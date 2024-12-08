@@ -4,9 +4,10 @@ import os
 from dotenv import load_dotenv
 
 from api import initial_filters
-from usercontext import UserContext
+from user_context import UserContext
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
+
 
 def main():
     logging.info("Starting the application...")
@@ -15,9 +16,7 @@ def main():
     username = os.environ.get("MEDICOVER_USER")
     password = os.environ.get("MEDICOVER_PASS")
 
-    uc = UserContext(username=username, password=password)
-    uc.login()
-    uc.refresh()
+    uc = UserContext(username, password)
 
     initial_filters(uc.session)
 

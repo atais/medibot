@@ -27,9 +27,8 @@ _online_url = "https://online24.medicover.pl"
 _oidc_url = f'{_online_url}/signin-oidc'
 
 
-def login(username: str, password: str, session: Session) -> Tuple[str, str]:
+def login(username: str, password: str, device_id: str, session: Session) -> Tuple[str, str]:
     state = "".join(random.choices(string.ascii_lowercase + string.digits, k=32))
-    device_id = str(uuid.uuid4())
     code_verifier = _uuid_v4() + _uuid_v4() + _uuid_v4()
     code_challenge = _gen_code_challenge(code_verifier)
 
