@@ -32,24 +32,27 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     code_verifier = _uuid_v4() + _uuid_v4() + _uuid_v4()
     code_challenge = _gen_code_challenge(code_verifier)
 
-    auth_params = ("?client_id=web" +
-                   f"&redirect_uri={_oidc_url}" +
-                   "&response_type=code" +
-                   "&scope=openid+offline_access+profile" +
-                   f"&state={state}" +
-                   f"&code_challenge={code_challenge}" +
-                   "&code_challenge_method=S256" +
-                   "&response_mode=query" +
-                   "&ui_locales=pl" +
-                   "&app_version=3.2.0.482" +
-                   "&previous_app_version=3.2.0.482" +
-                   f"&device_id={device_id}" +
-                   "&device_name=Chrome")
+    auth_params = {
+        "client_id": "web",
+        "redirect_uri": _oidc_url,
+        "response_type": "code",
+        "scope": "openid offline_access profile",
+        "state": state,
+        "code_challenge": code_challenge,
+        "code_challenge_method": "S256",
+        "response_mode": "query",
+        "ui_locales": "pl",
+        "app_version": "3.2.0.482",
+        "previous_app_version": "3.2.0.482",
+        "device_id": {device_id},
+        "device_name": "Chrome"
+    }
 
     # 0. initialize login
     # https://login-online24.medicover.pl/connect/authorize?client_id=web...
-    response = session.get(f"{_login_url}/connect/authorize" + auth_params, allow_redirects=False)
+    response = session.get(f"{_login_url}/connect/authorize", params=auth_params, allow_redirects=False)
     next_url = response.headers.get("Location")
+    return_url = parse_qs(urlparse(next_url).query)["ReturnUrl"][0]
 
     # 1. get __RequestVerificationToken
     # https://login-online24.medicover.pl/Account/Login?...
@@ -60,7 +63,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     # 2. send the form
     # https://login-online24.medicover.pl/Account/Login....
     login_form = {
-        "Input.ReturnUrl": "/connect/authorize/callback" + auth_params,
+        "Input.ReturnUrl": return_url,
         "Input.LoginType": "FullLogin",
         "Input.Username": username,
         "Input.Password": password,

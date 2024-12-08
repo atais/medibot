@@ -59,6 +59,8 @@ class UserContext(HTTPAdapter):
                     response = super().send(request, **kwargs)
                 else:
                     logging.warning(f"401 {self.user_data.username} no #1, its not possible to reload token")
+            except TypeError:
+                pass
             finally:
                 if response.status_code == 401:
                     logging.warning(f"401 {self.user_data.username} no #2, trying to login")
