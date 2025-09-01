@@ -20,7 +20,7 @@ def main():
 
     # 163 = ortopeda
     # 70770 - wymrazanie brodawek
-    r = search_appointments(
+    r = search(
         session=uc.session,
         page=1,
         page_size=5000,
@@ -30,7 +30,7 @@ def main():
         start_time="2025-09-01",
         is_overbooking_search_disabled=False
     )
-    print(r.status_code)
+    print(r)
 
     print("----")
     print(uc.user_data.bearer_token)

@@ -1,13 +1,13 @@
 import requests
 from requests import Session
-from dataclasses import dataclass
-
+from pydantic import BaseModel
+from typing import Optional, List
 
 api = "https://api-gateway-online24.medicover.pl"
 login = "https://login-online24.medicover.pl/"
 
-@dataclass
-class Profile:
+
+class Profile(BaseModel):
     mrn: int
     name: str
     surname: str
@@ -16,23 +16,46 @@ class Profile:
     sourceSystem: str
     isMain: bool
 
-def me( session: Session) -> Profile:
+
+def me(session: Session) -> Profile:
     url = f"{login}api/v4/available-profiles/me"
     response = session.get(url)
     response.raise_for_status()
     profiles_json = response.json()
     return Profile(**profiles_json[0])
 
-def search_appointments(
+
+class IdName(BaseModel):
+    id: str
+    name: str
+
+
+class Appointment(BaseModel):
+    appointmentDate: str
+    clinic: IdName
+    doctor: IdName
+    doctorLanguages: List[IdName]
+    specialty: IdName
+    visitType: str
+    bookingString: str
+    isOverbooking: bool
+    isOpticsAvailable: bool
+    isPharmaAvailable: bool
+    sysSpecialtyConsultationTypeId: str
+    visitOrigin: str
+    serviceId: Optional[str]
+
+
+def search(
         session: Session,
-        page: int,
-        page_size: int,
-        region_ids: int,
-        slot_search_type: str,
         specialty_ids: list[int],
         start_time: str,
-        is_overbooking_search_disabled: bool
-) -> requests.Response:
+        page: int = 1,
+        page_size: int = 5000,
+        region_ids: int = 204,
+        slot_search_type: str = "Standard",
+        is_overbooking_search_disabled: bool = False
+) -> list[Appointment]:
     params = []
     params.append(("Page", page))
     params.append(("PageSize", page_size))
@@ -42,5 +65,9 @@ def search_appointments(
     params.append(("StartTime", start_time))
     params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
 
-    return session.get(f"{api}/appointments/api/v2/search-appointments/slots", params=params)
-
+    response = session.get(f"{api}/appointments/api/v2/search-appointments/slots", params=params)
+    response.raise_for_status()
+    items = response.json().get("items", [])
+    print(items)
+    appointments = [Appointment(**item) for item in items]
+    return appointments
