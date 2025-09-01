@@ -24,17 +24,19 @@ def main():
     )
     print(r.status_code)
 
-    r = (search_appointments(
+
+    # 163 = ortopeda
+    # 70770 - wymrazanie brodawek
+    r = search_appointments(
         session=uc.session,
         page=1,
-        page_size=2,
-        service_type="Standard",
-        slot_search_type=1,
-        start_time="2024-12-08",
-        visit_type="Center",
+        page_size=5000,
         region_ids=204,
-        specialty_ids=[163, 202, 64796]
-    ))
+        slot_search_type="Standard",
+        specialty_ids=[163],
+        start_time="2025-09-01",
+        is_overbooking_search_disabled=False
+    )
     print(r.status_code)
 
     print("----")

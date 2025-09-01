@@ -7,6 +7,7 @@ import string
 import uuid
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs
+import time
 
 from bs4 import BeautifulSoup
 from requests import Session
@@ -42,10 +43,10 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
         "code_challenge_method": "S256",
         "response_mode": "query",
         "ui_locales": "pl",
-        "app_version": "3.2.0.482",
-        "previous_app_version": "3.2.0.482",
-        "device_id": {device_id},
-        "device_name": "Chrome"
+        "app_version": "3.9.3-beta.1.8",
+        "device_id": device_id,
+        "device_name": "Chrome",
+        "ts": int(time.time() * 1000)
     }
 
     # 0. initialize login
@@ -93,10 +94,10 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     }
     response = session.post(f"{_login_url}/connect/token", data=token_data)
     session_data = json.loads(response.content)
-    bearer_token = session_data.get("id_token")
+    access_token = session_data.get("access_token")
     refresh_token = session_data.get("refresh_token")
 
-    return bearer_token, refresh_token
+    return access_token, refresh_token
 
 
 def refresh(old_refresh: str, session: Session) -> Tuple[str, str]:
@@ -109,7 +110,7 @@ def refresh(old_refresh: str, session: Session) -> Tuple[str, str]:
     }
     response = session.post(f"{_login_url}/connect/token", data=refresh_token_data, allow_redirects=False)
     session_data = json.loads(response.content)
-    bearer_token = session_data.get("id_token")
+    access_token = session_data.get("access_token")
     refresh_token = session_data.get("refresh_token")
 
-    return bearer_token, refresh_token
+    return access_token, refresh_token

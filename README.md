@@ -17,7 +17,7 @@ pip install -r requirements.txt
 
 venv:
 ```commandline
-source venv/bin/activate
+source .venv/bin/activate
 deactivate
 ```
 

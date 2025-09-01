@@ -16,21 +16,22 @@ def search_appointments(
         session: Session,
         page: int,
         page_size: int,
-        service_type: str,
-        slot_search_type: int,
-        start_time: str,
-        visit_type: str,
         region_ids: int,
+        slot_search_type: str,
         specialty_ids: list[int],
+        start_time: str,
+        is_overbooking_search_disabled: bool
 ) -> requests.Response:
     params = []
     params.append(("Page", page))
     params.append(("PageSize", page_size))
     params.append(("RegionIds", region_ids))
-    params.append(("ServiceType", service_type))
     params.append(("SlotSearchType", slot_search_type))
     params.extend([("SpecialtyIds", x) for x in specialty_ids])
     params.append(("StartTime", start_time))
-    params.append(("VisitType", visit_type))
+    params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
 
-    return session.get(f"{_h}/appointments/api/search-appointments/slots", params=params)
+    return session.get(f"{_h}/appointments/api/v2/search-appointments/slots", params=params)
+
+# appointments/api/v2/search-appointments/slots?Page=1&PageSize=5000&RegionIds=204&SlotSearchType=Standard&SpecialtyIds=163&StartTime=2025-08-29&isOverbookingSearchDisabled=false
+# appointments/api/v2/search-appointments/slots?Page=1&PageSize=5000&RegionIds=204&SlotSearchType=Standard&SpecialtyIds=70770&StartTime=2025-08-29&isOverbookingSearchDisabled=false
