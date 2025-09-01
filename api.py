@@ -1,16 +1,27 @@
 import requests
 from requests import Session
+from dataclasses import dataclass
 
-_h = "https://api-gateway-online24.medicover.pl"
 
+api = "https://api-gateway-online24.medicover.pl"
+login = "https://login-online24.medicover.pl/"
 
-def initial_filters(
-        session: Session,
-        region_id: int
-) -> requests.Response:
-    params = [("RegionId", region_id)]
-    return session.get(f"{_h}/service-selector-configurator/api/search-appointments/filters", params=params)
+@dataclass
+class Profile:
+    mrn: int
+    name: str
+    surname: str
+    isChild: bool
+    accessLevel: str
+    sourceSystem: str
+    isMain: bool
 
+def me( session: Session) -> Profile:
+    url = f"{login}api/v4/available-profiles/me"
+    response = session.get(url)
+    response.raise_for_status()
+    profiles_json = response.json()
+    return Profile(**profiles_json[0])
 
 def search_appointments(
         session: Session,
@@ -31,7 +42,5 @@ def search_appointments(
     params.append(("StartTime", start_time))
     params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
 
-    return session.get(f"{_h}/appointments/api/v2/search-appointments/slots", params=params)
+    return session.get(f"{api}/appointments/api/v2/search-appointments/slots", params=params)
 
-# appointments/api/v2/search-appointments/slots?Page=1&PageSize=5000&RegionIds=204&SlotSearchType=Standard&SpecialtyIds=163&StartTime=2025-08-29&isOverbookingSearchDisabled=false
-# appointments/api/v2/search-appointments/slots?Page=1&PageSize=5000&RegionIds=204&SlotSearchType=Standard&SpecialtyIds=70770&StartTime=2025-08-29&isOverbookingSearchDisabled=false

@@ -18,13 +18,6 @@ def main():
 
     uc = UserContext(username, password)
 
-    r = initial_filters(
-        session=uc.session,
-        region_id=204
-    )
-    print(r.status_code)
-
-
     # 163 = ortopeda
     # 70770 - wymrazanie brodawek
     r = search_appointments(
