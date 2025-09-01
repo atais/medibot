@@ -1,5 +1,15 @@
 <!DOCTYPE html>
 <html>
+
+<head>
+    <title>Appointments</title>
+    <style>
+        table { border-collapse: collapse; width: 100%; }
+        th, td { border: 1px solid #ccc; padding: 8px; }
+        th { background: #f2f2f2; }
+    </style>
+</head>
+
 <body>
 <h1>Hello {{ name }}</h1>
 
@@ -17,9 +27,54 @@
 </form>
 
 
-<label for="response">Response (JSON):</label>
-<textarea id="response" name="response" rows="10" cols="80" readonly>
-{{ response | tojson if response is defined else '' }}
-</textarea>
+<h1>Appointments</h1>
+{% if response and response|length > 0 %}
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Clinic</th>
+        <th>Doctor</th>
+        <th>Languages</th>
+        <th>Specialty</th>
+        <th>Visit Type</th>
+<!--        <th>Booking String</th>-->
+<!--        <th>Overbooking</th>-->
+<!--        <th>Optics</th>-->
+<!--        <th>Pharma</th>-->
+        <th>Consultation Type</th>
+        <th>Origin</th>
+        <th>Service ID</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for a in response %}
+    <tr>
+        <td>{{ a.appointmentDate }}</td>
+        <td>{{ a.clinic.name }}</td>
+        <td>{{ a.doctor.name }}</td>
+        <td>
+            {% if a.doctorLanguages %}
+            {{ a.doctorLanguages | map(attribute='name') | join(', ') }}
+            {% else %}
+            -
+            {% endif %}
+        </td>
+        <td>{{ a.specialty.name }}</td>
+        <td>{{ a.visitType }}</td>
+<!--        <td>{{ a.bookingString }}</td>-->
+<!--        <td>{{ a.isOverbooking }}</td>-->
+<!--        <td>{{ a.isOpticsAvailable }}</td>-->
+<!--        <td>{{ a.isPharmaAvailable }}</td>-->
+        <td>{{ a.sysSpecialtyConsultationTypeId }}</td>
+        <td>{{ a.visitOrigin }}</td>
+        <td>{{ a.serviceId if a.serviceId else '-' }}</td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No appointments found.</p>
+{% endif %}
 </body>
 </html>

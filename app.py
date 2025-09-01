@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Request, Form
-from fastapi.responses import RedirectResponse, HTMLResponse
+from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
 import logging
@@ -16,6 +16,7 @@ templates = Jinja2Templates(directory="templates")
 
 # Global dictionary to store user contexts
 user_contexts = {}
+
 
 @app.get("/", response_class=HTMLResponse)
 async def hello(request: Request):
@@ -34,12 +35,9 @@ async def hello(request: Request):
 
 
 @app.post("/search", response_class=HTMLResponse)
-async def search(
-        request: Request,
-        region_ids: int = Form(...),
-        specialty_ids: str = Form(...),
-        start_time: str = Form(...)
-):
+@app.post("/search", response_class=HTMLResponse)
+async def search(request: Request, region_ids: int = Form(...), specialty_ids: str = Form(...),
+                 start_time: str = Form(...)):
     session_id = request.session.get("session_id")
     context = user_contexts.get(session_id)
     response = api.search(
@@ -48,9 +46,7 @@ async def search(
         specialty_ids=specialty_ids,
         start_time=start_time
     )
-
-    response_dict = [item.dict() for item in response] if response else []
-
+    response_dict = [item.model_dump() for item in response] if response else []
     return templates.TemplateResponse(
         "index.html",
         {
