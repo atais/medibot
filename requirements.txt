@@ -1,17 +1,9 @@
 pydantic
 starlette
-appdirs
-attrs
 beautifulsoup4
-certifi
-charset-normalizer
 fake-useragent
-idna
-importlib_resources
 python-dotenv
 requests
-soupsieve
-urllib3
 fastapi
 jinja2
 python-multipart
