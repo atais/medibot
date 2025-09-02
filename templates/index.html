@@ -25,14 +25,14 @@
 
 <form method="post" action="/search">
     <label for="region_ids">Region ID:</label>
-    <input type="number" id="region_ids" name="region_ids" value="204" required><br>
+    <input type="text" id="region_ids" name="region_ids" value="{{ region_ids }}" required>
 
     <label for="specialty_ids">Specialty IDs (comma separated):</label>
-    <input type="text" id="specialty_ids" name="specialty_ids" value="76798" required><br>
+    <input type="text" id="specialty_ids" name="specialty_ids" value="{{ specialty_ids }}" required>
 
     <label for="start_time">Start Time (YYYY-MM-DD):</label>
-    <input type="text" id="start_time" name="start_time" value="2025-09-03" required><br>
-
+    <input type="text" id="start_time" name="start_time" value="{{ start_time }}" required>
+    <br>
     <input type="submit" value="Search">
 </form>
 

@@ -25,6 +25,10 @@ user_contexts = {}
 @app.get("/", response_class=HTMLResponse)
 async def hello(request: Request):
     try:
+        region_ids = request.query_params.get("region_ids")
+        specialty_ids = request.query_params.get("specialty_ids")
+        start_time = request.query_params.get("start_time")
+
         session_id = request.session.get("session_id")
         context = user_contexts.get(session_id)
         me = medicover.me(context.session)
@@ -32,11 +36,23 @@ async def hello(request: Request):
 
         if not session_id or not context or not me:
             return RedirectResponse(url="/login", status_code=302)
+        elif not region_ids or not specialty_ids or not start_time:
+            return RedirectResponse(
+                url=f"/?region_ids=204&specialty_ids=76798&start_time=2025-09-03",
+                status_code=302
+            )
         else:
-            return templates.TemplateResponse("index.html", {"request": request, "name": session_id})
+            return templates.TemplateResponse("index.html", {
+                "request": request,
+                "name": session_id,
+                "region_ids": region_ids,
+                "specialty_ids": specialty_ids,
+                "start_time": start_time,
+            })
     except Exception as e:
         logging.error(e)
         return RedirectResponse(url="/login", status_code=302)
+
 
 @app.post("/book", response_class=HTMLResponse)
 async def search(request: Request, booking_string: str = Form(...)):
@@ -54,6 +70,7 @@ async def search(request: Request, booking_string: str = Form(...)):
             "appointments": []
         }
     )
+
 
 @app.post("/search", response_class=HTMLResponse)
 async def search(request: Request, region_ids: int = Form(...), specialty_ids: str = Form(...),
