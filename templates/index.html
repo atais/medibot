@@ -4,9 +4,19 @@
 <head>
     <title>Appointments</title>
     <style>
-        table { border-collapse: collapse; width: 100%; }
-        th, td { border: 1px solid #ccc; padding: 8px; }
-        th { background: #f2f2f2; }
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
     </style>
 </head>
 
@@ -28,7 +38,7 @@
 
 
 <h1>Appointments</h1>
-{% if response and response|length > 0 %}
+{% if appointments and appointments|length > 0 %}
 <table>
     <thead>
     <tr>
@@ -38,17 +48,18 @@
         <th>Languages</th>
         <th>Specialty</th>
         <th>Visit Type</th>
-<!--        <th>Booking String</th>-->
-<!--        <th>Overbooking</th>-->
-<!--        <th>Optics</th>-->
-<!--        <th>Pharma</th>-->
+        <!--        <th>Booking String</th>-->
+        <!--        <th>Overbooking</th>-->
+        <!--        <th>Optics</th>-->
+        <!--        <th>Pharma</th>-->
         <th>Consultation Type</th>
         <th>Origin</th>
-        <th>Service ID</th>
+        <!--        <th>Service ID</th>-->
+        <th>Book</th>
     </tr>
     </thead>
     <tbody>
-    {% for a in response %}
+    {% for a in appointments %}
     <tr>
         <td>{{ a.appointmentDate }}</td>
         <td>{{ a.clinic.name }}</td>
@@ -62,13 +73,19 @@
         </td>
         <td>{{ a.specialty.name }}</td>
         <td>{{ a.visitType }}</td>
-<!--        <td>{{ a.bookingString }}</td>-->
-<!--        <td>{{ a.isOverbooking }}</td>-->
-<!--        <td>{{ a.isOpticsAvailable }}</td>-->
-<!--        <td>{{ a.isPharmaAvailable }}</td>-->
+        <!--        <td>{{ a.bookingString }}</td>-->
+        <!--        <td>{{ a.isOverbooking }}</td>-->
+        <!--        <td>{{ a.isOpticsAvailable }}</td>-->
+        <!--        <td>{{ a.isPharmaAvailable }}</td>-->
         <td>{{ a.sysSpecialtyConsultationTypeId }}</td>
         <td>{{ a.visitOrigin }}</td>
-        <td>{{ a.serviceId if a.serviceId else '-' }}</td>
+        <!--        <td>{{ a.serviceId if a.serviceId else '-' }}</td>-->
+        <td>
+            <form method="post" action="/book">
+                <input type="hidden" name="booking_string" value="{{ a.bookingString }}">
+                <button type="submit">Book</button>
+            </form>
+        </td>
     </tr>
     {% endfor %}
     </tbody>

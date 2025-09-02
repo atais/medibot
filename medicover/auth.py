@@ -4,13 +4,15 @@ import json
 import random
 import re
 import string
+import time
 import uuid
 from typing import Tuple
 from urllib.parse import urlparse, parse_qs
-import time
 
 from bs4 import BeautifulSoup
 from requests import Session
+
+from .constants import ONLINE24, LOGIN
 
 
 def _uuid_v4() -> str:
@@ -22,11 +24,7 @@ def _gen_code_challenge(seed: str) -> str:
     based = base64.urlsafe_b64encode(uuid_sha).decode("utf-8")
     return re.sub(r"=+$", "", based.replace("+", "-").replace("/", "_"))
 
-
-_login_url = "https://login-online24.medicover.pl"
-_online_url = "https://online24.medicover.pl"
-_oidc_url = f'{_online_url}/signin-oidc'
-
+_oidc_url = f'{ONLINE24}/signin-oidc'
 
 def login(username: str, password: str, device_id: str, session: Session) -> Tuple[str, str]:
     state = "".join(random.choices(string.ascii_lowercase + string.digits, k=32))
@@ -51,7 +49,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
 
     # 0. initialize login
     # https://login-online24.medicover.pl/connect/authorize?client_id=web...
-    response = session.get(f"{_login_url}/connect/authorize", params=auth_params, allow_redirects=False)
+    response = session.get(f"{LOGIN}/connect/authorize", params=auth_params, allow_redirects=False)
     next_url = response.headers.get("Location")
     return_url = parse_qs(urlparse(next_url).query)["ReturnUrl"][0]
 
@@ -76,7 +74,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
 
     # 3. get code
     # https://login-online24.medicover.pl/connect/authorize/callback...
-    response = session.get(f"{_login_url}{next_url}", allow_redirects=False)
+    response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
     next_url = response.headers.get("Location")
     code = parse_qs(urlparse(next_url).query)["code"][0]
 
@@ -92,7 +90,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
         "code_verifier": code_verifier,
         "client_id": "web"
     }
-    response = session.post(f"{_login_url}/connect/token", data=token_data)
+    response = session.post(f"{LOGIN}/connect/token", data=token_data)
     session_data = json.loads(response.content)
     access_token = session_data.get("access_token")
     refresh_token = session_data.get("refresh_token")
@@ -108,7 +106,7 @@ def refresh(old_refresh: str, session: Session) -> Tuple[str, str]:
         "scope": "openid offline_access profile",
         "client_id": "web"
     }
-    response = session.post(f"{_login_url}/connect/token", data=refresh_token_data, allow_redirects=False)
+    response = session.post(f"{LOGIN}/connect/token", data=refresh_token_data, allow_redirects=False)
     session_data = json.loads(response.content)
     access_token = session_data.get("access_token")
     refresh_token = session_data.get("refresh_token")

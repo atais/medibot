@@ -3,7 +3,7 @@ import logging
 import requests
 from requests.adapters import HTTPAdapter
 
-import auth
+import medicover
 from user_data import UserData
 
 _default_headers = {
@@ -37,13 +37,13 @@ class UserContext(HTTPAdapter):
 
     def _login(self) -> None:
         logging.info(f"Logging in {self.username}")
-        r = auth.login(self.username, self.password, self.user_data.device_id, self.session)
+        r = medicover.login(self.username, self.password, self.user_data.device_id, self.session)
         self.user_data.update_tokens(*r)
         self._update_bearer()
 
     def _refresh(self) -> None:
         logging.info(f"Keep alive {self.username}")
-        r = auth.refresh(self.user_data.refresh_token, self.session)
+        r = medicover.refresh(self.user_data.refresh_token, self.session)
         self.user_data.update_tokens(*r)
         self._update_bearer()
 

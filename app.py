@@ -1,19 +1,19 @@
+import logging
+
 import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
 from starlette.middleware.sessions import SessionMiddleware
-import logging
-import api
 from starlette.responses import HTMLResponse
 
-logging.basicConfig(level=logging.INFO)
-
+import medicover
 from user_context import UserContext
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 
+logging.basicConfig(level=logging.INFO)
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 templates = Jinja2Templates(directory="templates")
@@ -21,12 +21,13 @@ templates = Jinja2Templates(directory="templates")
 # Global dictionary to store user contexts
 user_contexts = {}
 
+
 @app.get("/", response_class=HTMLResponse)
 async def hello(request: Request):
     try:
         session_id = request.session.get("session_id")
         context = user_contexts.get(session_id)
-        me = api.me(context.session)
+        me = medicover.me(context.session)
         logging.info(me)
 
         if not session_id or not context or not me:
@@ -34,26 +35,43 @@ async def hello(request: Request):
         else:
             return templates.TemplateResponse("index.html", {"request": request, "name": session_id})
     except Exception as e:
+        logging.error(e)
         return RedirectResponse(url="/login", status_code=302)
 
+@app.post("/book", response_class=HTMLResponse)
+async def search(request: Request, booking_string: str = Form(...)):
+    session_id = request.session.get("session_id")
+    context = user_contexts.get(session_id)
+    response = medicover.book(
+        context.session,
+        booking_string=booking_string
+    )
+
+    return templates.TemplateResponse(
+        "index.html",
+        {
+            "request": request,
+            "appointments": []
+        }
+    )
 
 @app.post("/search", response_class=HTMLResponse)
 async def search(request: Request, region_ids: int = Form(...), specialty_ids: str = Form(...),
                  start_time: str = Form(...)):
     session_id = request.session.get("session_id")
     context = user_contexts.get(session_id)
-    response = api.search(
+    response = medicover.appointments(
         context.session,
         region_ids=region_ids,
-        specialty_ids=specialty_ids,
+        specialty_ids=[int(x) for x in specialty_ids.split(",") if x.strip()],
         start_time=start_time
     )
-    response_dict = [item.model_dump() for item in response] if response else []
+
     return templates.TemplateResponse(
         "index.html",
         {
             "request": request,
-            "response": response_dict
+            "appointments": [item.model_dump() for item in response] if response else []
         }
     )
 

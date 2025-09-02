@@ -1,28 +1,9 @@
-import requests
-from requests import Session
-from pydantic import BaseModel
 from typing import Optional, List
 
-api = "https://api-gateway-online24.medicover.pl"
-login = "https://login-online24.medicover.pl/"
+from pydantic import BaseModel
+from requests import Session
 
-
-class Profile(BaseModel):
-    mrn: int
-    name: str
-    surname: str
-    isChild: bool
-    accessLevel: str
-    sourceSystem: str
-    isMain: bool
-
-
-def me(session: Session) -> Profile:
-    url = f"{login}api/v4/available-profiles/me"
-    response = session.get(url)
-    response.raise_for_status()
-    profiles_json = response.json()
-    return Profile(**profiles_json[0])
+from .constants import API
 
 
 class IdName(BaseModel):
@@ -46,7 +27,7 @@ class Appointment(BaseModel):
     serviceId: Optional[str]
 
 
-def search(
+def appointments(
         session: Session,
         specialty_ids: list[int],
         start_time: str,
@@ -65,7 +46,7 @@ def search(
     params.append(("StartTime", start_time))
     params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
 
-    response = session.get(f"{api}/appointments/api/v2/search-appointments/slots", params=params)
+    response = session.get(f"{API}/appointments/api/v2/search-appointments/slots", params=params)
     response.raise_for_status()
     items = response.json().get("items", [])
     appointments = [Appointment(**item) for item in items]

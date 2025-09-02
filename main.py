@@ -3,7 +3,7 @@ import os
 
 from dotenv import load_dotenv
 
-from api import *
+import medicover
 from user_context import UserContext
 
 logging.basicConfig(level=logging.DEBUG, format='%(asctime)s - %(levelname)s - %(message)s')
@@ -20,7 +20,7 @@ def main():
 
     # 163 = ortopeda
     # 70770 - wymrazanie brodawek
-    r = search(
+    r = medicover.appointments(
         session=uc.session,
         page=1,
         page_size=5000,
