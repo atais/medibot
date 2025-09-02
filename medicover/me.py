@@ -1,7 +1,7 @@
 from pydantic import BaseModel
 from requests import Session
 
-from .constants import LOGIN
+from ._constants import LOGIN
 
 
 class Profile(BaseModel):

@@ -12,7 +12,7 @@ from urllib.parse import urlparse, parse_qs
 from bs4 import BeautifulSoup
 from requests import Session
 
-from .constants import ONLINE24, LOGIN
+from ._constants import ONLINE24, LOGIN
 
 
 def _uuid_v4() -> str:

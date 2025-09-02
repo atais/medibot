@@ -3,7 +3,7 @@ from typing import Optional
 from pydantic import BaseModel, Field
 from requests import Session
 
-from .constants import API
+from ._constants import API
 
 class Metadata(BaseModel):
     appointmentSource: str = "Direct"

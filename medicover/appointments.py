@@ -3,7 +3,7 @@ from typing import Optional, List
 from pydantic import BaseModel
 from requests import Session
 
-from .constants import API
+from ._constants import API
 
 
 class IdName(BaseModel):
