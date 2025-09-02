@@ -1,3 +1,4 @@
+import uvicorn
 from fastapi import FastAPI, Request, Form
 from fastapi.responses import RedirectResponse
 from fastapi.templating import Jinja2Templates
@@ -10,13 +11,15 @@ logging.basicConfig(level=logging.INFO)
 
 from user_context import UserContext
 
+if __name__ == "__main__":
+    uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 app = FastAPI()
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 templates = Jinja2Templates(directory="templates")
 
 # Global dictionary to store user contexts
 user_contexts = {}
-
 
 @app.get("/", response_class=HTMLResponse)
 async def hello(request: Request):
@@ -34,7 +37,6 @@ async def hello(request: Request):
         return RedirectResponse(url="/login", status_code=302)
 
 
-@app.post("/search", response_class=HTMLResponse)
 @app.post("/search", response_class=HTMLResponse)
 async def search(request: Request, region_ids: int = Form(...), specialty_ids: str = Form(...),
                  start_time: str = Form(...)):

@@ -68,6 +68,5 @@ def search(
     response = session.get(f"{api}/appointments/api/v2/search-appointments/slots", params=params)
     response.raise_for_status()
     items = response.json().get("items", [])
-    print(items)
     appointments = [Appointment(**item) for item in items]
     return appointments
