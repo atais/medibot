@@ -21,3 +21,12 @@ source .venv/bin/activate
 deactivate
 ```
 
+start server from cmd
+```commandline
+uvicorn app:app --reload
+```
+start server from code
+```commandline
+python app.py
+```
+
