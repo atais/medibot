@@ -1,3 +1,5 @@
+apscheduler
+pytz
 pydantic
 starlette
 beautifulsoup4

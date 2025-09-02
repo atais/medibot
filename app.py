@@ -1,4 +1,5 @@
 import logging
+from contextlib import asynccontextmanager
 
 import uvicorn
 from fastapi import FastAPI, Request
@@ -11,12 +12,19 @@ from app_context import user_contexts, templates
 from routes.book import router as book_router
 from routes.login import router as login_router
 from routes.search import router as search_router
+from scheduler import scheduler
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 
+@asynccontextmanager
+async def lifespan(app):
+    scheduler.start()
+    yield
+    scheduler.shutdown()
+
 logging.basicConfig(level=logging.INFO)
-app = FastAPI()
+app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")
 app.include_router(login_router)
 app.include_router(book_router)

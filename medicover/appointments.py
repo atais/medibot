@@ -27,6 +27,16 @@ class Appointment(BaseModel):
     serviceId: Optional[str]
 
 
+class SearchParams(BaseModel):
+    specialty_ids: list[int]
+    start_time: str
+    page: int = 1
+    page_size: int = 5000
+    region_ids: int = 204
+    slot_search_type: str = "Standard"
+    is_overbooking_search_disabled: bool = False
+
+
 def appointments(
         session: Session,
         specialty_ids: list[int],
@@ -49,5 +59,5 @@ def appointments(
     response = session.get(f"{API}/appointments/api/v2/search-appointments/slots", params=params)
     response.raise_for_status()
     items = response.json().get("items", [])
-    appointments = [Appointment(**item) for item in items]
-    return appointments
+    result = [Appointment(**item) for item in items]
+    return result
