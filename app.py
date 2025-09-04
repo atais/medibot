@@ -1,4 +1,8 @@
 import logging
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
+
 from contextlib import asynccontextmanager
 
 import uvicorn
@@ -6,7 +10,7 @@ from fastapi import FastAPI, Request, Depends
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse
 
-from app_context import templates, get_current_user_context
+from app_context import templates, get_current_user_context, user_contexts
 from routes.book import router as book_router
 from routes.job import router as job_router
 from routes.login import router as login_router
@@ -20,13 +24,10 @@ if __name__ == "__main__":
 @asynccontextmanager
 async def lifespan(app):
     scheduler.start()
+    user_contexts.load_from_disk()
     yield
     scheduler.shutdown()
 
-
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 app = FastAPI(lifespan=lifespan)
 app.add_middleware(SessionMiddleware, secret_key="your-secret-key")

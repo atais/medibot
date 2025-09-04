@@ -11,3 +11,4 @@ jinja2
 python-multipart
 itsdangerous
 uvicorn
+pickledb

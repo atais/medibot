@@ -17,24 +17,33 @@ _default_headers = {
 
 
 class UserContext(HTTPAdapter):
-
-    def __init__(self, username: str, password: str, *args, **kwargs):
+    def __init__(
+            self,
+            username: str,
+            password: str,
+            user_agent: str = None,
+            device_id: str = None,
+            bearer_token: str = "",
+            refresh_token: str = "",
+            *args,
+            **kwargs
+    ):
         self.username = username
         self.password = password
 
-        self.user_agent: str = UserAgent().random
-        self.device_id: str = str(uuid.uuid4())
-        self.bearer_token: str = ""
-        self.refresh_token: str = ""
+        self.user_agent: str = user_agent if user_agent is not None else UserAgent().random
+        self.device_id: str = device_id if device_id is not None else str(uuid.uuid4())
+        self.bearer_token: str = bearer_token
+        self.refresh_token: str = refresh_token
 
         self.session = requests.Session()
         self.session.headers.update(_default_headers)
         self.session.mount('https://', self)
         self.session.mount('http://', self)
         self.session.headers["User-Agent"] = self.user_agent
+        self.session.headers["authorization"] = "Bearer " + self.bearer_token
 
         super().__init__(*args, **kwargs)
-
 
     def _login(self) -> None:
         logging.info(f"Logging in {self.username}")
@@ -74,3 +83,17 @@ class UserContext(HTTPAdapter):
                         raise Exception(f"401 {self.username} no #3, there is some issue with your account")
 
         return response
+
+    def to_tuple(self):
+        return (
+            self.username,
+            self.password,
+            self.user_agent,
+            self.device_id,
+            self.bearer_token,
+            self.refresh_token,
+        )
+
+    @classmethod
+    def from_tuple(cls, tup):
+        return cls(*tup)
