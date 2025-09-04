@@ -93,7 +93,3 @@ class UserContext(HTTPAdapter):
             self.bearer_token,
             self.refresh_token,
         )
-
-    @classmethod
-    def from_tuple(cls, tup):
-        return cls(*tup)

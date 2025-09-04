@@ -11,7 +11,7 @@ router = APIRouter()
 # Endpoint to render jobs table
 @router.get("/get_jobs", response_class=HTMLResponse)
 async def jobs_list(request: Request, user_context=Depends(get_current_user_context)):
-    jobs = get_jobs(user_context) if user_context else []
+    jobs = get_jobs(user_context.username) if user_context else []
     return templates.TemplateResponse("search.html", {
         "request": request,
         "name": user_context.username,
@@ -27,7 +27,7 @@ async def edit_job(request: Request, job_id: str, user_context=Depends(get_curre
 @router.post("/remove_job/{job_id}", response_class=HTMLResponse)
 async def remove_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.remove_job(job_id)
-    jobs = get_jobs(user_context) if user_context else []
+    jobs = get_jobs(user_context.username) if user_context else []
     return templates.TemplateResponse("index.html", {
         "request": request,
         "name": user_context.username,
@@ -46,5 +46,5 @@ async def add_job(request: Request,
         specialty_ids=[int(x) for x in specialty_ids.split(",") if x.strip()],
         start_time=start_time
     )
-    create_job(user_context, search_params)
+    create_job(user_context.username, search_params)
     return RedirectResponse(url="/", status_code=302)

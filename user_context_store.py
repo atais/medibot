@@ -22,7 +22,7 @@ class UserContextStore:
         for key in self.db.all():
             try:
                 info = self.db.get(key)
-                self.active[key] = UserContext.from_tuple(info)
+                self.active[key] = UserContext(*info)
                 logging.info(f"Restored user context for: {key}")
             except Exception as e:
                 logging.error(f"Failed to load context for {key}: {e}")

@@ -39,7 +39,7 @@ app.include_router(job_router)
 
 @app.get("/", response_class=HTMLResponse)
 async def home(request: Request, user_context=Depends(get_current_user_context)):
-    jobs = get_jobs(user_context)
+    jobs = get_jobs(user_context.username)
     return templates.TemplateResponse("index.html", {
         "request": request,
         "name": user_context.username,
