@@ -1,21 +1,18 @@
-from fastapi import APIRouter, Request, Form
+from fastapi import APIRouter, Request, Form, Depends
 from starlette.responses import HTMLResponse
 
 import medicover
-from app_context import templates, user_contexts
+from app_context import templates, get_current_user_context
 
 router = APIRouter()
 
 
 @router.post("/book", response_class=HTMLResponse)
-async def search(request: Request, booking_string: str = Form(...)):
-    session_id = request.session.get("session_id")
-    context = user_contexts.get(session_id)
+async def search(request: Request, booking_string: str = Form(...), user_context=Depends(get_current_user_context)):
     response = medicover.book(
-        context.session,
+        user_context.session,
         booking_string=booking_string
     )
-
     return templates.TemplateResponse(
         "index.html",
         {

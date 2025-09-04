@@ -2,27 +2,27 @@ import logging
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI, Request
-from fastapi.responses import RedirectResponse
+from fastapi import FastAPI, Request, Depends
 from starlette.middleware.sessions import SessionMiddleware
 from starlette.responses import HTMLResponse
 
-import medicover
-from app_context import user_contexts, templates
+from app_context import templates, get_current_user_context
 from routes.book import router as book_router
+from routes.job import router as job_router
 from routes.login import router as login_router
 from routes.search import router as search_router
-from routes.job import router as job_router
-from scheduler import scheduler
+from scheduler import scheduler, get_jobs
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
+
 
 @asynccontextmanager
 async def lifespan(app):
     scheduler.start()
     yield
     scheduler.shutdown()
+
 
 logging.basicConfig(level=logging.INFO)
 logging.getLogger("requests").setLevel(logging.DEBUG)
@@ -37,19 +37,10 @@ app.include_router(job_router)
 
 
 @app.get("/", response_class=HTMLResponse)
-async def hello(request: Request):
-    try:
-        session_id = request.session.get("session_id")
-        context = user_contexts.get(session_id)
-        me = medicover.me(context.session)
-
-        if not session_id or not context or not me:
-            return RedirectResponse(url="/login", status_code=302)
-        else:
-            return templates.TemplateResponse("index.html", {
-                "request": request,
-                "name": session_id
-            })
-    except Exception as e:
-        logging.error(e)
-        return RedirectResponse(url="/login", status_code=302)
+async def home(request: Request, user_context=Depends(get_current_user_context)):
+    jobs = get_jobs(user_context)
+    return templates.TemplateResponse("index.html", {
+        "request": request,
+        "name": user_context.username,
+        "jobs": jobs
+    })
