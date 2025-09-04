@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Appointments</title>
+    <style>
+        table {
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        th, td {
+            border: 1px solid #ccc;
+            padding: 8px;
+        }
+
+        th {
+            background: #f2f2f2;
+        }
+    </style>
+</head>
+
+<body>
+<h1>Hello {{ name }}</h1>
+
+<form method="get" action="/search" style="display:inline-block; margin-right:10px;">
+    <label for="region_ids">Region ID:</label>
+    <input type="text" id="region_ids" name="region_ids" value="{{ region_ids }}" required>
+
+    <label for="specialty_ids">Specialty IDs (comma separated):</label>
+    <input type="text" id="specialty_ids" name="specialty_ids" value="{{ specialty_ids }}" required>
+
+    <label for="start_time">Start Time (YYYY-MM-DD):</label>
+    <input type="text" id="start_time" name="start_time" value="{{ start_time }}" required>
+    <br>
+    <button type="submit" name="action" value="search">Search</button>
+</form>
+<form method="get" action="/add_job" style="display:inline-block;">
+    <input type="hidden" name="region_ids" value="{{ region_ids }}">
+    <input type="hidden" name="specialty_ids" value="{{ specialty_ids }}">
+    <input type="hidden" name="start_time" value="{{ start_time }}">
+    <br>
+    <button type="submit">Schedule</button>
+</form>
+
+
+<h1>Appointments</h1>
+{% if appointments and appointments|length > 0 %}
+<table>
+    <thead>
+    <tr>
+        <th>Date</th>
+        <th>Clinic</th>
+        <th>Doctor</th>
+        <th>Languages</th>
+        <th>Specialty</th>
+        <th>Visit Type</th>
+        <!--        <th>Booking String</th>-->
+        <!--        <th>Overbooking</th>-->
+        <!--        <th>Optics</th>-->
+        <!--        <th>Pharma</th>-->
+        <th>Consultation Type</th>
+        <th>Origin</th>
+        <!--        <th>Service ID</th>-->
+        <th>Book</th>
+    </tr>
+    </thead>
+    <tbody>
+    {% for a in appointments %}
+    <tr>
+        <td>{{ a.appointmentDate }}</td>
+        <td>{{ a.clinic.name }}</td>
+        <td>{{ a.doctor.name }}</td>
+        <td>
+            {% if a.doctorLanguages %}
+            {{ a.doctorLanguages | map(attribute='name') | join(', ') }}
+            {% else %}
+            -
+            {% endif %}
+        </td>
+        <td>{{ a.specialty.name }}</td>
+        <td>{{ a.visitType }}</td>
+        <!--        <td>{{ a.bookingString }}</td>-->
+        <!--        <td>{{ a.isOverbooking }}</td>-->
+        <!--        <td>{{ a.isOpticsAvailable }}</td>-->
+        <!--        <td>{{ a.isPharmaAvailable }}</td>-->
+        <td>{{ a.sysSpecialtyConsultationTypeId }}</td>
+        <td>{{ a.visitOrigin }}</td>
+        <!--        <td>{{ a.serviceId if a.serviceId else '-' }}</td>-->
+        <td>
+            <form method="post" action="/book">
+                <input type="hidden" name="booking_string" value="{{ a.bookingString }}">
+                <button type="submit">Book</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+    </tbody>
+</table>
+{% else %}
+<p>No appointments found.</p>
+{% endif %}
+
+</body>
+</html>

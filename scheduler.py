@@ -41,7 +41,7 @@ def _search(user_context: UserContext, search_params: SearchParams, job_id: str)
     logging.info([item.model_dump() for item in result])
 
 
-def add_job(user_context: UserContext, search_params: SearchParams) -> Job:
+def create_job(user_context: UserContext, search_params: SearchParams) -> Job:
     job_id = f"{user_context.username}_{list(search_params.model_dump().values())}"
     return scheduler.add_job(
         func=_search,

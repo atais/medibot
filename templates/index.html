@@ -2,7 +2,7 @@
 <html>
 
 <head>
-    <title>Appointments</title>
+    <title>Home</title>
     <style>
         table {
             border-collapse: collapse;
@@ -23,76 +23,49 @@
 <body>
 <h1>Hello {{ name }}</h1>
 
-<form method="post" action="/search">
+<h1>Create monitor</h1>
+<form method="get" action="/search">
     <label for="region_ids">Region ID:</label>
-    <input type="text" id="region_ids" name="region_ids" value="{{ region_ids }}" required>
+    <input type="text" id="region_ids" name="region_ids" value="204" required>
 
     <label for="specialty_ids">Specialty IDs (comma separated):</label>
-    <input type="text" id="specialty_ids" name="specialty_ids" value="{{ specialty_ids }}" required>
+    <input type="text" id="specialty_ids" name="specialty_ids" value="76798" required>
 
     <label for="start_time">Start Time (YYYY-MM-DD):</label>
-    <input type="text" id="start_time" name="start_time" value="{{ start_time }}" required>
+    <input type="text" id="start_time" name="start_time" value="2025-09-03" required>
     <br>
     <button type="submit" name="action" value="search">Search</button>
-    <button type="submit" name="action" value="schedule">Schedule</button>
 </form>
 
-
-<h1>Appointments</h1>
-{% if appointments and appointments|length > 0 %}
+<h1>Active monitors</h1>
 <table>
     <thead>
-    <tr>
-        <th>Date</th>
-        <th>Clinic</th>
-        <th>Doctor</th>
-        <th>Languages</th>
-        <th>Specialty</th>
-        <th>Visit Type</th>
-        <!--        <th>Booking String</th>-->
-        <!--        <th>Overbooking</th>-->
-        <!--        <th>Optics</th>-->
-        <!--        <th>Pharma</th>-->
-        <th>Consultation Type</th>
-        <th>Origin</th>
-        <!--        <th>Service ID</th>-->
-        <th>Book</th>
-    </tr>
+        <tr>
+            <th>Job ID</th>
+            <th>Next Run Time</th>
+            <th>Edit</th>
+            <th>Remove</th>
+        </tr>
     </thead>
     <tbody>
-    {% for a in appointments %}
-    <tr>
-        <td>{{ a.appointmentDate }}</td>
-        <td>{{ a.clinic.name }}</td>
-        <td>{{ a.doctor.name }}</td>
-        <td>
-            {% if a.doctorLanguages %}
-            {{ a.doctorLanguages | map(attribute='name') | join(', ') }}
-            {% else %}
-            -
-            {% endif %}
-        </td>
-        <td>{{ a.specialty.name }}</td>
-        <td>{{ a.visitType }}</td>
-        <!--        <td>{{ a.bookingString }}</td>-->
-        <!--        <td>{{ a.isOverbooking }}</td>-->
-        <!--        <td>{{ a.isOpticsAvailable }}</td>-->
-        <!--        <td>{{ a.isPharmaAvailable }}</td>-->
-        <td>{{ a.sysSpecialtyConsultationTypeId }}</td>
-        <td>{{ a.visitOrigin }}</td>
-        <!--        <td>{{ a.serviceId if a.serviceId else '-' }}</td>-->
-        <td>
-            <form method="post" action="/book">
-                <input type="hidden" name="booking_string" value="{{ a.bookingString }}">
-                <button type="submit">Book</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
+        {% for job in jobs %}
+        <tr>
+            <td>{{ job.id }}</td>
+            <td>{{ job.next_run_time }}</td>
+            <td>
+                <form method="get" action="/edit_job/{{ job.id }}">
+                    <button type="submit" disabled>Edit</button>
+                </form>
+            </td>
+            <td>
+                <form method="post" action="/remove_job/{{ job.id }}">
+                    <button type="submit">Remove</button>
+                </form>
+            </td>
+        </tr>
+        {% endfor %}
     </tbody>
 </table>
-{% else %}
-<p>No appointments found.</p>
-{% endif %}
+
 </body>
 </html>
