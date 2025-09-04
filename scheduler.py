@@ -1,4 +1,5 @@
 from datetime import datetime, timedelta, timezone
+import logging
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.job import Job
@@ -7,7 +8,7 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
 import medicover
-from app_context import user_contexts
+from app_context import user_contexts, fcm
 from medicover.appointments import SearchParams
 
 jobstores = {
@@ -30,12 +31,25 @@ scheduler = BackgroundScheduler(
 
 
 def _search(username: str, search_params: SearchParams, job_id: str):
+    user_context = user_contexts.get(username)
     result = medicover.appointments(
-        user_contexts.get(username).session,
+        user_context.session,
         region_ids=search_params.region_ids,
         specialty_ids=search_params.specialty_ids,
         start_time=search_params.start_time
     )
+
+    # Send FCM notification to the job owner
+    try:
+        fcm.notify(
+            fcm_token=user_context.fcm_token,
+            notification_title="Medibot Search",
+            notification_body="Hello! Your appointment search has been executed."
+        )
+        logging.info(f"Notification sent to {username}")
+    except Exception as e:
+        logging.error(f"Failed to send notification to {username}: {e}")
+
     # logging.info(f"{job_id}")
     # logging.info([item.model_dump() for item in result])
 
@@ -45,7 +59,7 @@ def create_job(username: str, search_params: SearchParams) -> Job:
     return scheduler.add_job(
         func=_search,
         trigger='interval',
-        minutes=5,
+        minutes=1,
         start_date=datetime.now(timezone.utc) + timedelta(minutes=1),  # Use timezone-aware UTC
         args=[username, search_params, job_id],
         id=job_id,

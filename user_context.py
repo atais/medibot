@@ -25,6 +25,7 @@ class UserContext(HTTPAdapter):
             device_id: str = None,
             bearer_token: str = "",
             refresh_token: str = "",
+            fcm_token: str = "",
             *args,
             **kwargs
     ):
@@ -35,6 +36,7 @@ class UserContext(HTTPAdapter):
         self.device_id: str = device_id if device_id is not None else str(uuid.uuid4())
         self.bearer_token: str = bearer_token
         self.refresh_token: str = refresh_token
+        self.fcm_token: str = fcm_token
 
         self.session = requests.Session()
         self.session.headers.update(_default_headers)
@@ -92,4 +94,5 @@ class UserContext(HTTPAdapter):
             self.device_id,
             self.bearer_token,
             self.refresh_token,
+            self.fcm_token,
         )
