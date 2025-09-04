@@ -21,8 +21,10 @@ async def process_login(request: Request, username: str = Form(...), password: s
         uc = UserContext(username, password)
         user_contexts[username] = uc
         me = medicover.me(uc.session)
-        request.session["session_id"] = username
-        return RedirectResponse(url="/", status_code=303)
+        request.session["username"] = username
+        response = RedirectResponse(url="/", status_code=303)
+        response.set_cookie(key="username", value=username, max_age=60*60*24*30)
+        return response
     except Exception as e:
         logging.error(e)
         return RedirectResponse(url="/login", status_code=302)
