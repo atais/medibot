@@ -1,4 +1,6 @@
+import json
 import logging
+
 from sqlalchemy import create_engine, Column, String, Text
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -6,6 +8,7 @@ from sqlalchemy.orm import sessionmaker
 from user_context import UserContext
 
 Base = declarative_base()
+
 
 class UserContextModel(Base):
     __tablename__ = 'user_contexts'
@@ -17,6 +20,7 @@ class UserContextModel(Base):
     bearer_token = Column(Text, default="")
     refresh_token = Column(Text, default="")
     fcm_token = Column(Text, default="")
+    cookie_jar = Column(Text, default="")
 
     def to_user_context(self):
         from user_context import UserContext
@@ -27,11 +31,34 @@ class UserContextModel(Base):
             device_id=self.device_id,
             bearer_token=self.bearer_token,
             refresh_token=self.refresh_token,
-            fcm_token=self.fcm_token
+            fcm_token=self.fcm_token,
+            cookie_jar=self.cookie_jar
         )
 
     @classmethod
     def from_user_context(cls, user_context):
+        # Serialize the entire cookie jar to JSON
+
+        cookie_jar_data = ""
+        if hasattr(user_context, 'session') and user_context.session.cookies:
+            try:
+                cookies_list = []
+                for cookie in user_context.session.cookies:
+                    cookie_dict = {
+                        'name': cookie.name,
+                        'value': cookie.value,
+                        'domain': cookie.domain,
+                        'path': cookie.path,
+                        'secure': cookie.secure,
+                        'expires': cookie.expires
+                    }
+                    cookies_list.append(cookie_dict)
+
+                # Serialize to JSON string
+                cookie_jar_data = json.dumps(cookies_list)
+            except Exception as e:
+                logging.warning(f"Failed to serialize cookie jar: {e}")
+
         return cls(
             username=user_context.username,
             password=user_context.password,
@@ -39,7 +66,8 @@ class UserContextModel(Base):
             device_id=user_context.device_id,
             bearer_token=user_context.bearer_token,
             refresh_token=user_context.refresh_token,
-            fcm_token=user_context.fcm_token
+            fcm_token=user_context.fcm_token,
+            cookie_jar=cookie_jar_data
         )
 
 

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form
 from starlette.responses import RedirectResponse, HTMLResponse
 
 import medicover
-from app_context import templates, user_contexts
+from app_context import templates
 from user_context import UserContext
 
 router = APIRouter()
@@ -20,10 +20,9 @@ async def process_login(request: Request, username: str = Form(...), password: s
     try:
         uc = UserContext(username, password)
         me = medicover.me(uc.session)
-        user_contexts.set(username, uc)
         request.session["username"] = username
         response = RedirectResponse(url="/", status_code=303)
-        response.set_cookie(key="username", value=username, max_age=60*60*24*30)
+        response.set_cookie(key="username", value=username, max_age=60 * 60 * 24 * 30)
         return response
     except Exception as e:
         logging.error(e)

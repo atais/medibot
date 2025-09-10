@@ -1,3 +1,4 @@
+import json
 import logging
 import uuid
 
@@ -5,6 +6,7 @@ import requests
 from fake_useragent import UserAgent
 from requests.adapters import HTTPAdapter
 
+import app_context
 import medicover
 
 _default_headers = {
@@ -26,6 +28,7 @@ class UserContext(HTTPAdapter):
             bearer_token: str = "",
             refresh_token: str = "",
             fcm_token: str = "",
+            cookie_jar: str = "",
             *args,
             **kwargs
     ):
@@ -45,7 +48,36 @@ class UserContext(HTTPAdapter):
         self.session.headers["User-Agent"] = self.user_agent
         self.session.headers["authorization"] = "Bearer " + self.bearer_token
 
+        # Restore cookie jar if provided
+        if cookie_jar:
+            self._restore_cookie_jar(cookie_jar)
+
         super().__init__(*args, **kwargs)
+
+    def _restore_cookie_jar(self, cookie_jar_data: str):
+        """Restore the entire cookie jar from JSON data"""
+
+        try:
+            if not cookie_jar_data:
+                return
+
+            # Parse JSON data
+            cookies_data = json.loads(cookie_jar_data)
+
+            # Restore each cookie
+            for cookie_info in cookies_data:
+                self.session.cookies.set(
+                    name=cookie_info['name'],
+                    value=cookie_info['value'],
+                    domain=cookie_info.get('domain'),
+                    path=cookie_info.get('path', '/'),
+                    secure=cookie_info.get('secure', False),
+                    expires=cookie_info.get('expires')
+                )
+
+            logging.debug(f"Restored {len(cookies_data)} cookies for {self.username}")
+        except Exception as e:
+            logging.warning(f"Failed to restore cookie jar for {self.username}: {e}")
 
     def _login(self) -> None:
         logging.info(f"Logging in {self.username}")
@@ -53,6 +85,7 @@ class UserContext(HTTPAdapter):
         self.bearer_token = at
         self.refresh_token = rt
         self.session.headers["authorization"] = "Bearer " + self.bearer_token
+        app_context.user_contexts.set(self.username, self)
 
     def _refresh(self) -> None:
         logging.info(f"Keep alive {self.username}")
@@ -60,6 +93,7 @@ class UserContext(HTTPAdapter):
         self.bearer_token = at
         self.refresh_token = rt
         self.session.headers["authorization"] = "Bearer " + self.bearer_token
+        app_context.user_contexts.set(self.username, self)
 
     def send(self, request, **kwargs):
         response = super().send(request, **kwargs)
@@ -69,7 +103,6 @@ class UserContext(HTTPAdapter):
                 if self.bearer_token != "":
                     logging.warning(f"401 {self.username} no #1, trying to reload token")
                     self._refresh()
-                    request.headers["authorization"] = "Bearer " + self.bearer_token
                     response = super().send(request, **kwargs)
                 else:
                     logging.warning(f"401 {self.username} no #1, its not possible to reload token")
@@ -78,8 +111,9 @@ class UserContext(HTTPAdapter):
             finally:
                 if response.status_code == 401:
                     logging.warning(f"401 {self.username} no #2, trying to login")
+                    self.session.headers["authorization"] = ""
+                    self.session.cookies.clear_session_cookies()
                     self._login()
-                    request.headers["authorization"] = "Bearer " + self.bearer_token
                     response = super().send(request, **kwargs)
                     if response.status_code == 401:
                         raise Exception(f"401 {self.username} no #3, there is some issue with your account")
