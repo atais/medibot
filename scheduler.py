@@ -12,7 +12,7 @@ from app_context import user_contexts, fcm
 from medicover.appointments import SearchParams
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url='sqlite:///jobs.sqlite')
+    'default': SQLAlchemyJobStore(url='sqlite:///medibot.sqlite')
 }
 executors = {
     'default': ThreadPoolExecutor(1)

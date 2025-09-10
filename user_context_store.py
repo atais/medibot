@@ -1,41 +1,70 @@
 import logging
-
-from pickledb import PickleDB
+from sqlalchemy import create_engine, Column, String, Text
+from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import sessionmaker
 
 from user_context import UserContext
+
+Base = declarative_base()
+
+class UserContextModel(Base):
+    __tablename__ = 'user_contexts'
+
+    username = Column(String, primary_key=True)
+    password = Column(String, nullable=False)
+    user_agent = Column(Text)
+    device_id = Column(String)
+    bearer_token = Column(Text, default="")
+    refresh_token = Column(Text, default="")
+    fcm_token = Column(Text, default="")
+
+    def to_user_context(self):
+        from user_context import UserContext
+        return UserContext(
+            username=self.username,
+            password=self.password,
+            user_agent=self.user_agent,
+            device_id=self.device_id,
+            bearer_token=self.bearer_token,
+            refresh_token=self.refresh_token,
+            fcm_token=self.fcm_token
+        )
+
+    @classmethod
+    def from_user_context(cls, user_context):
+        return cls(
+            username=user_context.username,
+            password=user_context.password,
+            user_agent=user_context.user_agent,
+            device_id=user_context.device_id,
+            bearer_token=user_context.bearer_token,
+            refresh_token=user_context.refresh_token,
+            fcm_token=user_context.fcm_token
+        )
 
 
 class UserContextStore:
 
-    def __init__(self, path):
-        try:
-            self.path = path
-            self.active: dict[str, UserContext] = {}
-            logging.info(f"Opening UserContextStore @ {path}")
-            self.db = PickleDB(path)
-        except Exception as e:
-            logging.error(e)
-            # os.remove(path)
-            self.db = PickleDB(path)
+    def __init__(self, db_url: str):
+        logging.info(f"Opening UserContextStore @ {db_url}")
+        self.engine = create_engine(db_url)
+        Base.metadata.create_all(self.engine)
+        Session = sessionmaker(bind=self.engine)
+        self.session = Session()
 
-    def load_from_disk(self):
-        for key in self.db.all():
-            try:
-                info = self.db.get(key)
-                self.active[key] = UserContext(*info)
-                logging.info(f"Restored user context for: {key}")
-            except Exception as e:
-                logging.error(f"Failed to load context for {key}: {e}")
-
-    def get(self, username: str) -> UserContext:
-        return self.active.get(username)
+    def get(self, username: str) -> UserContext | None:
+        context_model = self.session.query(UserContextModel).filter_by(username=username).first()
+        if context_model:
+            return context_model.to_user_context()
+        else:
+            return None
 
     def set(self, username: str, user_context: UserContext):
-        self.active[username] = user_context
-        self.db.set(username, user_context.to_tuple())
-        self.db.save()
-
-    def remove(self, username):
-        self.db.remove(username)
-        self.db.save()
-        del self.active[username]
+        existing = self.session.query(UserContextModel).filter_by(username=username).first()
+        if existing:
+            self.session.delete(existing)
+            self.session.commit()
+        # Add new/updated context
+        context_model = UserContextModel.from_user_context(user_context)
+        self.session.add(context_model)
+        self.session.commit()

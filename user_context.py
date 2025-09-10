@@ -85,14 +85,3 @@ class UserContext(HTTPAdapter):
                         raise Exception(f"401 {self.username} no #3, there is some issue with your account")
 
         return response
-
-    def to_tuple(self):
-        return (
-            self.username,
-            self.password,
-            self.user_agent,
-            self.device_id,
-            self.bearer_token,
-            self.refresh_token,
-            self.fcm_token,
-        )

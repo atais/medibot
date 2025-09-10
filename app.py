@@ -27,7 +27,6 @@ if __name__ == "__main__":
 @asynccontextmanager
 async def lifespan(app):
     scheduler.start()
-    user_contexts.load_from_disk()
     yield
     scheduler.shutdown()
 

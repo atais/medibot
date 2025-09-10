@@ -11,8 +11,7 @@ load_dotenv()
 
 templates = Jinja2Templates(directory="templates")
 
-USER_CONTEXTS_PATH = os.path.join(os.getcwd(), "user_contexts.db")
-user_contexts = UserContextStore(USER_CONTEXTS_PATH)
+user_contexts = UserContextStore('sqlite:///medibot.sqlite')
 
 # Initialize FCM with environment variables
 fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")

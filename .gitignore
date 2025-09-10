@@ -2,7 +2,6 @@
 venv
 
 medibot.iml
-user_contexts.db
-jobs.sqlite
+medibot.sqlite
 .env
 firebase-service-account.json
