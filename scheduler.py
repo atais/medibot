@@ -61,8 +61,8 @@ def create_job(username: str, search_params: SearchParams) -> Job:
     return scheduler.add_job(
         func=_search,
         trigger='interval',
-        minutes=1,
-        start_date=datetime.now(timezone.utc) + timedelta(minutes=1),  # Use timezone-aware UTC
+        minutes=5,
+        start_date=datetime.now(timezone.utc) + timedelta(minutes=5),
         args=[username, search_params, job_id],
         id=job_id,
         name=job_id
