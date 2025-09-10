@@ -1,22 +1,11 @@
 from fastapi import APIRouter, Request, Query, Depends
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app_context import templates, get_current_user_context
+from app_context import get_current_user_context
 from medicover.appointments import SearchParams
-from scheduler import get_jobs, scheduler, create_job
+from scheduler import scheduler, create_job
 
 router = APIRouter()
-
-
-# Endpoint to render jobs table
-@router.get("/get_jobs", response_class=HTMLResponse)
-async def jobs_list(request: Request, user_context=Depends(get_current_user_context)):
-    jobs = get_jobs(user_context.username) if user_context else []
-    return templates.TemplateResponse("search.html", {
-        "request": request,
-        "name": user_context.username,
-        "jobs": jobs
-    })
 
 
 @router.get("/edit_job/{job_id}", response_class=HTMLResponse)
@@ -27,12 +16,7 @@ async def edit_job(request: Request, job_id: str, user_context=Depends(get_curre
 @router.post("/remove_job/{job_id}", response_class=HTMLResponse)
 async def remove_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.remove_job(job_id)
-    jobs = get_jobs(user_context.username) if user_context else []
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "name": user_context.username,
-        "jobs": jobs
-    })
+    return RedirectResponse(url="/", status_code=302)
 
 
 @router.get("/add_job", response_class=HTMLResponse)
