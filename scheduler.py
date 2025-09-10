@@ -8,11 +8,11 @@ from apscheduler.schedulers.background import BackgroundScheduler
 from pytz import utc
 
 import medicover
-from app_context import user_contexts, fcm
+from app_context import user_contexts, fcm, app_db_env
 from medicover.appointments import SearchParams
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url='sqlite:///medibot.sqlite')
+    'default': SQLAlchemyJobStore(url=app_db_env)
 }
 executors = {
     'default': ThreadPoolExecutor(1)
