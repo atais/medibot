@@ -39,19 +39,21 @@ def _search(username: str, search_params: SearchParams, job_id: str):
         start_time=search_params.start_time
     )
 
-    # Send FCM notification to the job owner
-    try:
-        fcm.notify(
-            fcm_token=user_context.fcm_token,
-            notification_title="Medibot Search",
-            notification_body="Hello! Your appointment search has been executed."
-        )
-        logging.info(f"Notification sent to {username}")
-    except Exception as e:
-        logging.error(f"Failed to send notification to {username}: {e}")
+    if len(result) > 0:
+        try:
+            specialty_ids_str = ','.join(map(str, search_params.specialty_ids))
 
-    # logging.info(f"{job_id}")
-    # logging.info([item.model_dump() for item in result])
+            fcm.notify(
+                fcm_token=user_context.fcm_token,
+                notification_title="Medibot Search",
+                notification_body=f"Found {len(result)} appointments!",
+                data_payload={
+                    "click_action": f"/search?region_ids={search_params.region_ids}&specialty_ids={specialty_ids_str}&start_time={search_params.start_time}"
+                }
+            )
+            logging.info(f"Notification sent to {username}")
+        except Exception as e:
+            logging.error(f"Failed to send notification to {username}: {e}")
 
 
 def create_job(username: str, search_params: SearchParams) -> Job:

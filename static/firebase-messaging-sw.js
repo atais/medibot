@@ -21,8 +21,21 @@ messaging.onBackgroundMessage((payload) => {
     const notificationTitle = payload.notification.title;
     const notificationOptions = {
         body: payload.notification.body,
-        icon: '/favicon.ico'
+        icon: '/favicon.ico',
+        data: payload.data // Attach data for click_action
     };
 
     self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle notification click to support click_action
+self.addEventListener('notificationclick', function(event) {
+    event.notification.close();
+    let clickAction = '/';
+    if (event.notification.data && event.notification.data.click_action) {
+        clickAction = event.notification.data.click_action;
+    }
+    event.waitUntil(
+        clients.openWindow(clickAction)
+    );
 });
