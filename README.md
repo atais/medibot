@@ -7,6 +7,13 @@ Trying to automate search process in Medicover
 - https://github.com/apqlzm/medihunter
 - https://github.com/dyrkin/luxmed-bot
 
+## Running
+
+```commandline
+docker build -t medibot .
+docker run --rm -p 3333:8000 medibot
+```
+
 ## Development
 
 first time:
@@ -29,4 +36,3 @@ start server from code
 ```commandline
 python app.py
 ```
-
