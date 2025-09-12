@@ -103,6 +103,7 @@ class UserContext(HTTPAdapter):
                 if self.bearer_token != "":
                     logging.warning(f"401 {self.username} no #1, trying to reload token")
                     self._refresh()
+                    request.headers["authorization"] = "Bearer " + self.bearer_token
                     response = super().send(request, **kwargs)
                 else:
                     logging.warning(f"401 {self.username} no #1, its not possible to reload token")
@@ -114,6 +115,7 @@ class UserContext(HTTPAdapter):
                     self.session.headers["authorization"] = ""
                     self.session.cookies.clear_session_cookies()
                     self._login()
+                    request.headers["authorization"] = "Bearer " + self.bearer_token
                     response = super().send(request, **kwargs)
                     if response.status_code == 401:
                         raise Exception(f"401 {self.username} no #3, there is some issue with your account")
