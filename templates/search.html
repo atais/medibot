@@ -16,14 +16,17 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Szukaj wizyt</h2>
-                    <form method="get" action="/search" class="g-3 align-items-end">
+                    <form method="get" action="/search" class="g-3 align-items-end" id="search-form">
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
-                                <label for="region_ids" class="col-form-label">Region ID</label>
+                                <label for="region_name" class="col-form-label">Region</label>
                             </div>
-                            <div class="col-md-9">
-                                <input type="text" class="form-control" id="region_ids" name="region_ids"
-                                       value="{{ region_ids }}" required>
+                            <div class="col-md-9 position-relative">
+                                <input type="text" class="form-control" id="region_name" name="region_name"
+                                       autocomplete="off" placeholder="Wybierz region...">
+                                <input type="hidden" id="region_ids" name="region_ids" value="{{ region_ids }}" required>
+                                <div id="region-autocomplete-list" class="list-group position-absolute w-100"
+                                     style="z-index: 1000;"></div>
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
@@ -60,32 +63,94 @@
                     </form>
 
                     <script>
-                        function scheduleMonitor() {
-                            const form = document.createElement('form');
-                            form.method = 'get';
-                            form.action = '/add_job';
+                        let regions = [];
+                        let homeLocation = null;
 
-                            const regionIds = document.getElementById('region_ids').value;
-                            const specialtyIds = document.getElementById('specialty_ids').value;
-                            const startTime = document.getElementById('start_time').value;
-
-                            const inputs = [
-                                {name: 'region_ids', value: regionIds},
-                                {name: 'specialty_ids', value: specialtyIds},
-                                {name: 'start_time', value: startTime}
-                            ];
-
-                            inputs.forEach(input => {
-                                const hiddenInput = document.createElement('input');
-                                hiddenInput.type = 'hidden';
-                                hiddenInput.name = input.name;
-                                hiddenInput.value = input.value;
-                                form.appendChild(hiddenInput);
+                        fetch('/static/locations.json')
+                            .then(response => response.json())
+                            .then(data => {
+                                regions = data.regions || [];
+                                homeLocation = data.homeLocation || null;
+                                // Set value from region_ids param if present
+                                const regionIdFromParam = document.getElementById('region_ids').value;
+                                if (regionIdFromParam) {
+                                    const regionObj = regions.find(r => r.id === regionIdFromParam);
+                                    if (regionObj) {
+                                        document.getElementById('region_name').value = regionObj.value;
+                                    }
+                                } else if (homeLocation) {
+                                    document.getElementById('region_name').value = homeLocation.value;
+                                    document.getElementById('region_ids').value = homeLocation.id;
+                                }
                             });
 
-                            document.body.appendChild(form);
-                            form.submit();
-                        }
+                        const regionInput = document.getElementById('region_name');
+                        const regionIdInput = document.getElementById('region_ids');
+                        const autocompleteList = document.getElementById('region-autocomplete-list');
+
+                        regionInput.addEventListener('input', function () {
+                            const val = this.value.toLowerCase();
+                            autocompleteList.innerHTML = '';
+                            if (!val) return;
+                            const matches = regions.filter(r => r.value.toLowerCase().includes(val));
+                            matches.forEach(region => {
+                                const item = document.createElement('button');
+                                item.type = 'button';
+                                item.className = 'list-group-item list-group-item-action';
+                                item.textContent = region.value;
+                                item.onclick = function () {
+                                    regionInput.value = region.value;
+                                    regionIdInput.value = region.id;
+                                    autocompleteList.innerHTML = '';
+                                };
+                                autocompleteList.appendChild(item);
+                            });
+                        });
+
+                        regionInput.addEventListener('focus', function () {
+                            if (this.value === '' && regions.length > 0) {
+                                autocompleteList.innerHTML = '';
+                                regions.forEach(region => {
+                                    const item = document.createElement('button');
+                                    item.type = 'button';
+                                    item.className = 'list-group-item list-group-item-action';
+                                    item.textContent = region.value;
+                                    item.onclick = function () {
+                                        regionInput.value = region.value;
+                                        regionIdInput.value = region.id;
+                                        autocompleteList.innerHTML = '';
+                                    };
+                                    autocompleteList.appendChild(item);
+                                });
+                            }
+                        });
+
+                        document.addEventListener('click', function (e) {
+                            if (!regionInput.contains(e.target) && !autocompleteList.contains(e.target)) {
+                                autocompleteList.innerHTML = '';
+                            }
+                        });
+
+                        // On form submit, ensure region_ids is set to the selected region's ID
+                        const searchForm = document.getElementById('search-form');
+                        searchForm.addEventListener('submit', function (e) {
+                            // If the region name doesn't match any region, prevent submit
+                            const selected = regions.find(r => r.value === regionInput.value);
+                            if (selected) {
+                                regionIdInput.value = selected.id;
+                            } else {
+                                regionIdInput.value = '';
+                                regionInput.value = '';
+                                e.preventDefault();
+                                regionInput.classList.add('is-invalid');
+                                regionInput.setCustomValidity('Wybierz region z listy.');
+                                regionInput.reportValidity();
+                            }
+                        });
+                        regionInput.addEventListener('input', function () {
+                            regionInput.classList.remove('is-invalid');
+                            regionInput.setCustomValidity('');
+                        });
                     </script>
                 </div>
             </div>
