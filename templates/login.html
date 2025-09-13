@@ -1,10 +1,57 @@
 <!DOCTYPE html>
-<html>
+<html lang="pl">
+<head>
+    <title>MEDIBOT | Login</title>
+    <link rel="icon" type="image/x-icon" href="/static/favicon.ico">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: #f5f6fa;
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .login-container {
+            background: #fff;
+            padding: 2.5rem 2rem;
+            border-radius: 1rem;
+            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+            width: 100%;
+            max-width: 370px;
+            margin: 2rem auto;
+        }
+
+        .login-logo {
+            display: block;
+            margin: 0 auto 1.5rem auto;
+            width: 120px;
+        }
+    </style>
+</head>
 <body>
-<form method="post" action="/login">
-    <label>Username: <input type="text" name="username" /></label><br>
-    <label>Password: <input type="password" name="password" /></label><br>
-    <button type="submit">Login</button>
-</form>
+<div class="login-container">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    <!-- Optionally add a logo here -->
+    <img src="/static/medi_ico.png" class="login-logo" alt="Logo">
+    <h2 class="mb-4 text-primary text-center">Witaj w MediBOT</h2>
+    <form method="post" action="/login">
+        <div class="mb-3">
+            <label for="username" class="form-label">Nazwa użytkownika</label>
+            <input type="text" class="form-control" id="username" name="username" required autofocus>
+        </div>
+        <div class="mb-3">
+            <label for="password" class="form-label">Hasło</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Zaloguj się</button>
+    </form>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

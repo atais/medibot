@@ -26,4 +26,7 @@ async def process_login(request: Request, username: str = Form(...), password: s
         return response
     except Exception as e:
         logging.error(e)
-        return RedirectResponse(url="/login", status_code=302)
+        return templates.TemplateResponse(
+            "login.html",
+            {"request": request, "error": str(e)}
+        )
