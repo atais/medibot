@@ -1,6 +1,7 @@
 # Medibot
 
-Trying to automate search process in Medicover
+Exploring AI-assisted programming by interacting with online services using Python.
+The project experiments with automation of the search process in Medicover.
 
 ## Inspired on
 
