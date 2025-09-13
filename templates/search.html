@@ -260,6 +260,15 @@
                         });
                     });
                     </script>
+                    <script>
+                    // Make scheduleMonitor globally available and submit to /add_job
+                    function scheduleMonitor() {
+                        const form = document.getElementById('search-form');
+                        form.action = '/add_job';
+                        form.method = 'get';
+                        form.submit();
+                    }
+                    </script>
                 </div>
             </div>
         </div>
