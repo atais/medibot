@@ -24,6 +24,7 @@ async def search(request: Request,
         "search.html",
         {
             "request": request,
+            "user": user_context.username,
             "appointments": appointments,
             "region_ids": region_ids,
             "specialty_ids": specialty_ids,

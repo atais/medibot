@@ -1,0 +1,120 @@
+{
+  "homeLocation": {
+    "id": "204",
+    "value": "Warszawa"
+  },
+  "regions": [
+    {
+      "id": "102426",
+      "value": "Białystok"
+    },
+    {
+      "id": "104450",
+      "value": "Bielsko-Biała"
+    },
+    {
+      "id": "102424",
+      "value": "Bydgoszcz"
+    },
+    {
+      "id": "115682",
+      "value": "Częstochowa "
+    },
+    {
+      "id": "114060",
+      "value": "Elbląg"
+    },
+    {
+      "id": "102200",
+      "value": "Gliwice"
+    },
+    {
+      "id": "116902",
+      "value": "Inowrocław"
+    },
+    {
+      "id": "203",
+      "value": "Katowice"
+    },
+    {
+      "id": "109674",
+      "value": "Kielce"
+    },
+    {
+      "id": "104720",
+      "value": "Kostrzyn n/Odrą"
+    },
+    {
+      "id": "202",
+      "value": "Kraków"
+    },
+    {
+      "id": "113854",
+      "value": "Kwidzyn"
+    },
+    {
+      "id": "117524",
+      "value": "Leszno"
+    },
+    {
+      "id": "100032",
+      "value": "Lublin"
+    },
+    {
+      "id": "199",
+      "value": "Łódź"
+    },
+    {
+      "id": "121380",
+      "value": "Network Telemedycyna"
+    },
+    {
+      "id": "117526",
+      "value": "Olsztyn "
+    },
+    {
+      "id": "117",
+      "value": "Płock"
+    },
+    {
+      "id": "207",
+      "value": "Poznań"
+    },
+    {
+      "id": "121814",
+      "value": "Rzeszów"
+    },
+    {
+      "id": "253",
+      "value": "Słupsk"
+    },
+    {
+      "id": "110338",
+      "value": "Sosnowiec"
+    },
+    {
+      "id": "206",
+      "value": "Szczecin"
+    },
+    {
+      "id": "105814",
+      "value": "TeleCentrum"
+    },
+    {
+      "id": "117528",
+      "value": "Toruń "
+    },
+    {
+      "id": "200",
+      "value": "Trójmiasto"
+    },
+    {
+      "id": "204",
+      "value": "Warszawa"
+    },
+    {
+      "id": "205",
+      "value": "Wrocław"
+    }
+  ]
+}

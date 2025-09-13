@@ -5,6 +5,7 @@ from fastapi import Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from pyfcm import FCMNotification
 
+from user_context import UserContext
 from user_context_store import UserContextStore
 
 load_dotenv()
@@ -24,7 +25,7 @@ if not fcm_service_account_path or not fcm_project_id:
 fcm = FCMNotification(service_account_file=fcm_service_account_path, project_id=fcm_project_id)
 
 
-def get_current_user_context(request: Request):
+def get_current_user_context(request: Request) -> UserContext:
     username = next(
         (u for u in [
             request.session.get("username"),
