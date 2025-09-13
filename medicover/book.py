@@ -23,3 +23,24 @@ def book(session: Session, booking_string: str) -> BookingResponse:
     response.raise_for_status()
     booking_json = response.json()
     return BookingResponse(**booking_json)
+
+class Specialty(BaseModel):
+    id: str
+    value: str
+    type: str
+    kind: str
+
+class SpecialtiesResponse(BaseModel):
+    specialties: list[Specialty]
+
+def get_specialties(session: Session, region_ids: str, slot_search_type: str, specialty_ids: str) -> SpecialtiesResponse:
+    url = f"{API}/appointments/api/v2/search-appointments/filters"
+    params = {
+        "RegionIds": region_ids,
+        # "SlotSearchType": slot_search_type,
+        "SpecialtyIds": specialty_ids,
+    }
+    response = session.get(url, params=params)
+    response.raise_for_status()
+    filters_json = response.json()
+    return SpecialtiesResponse(**filters_json)

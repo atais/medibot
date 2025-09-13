@@ -18,7 +18,6 @@ from routes.job import router as job_router
 from routes.login import router as login_router
 from routes.search import router as search_router
 from routes.fcm import router as fcm_router
-from routes.admin import router as admin_router
 
 from scheduler import scheduler, get_jobs
 
@@ -42,7 +41,6 @@ app.include_router(book_router)
 app.include_router(search_router)
 app.include_router(job_router)
 app.include_router(fcm_router)
-app.include_router(admin_router)
 
 
 @app.get("/", response_class=HTMLResponse)

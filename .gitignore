@@ -1,6 +1,8 @@
 .idea
 venv
 
+_scripts/tmp
+
 medibot.iml
 medibot.sqlite
 .env

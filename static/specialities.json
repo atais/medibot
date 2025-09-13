@@ -1,0 +1,274 @@
+[
+  {
+    "id": "2",
+    "name": "Chirurg dorośli "
+  },
+  {
+    "id": "9",
+    "name": "Internista"
+  },
+  {
+    "id": "25",
+    "name": "Psycholog dorośli"
+  },
+  {
+    "id": "26",
+    "name": "Reumatolog dorośli"
+  },
+  {
+    "id": "33",
+    "name": "Nefrolog dorośli"
+  },
+  {
+    "id": "41",
+    "name": "Pulmonolog dorośli"
+  },
+  {
+    "id": "42",
+    "name": "Gastroenterolog dorośli"
+  },
+  {
+    "id": "53",
+    "name": "Hematolog"
+  },
+  {
+    "id": "54",
+    "name": "Hepatolog"
+  },
+  {
+    "id": "56",
+    "name": "Proktolog dorośli"
+  },
+  {
+    "id": "78",
+    "name": "Chirurg naczyniowy"
+  },
+  {
+    "id": "79",
+    "name": "Onkolog dorośli"
+  },
+  {
+    "id": "80",
+    "name": "Neurochirurg"
+  },
+  {
+    "id": "96",
+    "name": "Logopeda dorośli"
+  },
+  {
+    "id": "99",
+    "name": "Diabetolog"
+  },
+  {
+    "id": "112",
+    "name": "Higienistka stomatologiczna"
+  },
+  {
+    "id": "182",
+    "name": "Dietetyk dorośli"
+  },
+  {
+    "id": "192",
+    "name": "Laryngolog dorośli"
+  },
+  {
+    "id": "1190",
+    "name": "Choroby zakaźne dorośli"
+  },
+  {
+    "id": "1586",
+    "name": "Medycyna Rodzinna - dorośli"
+  },
+  {
+    "id": "1986",
+    "name": "Medycyna Sportowa"
+  },
+  {
+    "id": "5346",
+    "name": "Chirurgia - zmiana opatrunku"
+  },
+  {
+    "id": "9976",
+    "name": "Medycyna podróży - dorośli"
+  },
+  {
+    "id": "10212",
+    "name": "Internista - czat"
+  },
+  {
+    "id": "16234",
+    "name": "   Medicover Express - przeziębienie, grypa"
+  },
+  {
+    "id": "19046",
+    "name": "Internista - porada telefoniczna"
+  },
+  {
+    "id": "22890",
+    "name": "Stomatolog - przegląd"
+  },
+  {
+    "id": "23504",
+    "name": "Stomatolog - leczenie"
+  },
+  {
+    "id": "25104",
+    "name": "Dietetyk - porada telefoniczna"
+  },
+  {
+    "id": "27952",
+    "name": "Chirurgia - zdjęcie szwów"
+  },
+  {
+    "id": "28760",
+    "name": "Chirurg stomatolog - leczenie"
+  },
+  {
+    "id": "28764",
+    "name": "Endodonta - leczenie"
+  },
+  {
+    "id": "28766",
+    "name": "Ortodonta - leczenie"
+  },
+  {
+    "id": "28768",
+    "name": "Periodontolog - leczenie"
+  },
+  {
+    "id": "28770",
+    "name": "Protetyk - leczenie"
+  },
+  {
+    "id": "29178",
+    "name": "Diabetolog - porada telefoniczna"
+  },
+  {
+    "id": "29394",
+    "name": "Implantolog - leczenie"
+  },
+  {
+    "id": "32196",
+    "name": "Pielęgniarka - analiza składu masy ciała"
+  },
+  {
+    "id": "38636",
+    "name": "Protetyk słuchu - dobór aparatu słuchowego"
+  },
+  {
+    "id": "39836",
+    "name": "Invisalign - leczenie"
+  },
+  {
+    "id": "44054",
+    "name": "Gastroenterolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44066",
+    "name": "Laryngolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44070",
+    "name": "Nefrolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44082",
+    "name": "Pulmonolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44086",
+    "name": "Reumatolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44252",
+    "name": "Chirurg dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44258",
+    "name": "Choroby zakaźne dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44272",
+    "name": "Hematolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44276",
+    "name": "Hepatolog - porada telefoniczna"
+  },
+  {
+    "id": "44278",
+    "name": "Medycyna podróży - dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44284",
+    "name": "Onkolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44288",
+    "name": "Proktolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "47068",
+    "name": "Higienistka stomatologiczna FFS"
+  },
+  {
+    "id": "48080",
+    "name": "Fizjoterapia stomatologiczna - leczenie"
+  },
+  {
+    "id": "48082",
+    "name": "Logopedia stomatologiczna"
+  },
+  {
+    "id": "49318",
+    "name": "Diabetolog dorośli - porada telefoniczna zdalna"
+  },
+  {
+    "id": "49344",
+    "name": "Internista - porada telefoniczna zdalna"
+  },
+  {
+    "id": "52106",
+    "name": "Punkt Pobrań - dorośli"
+  },
+  {
+    "id": "55112",
+    "name": "Wizyta Pierwszorazowa z planem leczenia"
+  },
+  {
+    "id": "55522",
+    "name": " Medicover Express - przeziębienie, grypa - porada telefoniczna"
+  },
+  {
+    "id": "55920",
+    "name": "Medycyna estetyczna twarzy i szyi"
+  },
+  {
+    "id": "76798",
+    "name": "Urologia - pobranie wymazu u mężczyzn przez pielęgniarkę"
+  },
+  {
+    "id": "77798",
+    "name": "Higienizacja premium 8w1"
+  },
+  {
+    "id": "83012",
+    "name": "Endodonta - wizyta konsultacyjna"
+  },
+  {
+    "id": "84418",
+    "name": "Protetyk - metamorfoza uśmiechu"
+  },
+  {
+    "id": "85830",
+    "name": "Laryngologia - płukanie ucha u pielęgniarki"
+  },
+  {
+    "id": "93042",
+    "name": "Medicover Express - przeziębienie, grypa - czat"
+  },
+  {
+    "id": "95054",
+    "name": "Pielęgniarka - wizyta profilaktyczna"
+  }
+]
