@@ -29,13 +29,12 @@
                         </div>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
-                                <label for="specialty_name" class="col-form-label">Specjalności</label>
+                                <label for="specialty_select" class="col-form-label">Specjalności</label>
                             </div>
-                            <div class="col-md-9 position-relative">
-                                <input type="text" class="form-control" id="specialty_name" autocomplete="off" placeholder="Wybierz specjalności...">
-                                <input type="hidden" id="specialty_ids" name="specialty_ids" required>
-                                <div id="specialty-autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
-                                <div id="specialties-selected-list" class="mt-2"></div>
+                            <div class="col-md-9">
+                                <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple data-live-search="true" required>
+                                    <!-- Options will be populated by JS -->
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
@@ -61,25 +60,9 @@
 
                     <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        // Helper to get query param from URL
-                        function getQueryParam(name) {
-                            const url = new URL(window.location.href);
-                            return url.searchParams.get(name);
-                        }
                         let regions = [];
-                        let specialties = [];
-                        let selectedSpecialties = [];
                         const regionSelect = document.getElementById('region_select');
-                        const specialtyInput = document.getElementById('specialty_name');
-                        const specialtyIdsInput = document.getElementById('specialty_ids');
-                        const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
-                        const specialtiesSelectedList = document.getElementById('specialties-selected-list');
-
-                        // Set specialty_ids from URL if present
-                        const specialtyIdsFromUrl = getQueryParam('specialty_ids');
-                        if (specialtyIdsFromUrl) {
-                            specialtyIdsInput.value = specialtyIdsFromUrl;
-                        }
+                        const specialtySelect = document.getElementById('specialty_select');
 
                         // Fetch regions and set region select from region_ids
                         fetch('/static/locations.json')
@@ -87,116 +70,53 @@
                             .then(data => {
                                 regions = data.regions || [];
                                 const regionIdFromParam = "{{ region_ids }}";
+
                                 regionSelect.innerHTML = '';
+                                let selectedSet = false;
                                 regions.forEach(region => {
                                     const option = document.createElement('option');
                                     option.value = region.id;
                                     option.textContent = region.value;
-                                    if (region.id == regionIdFromParam) {
+                                    if (!selectedSet && region.id == regionIdFromParam) {
                                         option.selected = true;
+                                        selectedSet = true;
                                     }
                                     regionSelect.appendChild(option);
                                 });
-                                $('.selectpicker').selectpicker('refresh');
+                                $(regionSelect).selectpicker('refresh');
                             });
 
-                        // On form submit, nothing special needed, select value will be submitted as region_ids
-                        const searchForm = document.getElementById('search-form');
-                        searchForm.addEventListener('submit', function (e) {
-                            // Nothing special to do here
-                        });
-
-                        // Fetch specialties and set badges from specialty_ids
+                        // Fetch specialties and set specialty select from specialty_ids
                         fetch('/static/specialities.json')
                             .then(response => response.json())
                             .then(data => {
-                                specialties = data;
-                                const ids = (specialtyIdsInput.value || '').split(',').map(x => x.trim()).filter(Boolean);
-                                selectedSpecialties = specialties.filter(s => ids.includes(s.id));
-                                updateSpecialtyBadges();
-                                updateSpecialtyIdsInput();
-                            });
-                        function updateSpecialtyBadges() {
-                            specialtiesSelectedList.innerHTML = '';
-                            selectedSpecialties.forEach(spec => {
-                                const badge = document.createElement('span');
-                                badge.className = 'badge bg-primary me-1 mb-1';
-                                badge.textContent = spec.name.trim();
-                                const removeBtn = document.createElement('button');
-                                removeBtn.type = 'button';
-                                removeBtn.className = 'btn-close btn-close-white btn-sm ms-1';
-                                removeBtn.style.fontSize = '0.7em';
-                                removeBtn.onclick = function() {
-                                    selectedSpecialties = selectedSpecialties.filter(s => s.id !== spec.id);
-                                    updateSpecialtyBadges();
-                                    updateSpecialtyIdsInput();
-                                };
-                                badge.appendChild(removeBtn);
-                                specialtiesSelectedList.appendChild(badge);
-                            });
-                        }
-                        function updateSpecialtyIdsInput() {
-                            specialtyIdsInput.value = selectedSpecialties.map(s => s.id).join(',');
-                        }
-                        specialtyInput.addEventListener('input', function () {
-                            const val = this.value.toLowerCase();
-                            specialtyAutocompleteList.innerHTML = '';
-                            if (!val) return;
-                            const matches = specialties.filter(s => s.name.toLowerCase().includes(val) && !selectedSpecialties.some(sel => sel.id === s.id));
-                            matches.slice(0, 10).forEach(spec => {
-                                const item = document.createElement('button');
-                                item.type = 'button';
-                                item.className = 'list-group-item list-group-item-action';
-                                item.textContent = spec.name.trim();
-                                item.onclick = function () {
-                                    selectedSpecialties.push(spec);
-                                    updateSpecialtyBadges();
-                                    updateSpecialtyIdsInput();
-                                    specialtyInput.value = '';
-                                    specialtyAutocompleteList.innerHTML = '';
-                                };
-                                specialtyAutocompleteList.appendChild(item);
-                            });
-                        });
-                        specialtyInput.addEventListener('focus', function () {
-                            if (this.value === '' && specialties.length > 0) {
-                                specialtyAutocompleteList.innerHTML = '';
-                                specialties.filter(s => !selectedSpecialties.some(sel => sel.id === s.id)).slice(0, 10).forEach(spec => {
-                                    const item = document.createElement('button');
-                                    item.type = 'button';
-                                    item.className = 'list-group-item list-group-item-action';
-                                    item.textContent = spec.name.trim();
-                                    item.onclick = function () {
-                                        selectedSpecialties.push(spec);
-                                        updateSpecialtyBadges();
-                                        updateSpecialtyIdsInput();
-                                        specialtyInput.value = '';
-                                        specialtyAutocompleteList.innerHTML = '';
-                                    };
-                                    specialtyAutocompleteList.appendChild(item);
+                                // Get selected specialties from URL or form
+                                const url = new URL(window.location.href);
+                                let selectedSpecialties = url.searchParams.getAll('specialty_ids');
+                                specialtySelect.innerHTML = '';
+                                data.forEach(spec => {
+                                    const option = document.createElement('option');
+                                    option.value = spec.id;
+                                    option.textContent = spec.name;
+                                    if (selectedSpecialties.includes(spec.id)) {
+                                        option.selected = true;
+                                    }
+                                    specialtySelect.appendChild(option);
                                 });
-                            }
-                        });
-                        document.addEventListener('click', function (e) {
-                            if (!specialtyInput.contains(e.target) && !specialtyAutocompleteList.contains(e.target)) {
-                                specialtyAutocompleteList.innerHTML = '';
-                            }
-                        });
+                                $(specialtySelect).selectpicker('refresh');
+                            });
                         // Validate specialties on submit
+                        const searchForm = document.getElementById('search-form');
                         searchForm.addEventListener('submit', function (e) {
-                            if (!specialtyIdsInput.value) {
+                            if (!specialtySelect.value) {
                                 e.preventDefault();
-                                specialtyInput.classList.add('is-invalid');
-                                specialtyInput.setCustomValidity('Wybierz co najmniej jedną specjalność.');
-                                specialtyInput.reportValidity();
+                                $(specialtySelect).addClass('is-invalid');
+                                specialtySelect.setCustomValidity('Wybierz co najmniej jedną specjalność.');
+                                specialtySelect.reportValidity();
                             } else {
-                                specialtyInput.classList.remove('is-invalid');
-                                specialtyInput.setCustomValidity('');
+                                $(specialtySelect).removeClass('is-invalid');
+                                specialtySelect.setCustomValidity('');
                             }
-                        });
-                        specialtyInput.addEventListener('input', function () {
-                            specialtyInput.classList.remove('is-invalid');
-                            specialtyInput.setCustomValidity('');
                         });
 
                         // Set up datepicker for start_time

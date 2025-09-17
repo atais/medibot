@@ -22,12 +22,12 @@ async def remove_job(request: Request, job_id: str, user_context=Depends(get_cur
 @router.get("/add_job", response_class=HTMLResponse)
 async def add_job(request: Request,
                   region_ids: int = Query(...),
-                  specialty_ids: str = Query(...),
+                  specialty_ids: list[int] = Query(...),
                   start_time: str = Query(...),
                   user_context=Depends(get_current_user_context)):
     search_params = SearchParams(
         region_ids=region_ids,
-        specialty_ids=[int(x) for x in specialty_ids.split(",") if x.strip()],
+        specialty_ids=specialty_ids,
         start_time=start_time
     )
     create_job(user_context.username, search_params)

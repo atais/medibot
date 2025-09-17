@@ -10,13 +10,13 @@ router = APIRouter()
 @router.get("/search", response_class=HTMLResponse)
 async def search(request: Request,
                  region_ids: int = Query(...),
-                 specialty_ids: str = Query(...),
+                 specialty_ids: list[int] = Query(...),
                  start_time: str = Query(...),
                  user_context=Depends(get_current_user_context)):
     response = medicover.appointments(
         user_context.session,
         region_ids=region_ids,
-        specialty_ids=[int(x) for x in specialty_ids.split(",") if x.strip()],
+        specialty_ids=specialty_ids,
         start_time=start_time
     )
     appointments = [item.model_dump() for item in response] if response else []
