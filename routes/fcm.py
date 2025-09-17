@@ -15,7 +15,7 @@ class FCMTokenRequest(BaseModel):
 async def register_fcm_token(request: FCMTokenRequest, user_context=Depends(get_current_user_context)):
     try:
         user_context.fcm_token = request.token
-        user_contexts.set(user_context.username, user_context)
+        user_contexts.set(user_context)
 
         return {"status": "success", "message": "FCM token registered successfully"}
     except Exception as e:
@@ -26,7 +26,7 @@ async def register_fcm_token(request: FCMTokenRequest, user_context=Depends(get_
 async def unregister_fcm_token(user_context=Depends(get_current_user_context)):
     try:
         user_context.fcm_token = ""
-        user_contexts.set(user_context.username, user_context)
+        user_contexts.set(user_context)
 
         return {"status": "success", "message": "FCM token unregistered successfully"}
     except Exception as e:
