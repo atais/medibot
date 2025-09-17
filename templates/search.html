@@ -63,10 +63,18 @@
                         </div>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
-                                <label for="start_time" class="col-form-label">Data początkowa (YYYY-MM-DD)</label>
+                                <label for="start_time" class="col-form-label">Data początkowa</label>
                             </div>
                             <div class="col-md-9">
                                 <input type="text" class="form-control" id="start_time" name="start_time" required autocomplete="off">
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
+                                <label for="autobook" class="col-form-label">Automatycznie zaakceptuj 1. dostępny termin</label>
+                            </div>
+                            <div class="col-md-9">
+                                <input class="form-check-input" type="checkbox" id="autobook" name="autobook" checked>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -184,7 +192,8 @@
                             specialties: getSelectedOptions('specialty_select'),
                             clinics: getSelectedOptions('clinic_select'),
                             doctors: getSelectedOptions('doctor_select'),
-                            start_time: document.getElementById('start_time').value
+                            start_time: document.getElementById('start_time').value,
+                            autobook: document.getElementById('autobook').checked
                         };
 
                         fetch('/add_job', {

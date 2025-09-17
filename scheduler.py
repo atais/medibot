@@ -1,5 +1,5 @@
-from datetime import datetime, timedelta, timezone
 import logging
+from datetime import datetime, timedelta, timezone
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.job import Job
@@ -9,7 +9,7 @@ from pytz import utc
 
 import medicover
 from app_context import user_contexts, fcm, app_db_env
-from medicover.appointments import SearchParams
+from medicover.appointments import SearchParams, Appointment
 
 jobstores = {
     'default': SQLAlchemyJobStore(url=app_db_env)
@@ -30,9 +30,9 @@ scheduler = BackgroundScheduler(
 )
 
 
-def _search(username: str, search_params: SearchParams, search_url: str):
+def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool):
     user_context = user_contexts.get(username)
-    result = medicover.get_slots(
+    result: list[Appointment] = medicover.get_slots(
         user_context.session,
         region_ids=search_params.region_ids,
         doctor_ids=search_params.doctor_ids,
@@ -41,7 +41,24 @@ def _search(username: str, search_params: SearchParams, search_url: str):
         start_time=search_params.start_time
     )
 
-    if len(result) > 0:
+    if len(result) > 0 and autobook:
+        try:
+            b = result[0]
+            medicover.book(
+                user_context.session,
+                booking_string=b.bookingString
+            )
+            fcm.notify(
+                fcm_token=user_context.fcm_token,
+                notification_title="Medibot Search",
+                notification_body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate}",
+                data_payload={}
+            )
+            logging.info(f"Notification sent to {username}")
+
+        except Exception as e:
+            logging.error(f"Failed to send notification to {username}: {e}")
+    elif len(result) > 0 and not autobook:
         try:
             fcm.notify(
                 fcm_token=user_context.fcm_token,
@@ -56,14 +73,14 @@ def _search(username: str, search_params: SearchParams, search_url: str):
             logging.error(f"Failed to send notification to {username}: {e}")
 
 
-def create_job(username: str, search_params: SearchParams, search_url: str, name: str) -> Job:
+def create_job(username: str, search_params: SearchParams, search_url: str, name: str, autobook: bool) -> Job:
     job_id = f"{username}_{list(search_params.model_dump().values())}"
     return scheduler.add_job(
         func=_search,
         trigger='interval',
         minutes=5,
         start_date=datetime.now(timezone.utc) + timedelta(minutes=5),
-        args=[username, search_params, search_url],
+        args=[username, search_params, search_url, autobook],
         id=job_id,
         name=name
     )

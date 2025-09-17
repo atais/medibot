@@ -23,6 +23,7 @@ class SelectedData(BaseModel):
     clinics: List[Option]
     doctors: List[Option]
     start_time: str
+    autobook: bool
 
 
 @router.get("/edit_job/{job_id}", response_class=HTMLResponse)
@@ -60,5 +61,5 @@ async def add_job(request: Request,
         clinic_ids=clinic_ids,
         start_time=selected_data.start_time
     )
-    create_job(user_context.username, search_params, selected_data.url, name)
+    create_job(user_context.username, search_params, selected_data.url, name, selected_data.autobook)
     return RedirectResponse(url="/", status_code=302)
