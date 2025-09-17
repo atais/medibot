@@ -19,13 +19,11 @@
                         <input type="hidden" id="search_region_ids" name="region_ids" value="{{ profile.home_clinic }}"
                                required>
                         <div class="col-md-12">
-                            <label for="specialty_name" class="form-label">Specjalności</label>
-                            <input type="text" class="form-control" id="specialty_name" autocomplete="off"
-                                   placeholder="Wybierz specjalności...">
-                            <input type="hidden" id="specialty_ids" name="specialty_ids" required>
-                            <div id="specialty-autocomplete-list" class="list-group position-absolute w-100"
-                                 style="z-index: 1000;"></div>
-                            <div id="specialties-selected-list" class="mt-2"></div>
+                            <label for="specialty_select" class="form-label">Specjalności</label>
+                            <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple
+                                    data-live-search="true" required>
+                                <!-- Options will be populated by JS -->
+                            </select>
                         </div>
                         <div class="col-md-12">
                             <label for="start_time" class="form-label">Data początkowa (YYYY-MM-DD)</label>
@@ -146,7 +144,6 @@
         const userHomeClinic = "{{ profile.home_clinic }}";
         let regions = [];
         let specialties = [];
-        let selectedSpecialties = [];
 
         fetch('/static/locations.json')
             .then(response => response.json())
@@ -164,119 +161,42 @@
                     regionSelect.appendChild(option);
                 });
                 // Initialize bootstrap-select
-                $('.selectpicker').selectpicker('refresh');
+                $('#region_select').selectpicker('refresh');
             });
 
         // Load specialties
         fetch('/static/specialities.json')
             .then(response => response.json())
             .then(data => {
-                specialties = data;
-            });
-
-        // Specialty autocomplete logic
-        const specialtyInput = document.getElementById('specialty_name');
-        const specialtyIdsInput = document.getElementById('specialty_ids');
-        const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
-        const specialtiesSelectedList = document.getElementById('specialties-selected-list');
-        const regionInput = document.getElementById('region_name');
-        const regionIdInput = document.getElementById('region_id');
-
-        function updateSpecialtyBadges() {
-            specialtiesSelectedList.innerHTML = '';
-            selectedSpecialties.forEach(spec => {
-                const badge = document.createElement('span');
-                badge.className = 'badge bg-primary me-1 mb-1';
-                badge.textContent = spec.name.trim();
-                const removeBtn = document.createElement('button');
-                removeBtn.type = 'button';
-                removeBtn.className = 'btn-close btn-close-white btn-sm ms-1';
-                removeBtn.style.fontSize = '0.7em';
-                removeBtn.onclick = function () {
-                    selectedSpecialties = selectedSpecialties.filter(s => s.id !== spec.id);
-                    updateSpecialtyBadges();
-                    updateSpecialtyIdsInput();
-                };
-                badge.appendChild(removeBtn);
-                specialtiesSelectedList.appendChild(badge);
-            });
-        }
-
-        function updateSpecialtyIdsInput() {
-            specialtyIdsInput.value = selectedSpecialties.map(s => s.id).join(',');
-        }
-
-        specialtyInput.addEventListener('input', function () {
-            const val = this.value.toLowerCase();
-            specialtyAutocompleteList.innerHTML = '';
-            if (!val) return;
-            const matches = specialties.filter(s => s.name.toLowerCase().includes(val) && !selectedSpecialties.some(sel => sel.id === s.id));
-            matches.slice(0, 10).forEach(spec => {
-                const item = document.createElement('button');
-                item.type = 'button';
-                item.className = 'list-group-item list-group-item-action';
-                item.textContent = spec.name.trim();
-                item.onclick = function () {
-                    selectedSpecialties.push(spec);
-                    updateSpecialtyBadges();
-                    updateSpecialtyIdsInput();
-                    specialtyInput.value = '';
-                    specialtyAutocompleteList.innerHTML = '';
-                };
-                specialtyAutocompleteList.appendChild(item);
-            });
-        });
-
-        specialtyInput.addEventListener('focus', function () {
-            if (this.value === '' && specialties.length > 0) {
-                specialtyAutocompleteList.innerHTML = '';
-                specialties.filter(s => !selectedSpecialties.some(sel => sel.id === s.id)).slice(0, 10).forEach(spec => {
-                    const item = document.createElement('button');
-                    item.type = 'button';
-                    item.className = 'list-group-item list-group-item-action';
-                    item.textContent = spec.name.trim();
-                    item.onclick = function () {
-                        selectedSpecialties.push(spec);
-                        updateSpecialtyBadges();
-                        updateSpecialtyIdsInput();
-                        specialtyInput.value = '';
-                        specialtyAutocompleteList.innerHTML = '';
-                    };
-                    specialtyAutocompleteList.appendChild(item);
+                const specialtySelect = document.getElementById('specialty_select');
+                specialtySelect.innerHTML = '';
+                const selectedSpecialties = (document.getElementById('specialty_ids')?.value || '').split(',').map(x => x.trim()).filter(Boolean);
+                data.forEach(spec => {
+                    const option = document.createElement('option');
+                    option.value = spec.id;
+                    option.textContent = spec.name;
+                    if (selectedSpecialties.includes(spec.id)) {
+                        option.selected = true;
+                    }
+                    specialtySelect.appendChild(option);
                 });
-            }
-        });
-
+                $('#specialty_select').selectpicker('refresh');
+            });
 
         // On form submit, ensure region_ids is set to the selected region's ID
         const monitorForm = document.getElementById('monitor-form');
         monitorForm.addEventListener('submit', function (e) {
-            // If the region name doesn't match any region, prevent submit
-            const selected = regions.find(r => r.value === regionInput.value);
-            if (selected) {
-                regionIdInput.value = selected.id;
-            } else {
-                regionIdInput.value = '';
-                regionInput.value = '';
-                e.preventDefault();
-                regionInput.classList.add('is-invalid');
-                regionInput.setCustomValidity('Wybierz region z listy.');
-                regionInput.reportValidity();
-            }
             // Validate specialties
-            if (!specialtyIdsInput.value) {
+            const specialtySelect = document.getElementById('specialty_select');
+            if (!specialtySelect.value) {
                 e.preventDefault();
-                specialtyInput.classList.add('is-invalid');
-                specialtyInput.setCustomValidity('Wybierz co najmniej jedną specjalność.');
-                specialtyInput.reportValidity();
+                specialtySelect.classList.add('is-invalid');
+                specialtySelect.setCustomValidity('Wybierz co najmniej jedną specjalność.');
+                specialtySelect.reportValidity();
             } else {
-                specialtyInput.classList.remove('is-invalid');
-                specialtyInput.setCustomValidity('');
+                specialtySelect.classList.remove('is-invalid');
+                specialtySelect.setCustomValidity('');
             }
-        });
-        specialtyInput.addEventListener('input', function () {
-            specialtyInput.classList.remove('is-invalid');
-            specialtyInput.setCustomValidity('');
         });
 
         // Set up datepicker for start_time
