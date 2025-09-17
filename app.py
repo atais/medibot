@@ -10,7 +10,6 @@ import uvicorn
 from fastapi import FastAPI, Request, Depends
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
-from starlette.responses import HTMLResponse
 
 from app_context import templates, get_current_user_context
 from routes.book import router as book_router
@@ -18,6 +17,7 @@ from routes.job import router as job_router
 from routes.login import router as login_router
 from routes.search import router as search_router
 from routes.fcm import router as fcm_router
+from routes.home import router as home_router
 
 from scheduler import scheduler, get_jobs
 
@@ -41,13 +41,4 @@ app.include_router(book_router)
 app.include_router(search_router)
 app.include_router(job_router)
 app.include_router(fcm_router)
-
-
-@app.get("/", response_class=HTMLResponse)
-async def home(request: Request, user_context=Depends(get_current_user_context)):
-    jobs = get_jobs(user_context.username)
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "user": user_context.username,
-        "jobs": jobs
-    })
+app.include_router(home_router)

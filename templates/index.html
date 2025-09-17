@@ -11,7 +11,7 @@
 
 <div class="container-fluid px-2 px-md-4 py-3">
     <div class="row g-4">
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Utwórz monitor</h2>
@@ -26,9 +26,11 @@
                         </div>
                         <div class="col-md-12">
                             <label for="specialty_name" class="form-label">Specjalności</label>
-                            <input type="text" class="form-control" id="specialty_name" autocomplete="off" placeholder="Wybierz specjalności...">
+                            <input type="text" class="form-control" id="specialty_name" autocomplete="off"
+                                   placeholder="Wybierz specjalności...">
                             <input type="hidden" id="specialty_ids" name="specialty_ids" required>
-                            <div id="specialty-autocomplete-list" class="list-group position-absolute w-100" style="z-index: 1000;"></div>
+                            <div id="specialty-autocomplete-list" class="list-group position-absolute w-100"
+                                 style="z-index: 1000;"></div>
                             <div id="specialties-selected-list" class="mt-2"></div>
                         </div>
                         <div class="col-md-12">
@@ -45,7 +47,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-12 col-lg-6">
+        <div class="col-12 col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Aktywne monitory</h2>
@@ -55,7 +57,7 @@
                             <tr>
                                 <th>Job ID</th>
                                 <th>Następne uruchomienie</th>
-<!--                                <th>Edycja</th>-->
+                                <!--                                <th>Edycja</th>-->
                                 <th>Usuń</th>
                             </tr>
                             </thead>
@@ -64,20 +66,54 @@
                             <tr>
                                 <td>{{ job.id }}</td>
                                 <td>{{ job.next_run_time }}</td>
-<!--                                <td>-->
-<!--                                    <form method="get" action="/edit_job/{{ job.id }}">-->
-<!--                                        <button type="submit" class="btn btn-secondary btn-sm" disabled-->
-<!--                                                aria-label="Edytuj">-->
-<!--                                            <i class="bi bi-pencil"></i>-->
-<!--                                        </button>-->
-<!--                                    </form>-->
-<!--                                </td>-->
+                                <!--                                <td>-->
+                                <!--                                    <form method="get" action="/edit_job/{{ job.id }}">-->
+                                <!--                                        <button type="submit" class="btn btn-secondary btn-sm" disabled-->
+                                <!--                                                aria-label="Edytuj">-->
+                                <!--                                            <i class="bi bi-pencil"></i>-->
+                                <!--                                        </button>-->
+                                <!--                                    </form>-->
+                                <!--                                </td>-->
                                 <td>
                                     <form method="post" action="/remove_job/{{ job.id }}">
                                         <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Skierowania</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Data ważności</th>
+                                <th>Status</th>
+                                <th>Usługa</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for referral in referrals.items %}
+                            <tr>
+                                <td>{{ referral.expirationDate }}</td>
+                                <td>{{ referral.referralStatus }}</td>
+                                <td>
+                                    {% if referral.services and referral.services[0].service %}
+                                        {{ referral.services[0].service.name }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
                                 </td>
                             </tr>
                             {% endfor %}
@@ -136,7 +172,7 @@
             removeBtn.type = 'button';
             removeBtn.className = 'btn-close btn-close-white btn-sm ms-1';
             removeBtn.style.fontSize = '0.7em';
-            removeBtn.onclick = function() {
+            removeBtn.onclick = function () {
                 selectedSpecialties = selectedSpecialties.filter(s => s.id !== spec.id);
                 updateSpecialtyBadges();
                 updateSpecialtyIdsInput();
@@ -278,3 +314,4 @@
 </body>
 
 </html>
+
