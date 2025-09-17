@@ -30,7 +30,7 @@ scheduler = BackgroundScheduler(
 )
 
 
-def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool):
+def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool, job_id: str):
     user_context = user_contexts.get(username)
     result: list[Appointment] = medicover.get_slots(
         user_context.session,
@@ -55,7 +55,7 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
                 data_payload={}
             )
             logging.info(f"Notification sent to {username}")
-
+            scheduler.pause_job(job_id)
         except Exception as e:
             logging.error(f"Failed to send notification to {username}: {e}")
     elif len(result) > 0 and not autobook:
@@ -80,7 +80,7 @@ def create_job(username: str, search_params: SearchParams, search_url: str, name
         trigger='interval',
         minutes=5,
         start_date=datetime.now(timezone.utc) + timedelta(minutes=5),
-        args=[username, search_params, search_url, autobook],
+        args=[username, search_params, search_url, autobook, job_id],
         id=job_id,
         name=name
     )

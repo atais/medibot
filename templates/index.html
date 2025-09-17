@@ -21,6 +21,7 @@
                         <div class="col-md-12">
                             <label for="specialty_select" class="form-label">Specjalności</label>
                             <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple
+                                    data-none-Selected-Text="Wybierz specjalności"
                                     data-live-search="true" required>
                                 <!-- Options will be populated by JS -->
                             </select>
@@ -49,7 +50,7 @@
                             <tr>
                                 <th>Job ID</th>
                                 <th>Następne uruchomienie</th>
-                                <!--                                <th>Edycja</th>-->
+                                <th>Status</th>
                                 <th>Usuń</th>
                             </tr>
                             </thead>
@@ -58,14 +59,21 @@
                             <tr>
                                 <td>{{ job.name }}</td>
                                 <td>{{ job.next_run_time }}</td>
-                                <!--                                <td>-->
-                                <!--                                    <form method="get" action="/edit_job/{{ job.id }}">-->
-                                <!--                                        <button type="submit" class="btn btn-secondary btn-sm" disabled-->
-                                <!--                                                aria-label="Edytuj">-->
-                                <!--                                            <i class="bi bi-pencil"></i>-->
-                                <!--                                        </button>-->
-                                <!--                                    </form>-->
-                                <!--                                </td>-->
+                                <td>
+                                    {% if job.next_run_time is none %}
+                                    <form method="get" action="/resume_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-success btn-sm" aria-label="Resume job">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="get" action="/pause_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="Pause job">
+                                            <i class="bi bi-pause-fill"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
                                 <td>
                                     <form method="post" action="/remove_job/{{ job.id }}">
                                         <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
@@ -123,7 +131,8 @@
                     <form method="post" action="/update_profile" class="mb-3">
                         <div class="mb-3 w-100">
                             <label for="region_select" class="form-label">Region</label>
-                            <select class="selectpicker w-100" id="region_select" name="region_id" data-live-search="true" required>
+                            <select class="selectpicker w-100" id="region_select" name="region_id"
+                                    data-live-search="true" required>
                                 <!-- Options will be populated by JS -->
                             </select>
                         </div>

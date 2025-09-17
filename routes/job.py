@@ -26,10 +26,6 @@ class SelectedData(BaseModel):
     autobook: bool
 
 
-@router.get("/edit_job/{job_id}", response_class=HTMLResponse)
-async def edit_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
-    return HTMLResponse(f"<h1>Edit Job {job_id} (not implemented)</h1>")
-
 
 @router.post("/remove_job/{job_id}", response_class=HTMLResponse)
 async def remove_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
@@ -62,4 +58,15 @@ async def add_job(request: Request,
         start_time=selected_data.start_time
     )
     create_job(user_context.username, search_params, selected_data.url, name, selected_data.autobook)
+    return RedirectResponse(url="/", status_code=302)
+
+
+@router.get("/pause_job/{job_id}", response_class=HTMLResponse)
+async def pause_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
+    scheduler.pause_job(job_id)
+    return RedirectResponse(url="/", status_code=302)
+
+@router.get("/resume_job/{job_id}", response_class=HTMLResponse)
+async def resume_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
+    scheduler.resume_job(job_id)
     return RedirectResponse(url="/", status_code=302)

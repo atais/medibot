@@ -22,7 +22,9 @@
                                 <label for="region_select" class="col-form-label">Region</label>
                             </div>
                             <div class="col-md-9">
-                                <select class="selectpicker w-100" id="region_select" name="region_ids" data-live-search="true" required>
+                                <select class="selectpicker w-100" id="region_select" name="region_ids"
+                                        data-none-Selected-Text="Wybierz region"
+                                        data-live-search="true" required>
                                     <!-- Options will be populated by JS -->
                                 </select>
                             </div>
@@ -32,7 +34,9 @@
                                 <label for="specialty_select" class="col-form-label">Specjalności</label>
                             </div>
                             <div class="col-md-9">
-                                <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple data-live-search="true" required>
+                                <select class="selectpicker w-100" id="specialty_select" name="specialty_ids"
+                                        data-none-Selected-Text="Wybierz specjalności"
+                                        multiple data-live-search="true" required>
                                     <!-- Options will be populated by JS -->
                                 </select>
                             </div>
@@ -42,7 +46,9 @@
                                 <label for="clinic_select" class="col-form-label">Placówki</label>
                             </div>
                             <div class="col-md-9">
-                                <select class="selectpicker w-100" id="clinic_select" name="clinic_ids" multiple data-live-search="true">
+                                <select class="selectpicker w-100" id="clinic_select" name="clinic_ids"
+                                        data-none-Selected-Text="Wybierz placówki / BRAK WYBORU = WSZYSTKIE"
+                                        multiple data-live-search="true">
                                     {% for clinic in all_clinics %}
                                         <option value="{{ clinic.id }}" {% if clinic_ids and clinic.id|string in clinic_ids|map('string')|list %}selected{% endif %}>{{ clinic.value }}</option>
                                     {% endfor %}
@@ -54,7 +60,9 @@
                                 <label for="doctor_select" class="col-form-label">Lekarze</label>
                             </div>
                             <div class="col-md-9">
-                                <select class="selectpicker w-100" id="doctor_select" name="doctor_ids" multiple data-live-search="true">
+                                <select class="selectpicker w-100" id="doctor_select" name="doctor_ids"
+                                        data-none-Selected-Text="Wybierz lekarzy / BRAK WYBORU = WSZYSCY"
+                                        multiple data-live-search="true">
                                     {% for doctor in all_doctors %}
                                     <option value="{{ doctor.id }}" {% if doctor_ids and doctor.id|string in doctor_ids|map('string')|list %}selected{% endif %}>{{ doctor.value }}</option>
                                     {% endfor %}
