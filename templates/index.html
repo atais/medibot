@@ -34,7 +34,7 @@
                         </div>
                         <div class="col-md-12 d-flex justify-content-start">
                             <button type="submit" class="btn btn-success w-auto">
-                                <i class="bi bi-clock"></i> Zaplanuj monitor
+                                <i class="bi bi-search"></i> Szukaj wizyt
                             </button>
                         </div>
                     </form>
@@ -123,14 +123,11 @@
                 <div class="card-body">
                     <h2 class="h4 mb-3">Profil</h2>
                     <form method="post" action="/update_profile" class="mb-3">
-                        <div class="mb-3">
-                            <label for="region_name" class="form-label">Region</label>
-                            <input type="text" class="form-control" id="region_name" name="region_name"
-                                   autocomplete="on" placeholder="Wybierz region...">
-                            <input type="hidden" id="region_id" name="region_id" value="{{ profile.home_clinic }}"
-                                   required>
-                            <div id="region-autocomplete-list" class="list-group position-absolute w-100"
-                                 style="z-index: 1000;"></div>
+                        <div class="mb-3 w-100">
+                            <label for="region_select" class="form-label">Region</label>
+                            <select class="selectpicker w-100" id="region_select" name="region_id" data-live-search="true" required>
+                                <!-- Options will be populated by JS -->
+                            </select>
                         </div>
                         <button type="submit" class="btn btn-primary">
                             <i class="bi bi-save"></i> Zapisz zmiany
@@ -155,9 +152,19 @@
             .then(response => response.json())
             .then(data => {
                 regions = data.regions || [];
-                const defaultRegion = regions.find(r => r.id === userHomeClinic);
-                regionIdInput.value = defaultRegion.id;
-                regionInput.value = defaultRegion.value;
+                const regionSelect = document.getElementById('region_select');
+                regionSelect.innerHTML = '';
+                regions.forEach(region => {
+                    const option = document.createElement('option');
+                    option.value = region.id;
+                    option.textContent = region.value;
+                    if (region.id == userHomeClinic) {
+                        option.selected = true;
+                    }
+                    regionSelect.appendChild(option);
+                });
+                // Initialize bootstrap-select
+                $('.selectpicker').selectpicker('refresh');
             });
 
         // Load specialties
@@ -240,54 +247,6 @@
             }
         });
 
-        // Region autocomplete logic
-        const regionAutocompleteList = document.getElementById('region-autocomplete-list');
-
-        regionInput.addEventListener('input', function () {
-            const val = this.value.toLowerCase();
-            regionAutocompleteList.innerHTML = '';
-            if (!val) return;
-            const matches = regions.filter(r => r.value.toLowerCase().includes(val));
-            matches.forEach(region => {
-                const item = document.createElement('button');
-                item.type = 'button';
-                item.className = 'list-group-item list-group-item-action';
-                item.textContent = region.value;
-                item.onclick = function () {
-                    regionInput.value = region.value;
-                    regionIdInput.value = region.id;
-                    regionAutocompleteList.innerHTML = '';
-                };
-                regionAutocompleteList.appendChild(item);
-            });
-        });
-
-        regionInput.addEventListener('focus', function () {
-            if (this.value === '' && regions.length > 0) {
-                regionAutocompleteList.innerHTML = '';
-                regions.forEach(region => {
-                    const item = document.createElement('button');
-                    item.type = 'button';
-                    item.className = 'list-group-item list-group-item-action';
-                    item.textContent = region.value;
-                    item.onclick = function () {
-                        regionInput.value = region.value;
-                        regionIdInput.value = region.id;
-                        regionAutocompleteList.innerHTML = '';
-                    };
-                    regionAutocompleteList.appendChild(item);
-                });
-            }
-        });
-
-        document.addEventListener('click', function (e) {
-            if (!regionInput.contains(e.target) && !regionAutocompleteList.contains(e.target)) {
-                regionAutocompleteList.innerHTML = '';
-            }
-            if (!specialtyInput.contains(e.target) && !specialtyAutocompleteList.contains(e.target)) {
-                specialtyAutocompleteList.innerHTML = '';
-            }
-        });
 
         // On form submit, ensure region_ids is set to the selected region's ID
         const monitorForm = document.getElementById('monitor-form');
@@ -314,10 +273,6 @@
                 specialtyInput.classList.remove('is-invalid');
                 specialtyInput.setCustomValidity('');
             }
-        });
-        regionInput.addEventListener('input', function () {
-            regionInput.classList.remove('is-invalid');
-            regionInput.setCustomValidity('');
         });
         specialtyInput.addEventListener('input', function () {
             specialtyInput.classList.remove('is-invalid');
