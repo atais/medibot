@@ -44,7 +44,7 @@ saved = []
 for kw in keywords:
     kw_id = kw.get('id')
     selection_path = kw.get('selectionPath', '').lower()
-    mode = 'triage_flat' if selection_path == 'triage' else 'sections'
+    mode = 'triage' if selection_path == 'triage' else 'sections'
     try:
         details = get_keyword_details(user_context.session, kw_id, region_id, mode=mode)
         spec_list = os.path.join(spec_dir, f"{kw_id}.json")

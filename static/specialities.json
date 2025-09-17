@@ -5,11 +5,23 @@
   },
   {
     "id": "3",
-    "name": "Dermatolog wizyta w placówce"
+    "name": "Dermatolog dorośli"
+  },
+  {
+    "id": "5",
+    "name": "Endokrynolog dorośli"
   },
   {
     "id": "9",
     "name": "Internista"
+  },
+  {
+    "id": "10",
+    "name": "Kardiolog dorośli"
+  },
+  {
+    "id": "16",
+    "name": "Neurolog dorośli"
   },
   {
     "id": "25",
@@ -72,12 +84,28 @@
     "name": "Higienistka stomatologiczna"
   },
   {
+    "id": "163",
+    "name": "Ortopeda dorośli"
+  },
+  {
+    "id": "176",
+    "name": "Alergolog dorośli"
+  },
+  {
+    "id": "178",
+    "name": "Alergolog dorośli odczulanie"
+  },
+  {
     "id": "182",
     "name": "Dietetyk dorośli"
   },
   {
     "id": "192",
     "name": "Laryngolog dorośli"
+  },
+  {
+    "id": "198",
+    "name": "Okulista dorośli"
   },
   {
     "id": "1190",
@@ -92,6 +120,10 @@
     "name": "Medycyna Sportowa"
   },
   {
+    "id": "3004",
+    "name": "Mykologia - pobranie u pielęgniarki"
+  },
+  {
     "id": "5346",
     "name": "Chirurgia - zmiana opatrunku"
   },
@@ -104,12 +136,28 @@
     "name": "Internista - czat"
   },
   {
+    "id": "11682",
+    "name": "Badanie dna oka - dorośli"
+  },
+  {
     "id": "16234",
     "name": "   Medicover Express - przeziębienie, grypa"
   },
   {
+    "id": "16236",
+    "name": "Medicover Express - szczepienia dorośli"
+  },
+  {
     "id": "19046",
     "name": "Internista - porada telefoniczna"
+  },
+  {
+    "id": "19054",
+    "name": "Okulistyka - badanie wzroku"
+  },
+  {
+    "id": "22694",
+    "name": "Okulistyka - dobór soczewek kontaktowych"
   },
   {
     "id": "22890",
@@ -124,8 +172,16 @@
     "name": "Dietetyk - porada telefoniczna"
   },
   {
+    "id": "27158",
+    "name": "Poradnia Bólu Pleców i Układu Ruchu - dorośli"
+  },
+  {
     "id": "27952",
     "name": "Chirurgia - zdjęcie szwów"
+  },
+  {
+    "id": "27962",
+    "name": "Endokrynolog dorośli - porada telefoniczna"
   },
   {
     "id": "28760",
@@ -168,8 +224,20 @@
     "name": "Invisalign - leczenie"
   },
   {
+    "id": "43652",
+    "name": "Kardiolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "43852",
+    "name": "Dermatolog dorośli - porada telefoniczna"
+  },
+  {
     "id": "44054",
     "name": "Gastroenterolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44062",
+    "name": "Alergolog dorośli - porada telefoniczna"
   },
   {
     "id": "44066",
@@ -178,6 +246,14 @@
   {
     "id": "44070",
     "name": "Nefrolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44074",
+    "name": "Neurolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44078",
+    "name": "Okulista dorośli - porada telefoniczna"
   },
   {
     "id": "44082",
@@ -216,6 +292,10 @@
     "name": "Proktolog dorośli - porada telefoniczna"
   },
   {
+    "id": "44290",
+    "name": "Urolog dorośli - porada telefoniczna"
+  },
+  {
     "id": "47068",
     "name": "Higienistka stomatologiczna FFS"
   },
@@ -232,8 +312,16 @@
     "name": "Diabetolog dorośli - porada telefoniczna zdalna"
   },
   {
+    "id": "49322",
+    "name": "Endokrynolog dorośli - porada telefoniczna zdalna"
+  },
+  {
     "id": "49344",
     "name": "Internista - porada telefoniczna zdalna"
+  },
+  {
+    "id": "49348",
+    "name": "Kardiolog dorośli - porada telefoniczna zdalna"
   },
   {
     "id": "52106",
@@ -250,6 +338,26 @@
   {
     "id": "55920",
     "name": "Medycyna estetyczna twarzy i szyi"
+  },
+  {
+    "id": "58724",
+    "name": "Okulistyka - pakiet dobór okularów i soczewek kontaktowych"
+  },
+  {
+    "id": "62742",
+    "name": "Medicover Express - szczepienia grypa - dorośli - pielęgniarka"
+  },
+  {
+    "id": "63156",
+    "name": "Przeziębienie, grypa - pielęgniarka specjalistyczna"
+  },
+  {
+    "id": "70770",
+    "name": "Medicover Express - wymrażanie kurzajek"
+  },
+  {
+    "id": "72984",
+    "name": "Konsultacja stylisty"
   },
   {
     "id": "76798",
@@ -272,11 +380,23 @@
     "name": "Laryngologia - płukanie ucha u pielęgniarki"
   },
   {
+    "id": "87428",
+    "name": "Kwalifikacja i szczepienie - położna"
+  },
+  {
+    "id": "87430",
+    "name": "Kwalifikacja i szczepienie - pielęgniarka"
+  },
+  {
     "id": "93042",
     "name": "Medicover Express - przeziębienie, grypa - czat"
   },
   {
     "id": "95054",
     "name": "Pielęgniarka - wizyta profilaktyczna"
+  },
+  {
+    "id": "102070",
+    "name": "Stylista opraw okularowych - Pakiet Silver"
   }
 ]
