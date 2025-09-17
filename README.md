@@ -11,6 +11,11 @@ a multi-user platform with a WebUI. The app sends real-time Firebase push notifi
 
 ## Running
 
+### Prepare .env file
+
+1. Copy `.env.example` as `.env`
+2. Fill with your values
+
 ### Prepare firebase project
 
 To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
@@ -21,11 +26,6 @@ To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
 4. Get Web App Configuration, update `/static/firebase-config.js` with your configuration.
 5. Generate VAPID Key, update it in `/static/firebase-config.js`
 6. Enable Notifications in Browser
-
-### Prepare .env file
-
-1. Copy `.env.example` as `.env`
-2. Fill with your values
 
 ### Build & run the application with docker
 
