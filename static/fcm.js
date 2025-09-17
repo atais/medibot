@@ -24,7 +24,7 @@ async function requestNotificationPermission() {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
             const token = await messaging.getToken({
-                vapidKey: 'BDCWOFCq6ViODkLxoyfDjQduNKdehLzAFMml4zsv3vJ43Kn6WdG7VD7qGmC3lhsdmZdE_28K9gp77h99bMcb78A'
+                vapidKey: window.vapidKey
             });
             
             if (token) {
