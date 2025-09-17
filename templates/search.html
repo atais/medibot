@@ -42,12 +42,10 @@
                         </div>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
-                                <label for="start_time" class="col-form-label">Data początkowa (YYYY-MM-DD)
-                                </label>
+                                <label for="start_time" class="col-form-label">Data początkowa (YYYY-MM-DD)</label>
                             </div>
                             <div class="col-md-9">
-                                <input type="text" class="form-control" id="start_time" name="start_time"
-                                       value="{{ start_time }}" required>
+                                <input type="text" class="form-control" id="start_time" name="start_time" required autocomplete="off">
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -258,6 +256,32 @@
                             specialtyInput.classList.remove('is-invalid');
                             specialtyInput.setCustomValidity('');
                         });
+
+                        // Set up datepicker for start_time
+                        const startTimeInput = document.getElementById('start_time');
+                        if (startTimeInput) {
+                            $(startTimeInput).datepicker({
+                                format: 'yyyy-mm-dd',
+                                language: 'pl',
+                                autoclose: true,
+                                todayHighlight: true
+                            });
+                            // Set default value to start_time from URL if present, otherwise today
+                            const urlParams = new URLSearchParams(window.location.search);
+                            const startTimeParam = urlParams.get('start_time');
+                            if (startTimeParam) {
+                                startTimeInput.value = startTimeParam;
+                                $(startTimeInput).datepicker('update', startTimeParam);
+                            } else if (!startTimeInput.value) {
+                                const today = new Date();
+                                const yyyy = today.getFullYear();
+                                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                                const dd = String(today.getDate()).padStart(2, '0');
+                                const todayStr = `${yyyy}-${mm}-${dd}`;
+                                startTimeInput.value = todayStr;
+                                $(startTimeInput).datepicker('update', todayStr);
+                            }
+                        }
                     });
                     </script>
                     <script>
@@ -336,6 +360,8 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.pl.min.js"></script>
 </body>
 
 </html>

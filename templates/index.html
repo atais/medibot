@@ -35,8 +35,7 @@
                         </div>
                         <div class="col-md-12">
                             <label for="start_time" class="form-label">Data początkowa (YYYY-MM-DD)</label>
-                            <input type="text" class="form-control" id="start_time" name="start_time"
-                                   value="2025-09-03" required>
+                            <input type="text" class="form-control" id="start_time" name="start_time" required autocomplete="off">
                         </div>
                         <div class="col-md-3">
                             <button type="submit" class="btn btn-success w-100">
@@ -133,84 +132,68 @@
 <script src="/static/firebase-config.js"></script>
 <!-- Include FCM JavaScript for push notifications -->
 <script src="/static/fcm.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/js/bootstrap-datepicker.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap-datepicker@1.10.0/dist/locales/bootstrap-datepicker.pl.min.js"></script>
 <script>
-    let regions = [];
-    let specialties = [];
-    let selectedSpecialties = [];
+    document.addEventListener('DOMContentLoaded', function() {
+        let regions = [];
+        let specialties = [];
+        let selectedSpecialties = [];
 
-    fetch('/static/locations.json')
-        .then(response => response.json())
-        .then(data => {
-            regions = data.regions || [];
-            const defaultRegion = regions.find(r => r.id === '204');
-            regionIdInput.value = '204';
-            regionInput.value = defaultRegion.value;
-        });
+        fetch('/static/locations.json')
+            .then(response => response.json())
+            .then(data => {
+                regions = data.regions || [];
+                const defaultRegion = regions.find(r => r.id === '204');
+                regionIdInput.value = '204';
+                regionInput.value = defaultRegion.value;
+            });
 
-    // Load specialties
-    fetch('/static/specialities.json')
-        .then(response => response.json())
-        .then(data => {
-            specialties = data;
-        });
+        // Load specialties
+        fetch('/static/specialities.json')
+            .then(response => response.json())
+            .then(data => {
+                specialties = data;
+            });
 
-    // Specialty autocomplete logic
-    const specialtyInput = document.getElementById('specialty_name');
-    const specialtyIdsInput = document.getElementById('specialty_ids');
-    const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
-    const specialtiesSelectedList = document.getElementById('specialties-selected-list');
-    const regionInput = document.getElementById('region_name');
-    const regionIdInput = document.getElementById('region_ids');
+        // Specialty autocomplete logic
+        const specialtyInput = document.getElementById('specialty_name');
+        const specialtyIdsInput = document.getElementById('specialty_ids');
+        const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
+        const specialtiesSelectedList = document.getElementById('specialties-selected-list');
+        const regionInput = document.getElementById('region_name');
+        const regionIdInput = document.getElementById('region_ids');
 
-    function updateSpecialtyBadges() {
-        specialtiesSelectedList.innerHTML = '';
-        selectedSpecialties.forEach(spec => {
-            const badge = document.createElement('span');
-            badge.className = 'badge bg-primary me-1 mb-1';
-            badge.textContent = spec.name.trim();
-            const removeBtn = document.createElement('button');
-            removeBtn.type = 'button';
-            removeBtn.className = 'btn-close btn-close-white btn-sm ms-1';
-            removeBtn.style.fontSize = '0.7em';
-            removeBtn.onclick = function () {
-                selectedSpecialties = selectedSpecialties.filter(s => s.id !== spec.id);
-                updateSpecialtyBadges();
-                updateSpecialtyIdsInput();
-            };
-            badge.appendChild(removeBtn);
-            specialtiesSelectedList.appendChild(badge);
-        });
-    }
+        function updateSpecialtyBadges() {
+            specialtiesSelectedList.innerHTML = '';
+            selectedSpecialties.forEach(spec => {
+                const badge = document.createElement('span');
+                badge.className = 'badge bg-primary me-1 mb-1';
+                badge.textContent = spec.name.trim();
+                const removeBtn = document.createElement('button');
+                removeBtn.type = 'button';
+                removeBtn.className = 'btn-close btn-close-white btn-sm ms-1';
+                removeBtn.style.fontSize = '0.7em';
+                removeBtn.onclick = function () {
+                    selectedSpecialties = selectedSpecialties.filter(s => s.id !== spec.id);
+                    updateSpecialtyBadges();
+                    updateSpecialtyIdsInput();
+                };
+                badge.appendChild(removeBtn);
+                specialtiesSelectedList.appendChild(badge);
+            });
+        }
 
-    function updateSpecialtyIdsInput() {
-        specialtyIdsInput.value = selectedSpecialties.map(s => s.id).join(',');
-    }
+        function updateSpecialtyIdsInput() {
+            specialtyIdsInput.value = selectedSpecialties.map(s => s.id).join(',');
+        }
 
-    specialtyInput.addEventListener('input', function () {
-        const val = this.value.toLowerCase();
-        specialtyAutocompleteList.innerHTML = '';
-        if (!val) return;
-        const matches = specialties.filter(s => s.name.toLowerCase().includes(val) && !selectedSpecialties.some(sel => sel.id === s.id));
-        matches.slice(0, 10).forEach(spec => {
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'list-group-item list-group-item-action';
-            item.textContent = spec.name.trim();
-            item.onclick = function () {
-                selectedSpecialties.push(spec);
-                updateSpecialtyBadges();
-                updateSpecialtyIdsInput();
-                specialtyInput.value = '';
-                specialtyAutocompleteList.innerHTML = '';
-            };
-            specialtyAutocompleteList.appendChild(item);
-        });
-    });
-
-    specialtyInput.addEventListener('focus', function () {
-        if (this.value === '' && specialties.length > 0) {
+        specialtyInput.addEventListener('input', function () {
+            const val = this.value.toLowerCase();
             specialtyAutocompleteList.innerHTML = '';
-            specialties.filter(s => !selectedSpecialties.some(sel => sel.id === s.id)).slice(0, 10).forEach(spec => {
+            if (!val) return;
+            const matches = specialties.filter(s => s.name.toLowerCase().includes(val) && !selectedSpecialties.some(sel => sel.id === s.id));
+            matches.slice(0, 10).forEach(spec => {
                 const item = document.createElement('button');
                 item.type = 'button';
                 item.className = 'list-group-item list-group-item-action';
@@ -224,35 +207,37 @@
                 };
                 specialtyAutocompleteList.appendChild(item);
             });
-        }
-    });
-
-    // Region autocomplete logic
-    const regionAutocompleteList = document.getElementById('region-autocomplete-list');
-
-    regionInput.addEventListener('input', function () {
-        const val = this.value.toLowerCase();
-        regionAutocompleteList.innerHTML = '';
-        if (!val) return;
-        const matches = regions.filter(r => r.value.toLowerCase().includes(val));
-        matches.forEach(region => {
-            const item = document.createElement('button');
-            item.type = 'button';
-            item.className = 'list-group-item list-group-item-action';
-            item.textContent = region.value;
-            item.onclick = function () {
-                regionInput.value = region.value;
-                regionIdInput.value = region.id;
-                regionAutocompleteList.innerHTML = '';
-            };
-            regionAutocompleteList.appendChild(item);
         });
-    });
 
-    regionInput.addEventListener('focus', function () {
-        if (this.value === '' && regions.length > 0) {
+        specialtyInput.addEventListener('focus', function () {
+            if (this.value === '' && specialties.length > 0) {
+                specialtyAutocompleteList.innerHTML = '';
+                specialties.filter(s => !selectedSpecialties.some(sel => sel.id === s.id)).slice(0, 10).forEach(spec => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = spec.name.trim();
+                    item.onclick = function () {
+                        selectedSpecialties.push(spec);
+                        updateSpecialtyBadges();
+                        updateSpecialtyIdsInput();
+                        specialtyInput.value = '';
+                        specialtyAutocompleteList.innerHTML = '';
+                    };
+                    specialtyAutocompleteList.appendChild(item);
+                });
+            }
+        });
+
+        // Region autocomplete logic
+        const regionAutocompleteList = document.getElementById('region-autocomplete-list');
+
+        regionInput.addEventListener('input', function () {
+            const val = this.value.toLowerCase();
             regionAutocompleteList.innerHTML = '';
-            regions.forEach(region => {
+            if (!val) return;
+            const matches = regions.filter(r => r.value.toLowerCase().includes(val));
+            matches.forEach(region => {
                 const item = document.createElement('button');
                 item.type = 'button';
                 item.className = 'list-group-item list-group-item-action';
@@ -264,54 +249,90 @@
                 };
                 regionAutocompleteList.appendChild(item);
             });
-        }
-    });
+        });
 
-    document.addEventListener('click', function (e) {
-        if (!regionInput.contains(e.target) && !regionAutocompleteList.contains(e.target)) {
-            regionAutocompleteList.innerHTML = '';
-        }
-        if (!specialtyInput.contains(e.target) && !specialtyAutocompleteList.contains(e.target)) {
-            specialtyAutocompleteList.innerHTML = '';
-        }
-    });
+        regionInput.addEventListener('focus', function () {
+            if (this.value === '' && regions.length > 0) {
+                regionAutocompleteList.innerHTML = '';
+                regions.forEach(region => {
+                    const item = document.createElement('button');
+                    item.type = 'button';
+                    item.className = 'list-group-item list-group-item-action';
+                    item.textContent = region.value;
+                    item.onclick = function () {
+                        regionInput.value = region.value;
+                        regionIdInput.value = region.id;
+                        regionAutocompleteList.innerHTML = '';
+                    };
+                    regionAutocompleteList.appendChild(item);
+                });
+            }
+        });
 
-    // On form submit, ensure region_ids is set to the selected region's ID
-    const monitorForm = document.getElementById('monitor-form');
-    monitorForm.addEventListener('submit', function (e) {
-        // If the region name doesn't match any region, prevent submit
-        const selected = regions.find(r => r.value === regionInput.value);
-        if (selected) {
-            regionIdInput.value = selected.id;
-        } else {
-            regionIdInput.value = '';
-            regionInput.value = '';
-            e.preventDefault();
-            regionInput.classList.add('is-invalid');
-            regionInput.setCustomValidity('Wybierz region z listy.');
-            regionInput.reportValidity();
-        }
-        // Validate specialties
-        if (!specialtyIdsInput.value) {
-            e.preventDefault();
-            specialtyInput.classList.add('is-invalid');
-            specialtyInput.setCustomValidity('Wybierz co najmniej jedną specjalność.');
-            specialtyInput.reportValidity();
-        } else {
+        document.addEventListener('click', function (e) {
+            if (!regionInput.contains(e.target) && !regionAutocompleteList.contains(e.target)) {
+                regionAutocompleteList.innerHTML = '';
+            }
+            if (!specialtyInput.contains(e.target) && !specialtyAutocompleteList.contains(e.target)) {
+                specialtyAutocompleteList.innerHTML = '';
+            }
+        });
+
+        // On form submit, ensure region_ids is set to the selected region's ID
+        const monitorForm = document.getElementById('monitor-form');
+        monitorForm.addEventListener('submit', function (e) {
+            // If the region name doesn't match any region, prevent submit
+            const selected = regions.find(r => r.value === regionInput.value);
+            if (selected) {
+                regionIdInput.value = selected.id;
+            } else {
+                regionIdInput.value = '';
+                regionInput.value = '';
+                e.preventDefault();
+                regionInput.classList.add('is-invalid');
+                regionInput.setCustomValidity('Wybierz region z listy.');
+                regionInput.reportValidity();
+            }
+            // Validate specialties
+            if (!specialtyIdsInput.value) {
+                e.preventDefault();
+                specialtyInput.classList.add('is-invalid');
+                specialtyInput.setCustomValidity('Wybierz co najmniej jedną specjalność.');
+                specialtyInput.reportValidity();
+            } else {
+                specialtyInput.classList.remove('is-invalid');
+                specialtyInput.setCustomValidity('');
+            }
+        });
+        regionInput.addEventListener('input', function () {
+            regionInput.classList.remove('is-invalid');
+            regionInput.setCustomValidity('');
+        });
+        specialtyInput.addEventListener('input', function () {
             specialtyInput.classList.remove('is-invalid');
             specialtyInput.setCustomValidity('');
+        });
+
+        // Set up datepicker for start_time
+        const startTimeInput = document.getElementById('start_time');
+        if (startTimeInput) {
+            $(startTimeInput).datepicker({
+                format: 'yyyy-mm-dd',
+                language: 'pl',
+                autoclose: true,
+                todayHighlight: true
+            });
+            // Set default value to today if empty
+            if (!startTimeInput.value) {
+                const today = new Date();
+                const yyyy = today.getFullYear();
+                const mm = String(today.getMonth() + 1).padStart(2, '0');
+                const dd = String(today.getDate()).padStart(2, '0');
+                startTimeInput.value = `${yyyy}-${mm}-${dd}`;
+            }
         }
-    });
-    regionInput.addEventListener('input', function () {
-        regionInput.classList.remove('is-invalid');
-        regionInput.setCustomValidity('');
-    });
-    specialtyInput.addEventListener('input', function () {
-        specialtyInput.classList.remove('is-invalid');
-        specialtyInput.setCustomValidity('');
     });
 </script>
 </body>
 
 </html>
-
