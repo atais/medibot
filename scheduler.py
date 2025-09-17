@@ -30,25 +30,25 @@ scheduler = BackgroundScheduler(
 )
 
 
-def _search(username: str, search_params: SearchParams, job_id: str):
+def _search(username: str, search_params: SearchParams, search_url: str):
     user_context = user_contexts.get(username)
-    result = medicover.appointments(
+    result = medicover.get_slots(
         user_context.session,
         region_ids=search_params.region_ids,
+        doctor_ids=search_params.doctor_ids,
+        clinic_ids=search_params.clinic_ids,
         specialty_ids=search_params.specialty_ids,
         start_time=search_params.start_time
     )
 
     if len(result) > 0:
         try:
-            specialty_ids_str = ','.join(map(str, search_params.specialty_ids))
-
             fcm.notify(
                 fcm_token=user_context.fcm_token,
                 notification_title="Medibot Search",
                 notification_body=f"Found {len(result)} appointments!",
                 data_payload={
-                    "click_action": f"/search?region_ids={search_params.region_ids}&specialty_ids={specialty_ids_str}&start_time={search_params.start_time}"
+                    "click_action": search_url
                 }
             )
             logging.info(f"Notification sent to {username}")
@@ -56,16 +56,16 @@ def _search(username: str, search_params: SearchParams, job_id: str):
             logging.error(f"Failed to send notification to {username}: {e}")
 
 
-def create_job(username: str, search_params: SearchParams) -> Job:
+def create_job(username: str, search_params: SearchParams, search_url: str, name: str) -> Job:
     job_id = f"{username}_{list(search_params.model_dump().values())}"
     return scheduler.add_job(
         func=_search,
         trigger='interval',
         minutes=5,
         start_date=datetime.now(timezone.utc) + timedelta(minutes=5),
-        args=[username, search_params, job_id],
+        args=[username, search_params, search_url],
         id=job_id,
-        name=job_id
+        name=name
     )
 
 

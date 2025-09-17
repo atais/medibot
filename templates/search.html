@@ -39,6 +39,30 @@
                         </div>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
+                                <label for="clinic_select" class="col-form-label">Placówki</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select class="selectpicker w-100" id="clinic_select" name="clinic_ids" multiple data-live-search="true">
+                                    {% for clinic in all_clinics %}
+                                        <option value="{{ clinic.id }}" {% if clinic_ids and clinic.id|string in clinic_ids|map('string')|list %}selected{% endif %}>{{ clinic.value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
+                                <label for="doctor_select" class="col-form-label">Lekarze</label>
+                            </div>
+                            <div class="col-md-9">
+                                <select class="selectpicker w-100" id="doctor_select" name="doctor_ids" multiple data-live-search="true">
+                                    {% for doctor in all_doctors %}
+                                    <option value="{{ doctor.id }}" {% if doctor_ids and doctor.id|string in doctor_ids|map('string')|list %}selected{% endif %}>{{ doctor.value }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
                                 <label for="start_time" class="col-form-label">Data początkowa (YYYY-MM-DD)</label>
                             </div>
                             <div class="col-md-9">
@@ -145,14 +169,35 @@
                             }
                         }
                     });
-                    </script>
-                    <script>
+
                     // Make scheduleMonitor globally available and submit to /add_job
                     function scheduleMonitor() {
-                        const form = document.getElementById('search-form');
-                        form.action = '/add_job';
-                        form.method = 'get';
-                        form.submit();
+                        // Helper to get selected values and labels from a select
+                        function getSelectedOptions(selectId) {
+                            const select = document.getElementById(selectId);
+                            if (!select) return [];
+                            return Array.from(select.selectedOptions).map(opt => ({ value: opt.value, label: opt.textContent.trim() }));
+                        }
+                        const selectedData = {
+                            url: window.location.pathname + window.location.search,
+                            region: getSelectedOptions('region_select'),
+                            specialties: getSelectedOptions('specialty_select'),
+                            clinics: getSelectedOptions('clinic_select'),
+                            doctors: getSelectedOptions('doctor_select'),
+                            start_time: document.getElementById('start_time').value
+                        };
+
+                        fetch('/add_job', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(selectedData)
+                        }).then(response => {
+                            if (response.redirected) {
+                                window.location.href = response.url;
+                            }
+                        });
                     }
                     </script>
                 </div>

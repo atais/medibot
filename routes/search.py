@@ -11,15 +11,26 @@ router = APIRouter()
 async def search(request: Request,
                  region_ids: int = Query(...),
                  specialty_ids: list[int] = Query(...),
+                 doctor_ids: list[int] = Query(None),
+                 clinic_ids: list[int] = Query(None),
                  start_time: str = Query(...),
                  user_context=Depends(get_current_user_context)):
-    response = medicover.appointments(
+    filters = medicover.get_filters(
         user_context.session,
         region_ids=region_ids,
+        specialty_ids=specialty_ids
+    )
+    all_clinics = filters.get("clinics", [])
+    all_doctors = filters.get("doctors", [])
+    slots = medicover.get_slots(
+        user_context.session,
+        region_ids=region_ids,
+        doctor_ids=doctor_ids,
+        clinic_ids=clinic_ids,
         specialty_ids=specialty_ids,
         start_time=start_time
     )
-    appointments = [item.model_dump() for item in response] if response else []
+    appointments = [item.model_dump() for item in slots] if slots else []
     return templates.TemplateResponse(
         "search.html",
         {
@@ -28,6 +39,10 @@ async def search(request: Request,
             "appointments": appointments,
             "region_ids": region_ids,
             "specialty_ids": specialty_ids,
-            "start_time": start_time
+            "start_time": start_time,
+            "clinic_ids": clinic_ids,
+            "doctor_ids": doctor_ids,
+            "all_clinics": all_clinics,
+            "all_doctors": all_doctors,
         }
     )

@@ -1,4 +1,7 @@
-from fastapi import APIRouter, Request, Query, Depends
+from typing import List
+
+from fastapi import APIRouter, Request, Depends
+from pydantic import BaseModel
 from starlette.responses import HTMLResponse, RedirectResponse
 
 from app_context import get_current_user_context
@@ -6,6 +9,20 @@ from medicover.appointments import SearchParams
 from scheduler import scheduler, create_job
 
 router = APIRouter()
+
+
+class Option(BaseModel):
+    value: str
+    label: str
+
+
+class SelectedData(BaseModel):
+    url: str
+    region: List[Option]
+    specialties: List[Option]
+    clinics: List[Option]
+    doctors: List[Option]
+    start_time: str
 
 
 @router.get("/edit_job/{job_id}", response_class=HTMLResponse)
@@ -19,16 +36,29 @@ async def remove_job(request: Request, job_id: str, user_context=Depends(get_cur
     return RedirectResponse(url="/", status_code=302)
 
 
-@router.get("/add_job", response_class=HTMLResponse)
+@router.post("/add_job", response_class=HTMLResponse)
 async def add_job(request: Request,
-                  region_ids: int = Query(...),
-                  specialty_ids: list[int] = Query(...),
-                  start_time: str = Query(...),
+                  selected_data: SelectedData,
                   user_context=Depends(get_current_user_context)):
+    # Extract values from selectedData structure
+    region_ids = int(selected_data.region[0].value)
+    specialty_ids = [int(opt.value) for opt in selected_data.specialties]
+    doctor_ids = [int(opt.value) for opt in selected_data.doctors] if selected_data.doctors else None
+    clinic_ids = [int(opt.value) for opt in selected_data.clinics] if selected_data.clinics else None
+
+    name = ", ".join([
+        selected_data.region[0].label,
+        ", ".join([opt.label for opt in selected_data.specialties]),
+        ", ".join([opt.label for opt in selected_data.clinics]) if selected_data.clinics else "",
+        ", ".join([opt.label for opt in selected_data.doctors]) if selected_data.doctors else ""
+    ]).strip(", ")
+
     search_params = SearchParams(
         region_ids=region_ids,
         specialty_ids=specialty_ids,
-        start_time=start_time
+        doctor_ids=doctor_ids,
+        clinic_ids=clinic_ids,
+        start_time=selected_data.start_time
     )
-    create_job(user_context.username, search_params)
+    create_job(user_context.username, search_params, selected_data.url, name)
     return RedirectResponse(url="/", status_code=302)
