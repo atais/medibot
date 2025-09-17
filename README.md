@@ -1,7 +1,8 @@
 # Medibot
 
-Exploring AI-assisted programming by interacting with online services using Python. \
-The project experiments with automation of the search process in Medicover.
+Exploring AI-assisted programming by interacting with online services using Python. 
+The project experiments with automation of the search process in Medicover by providing 
+a multi-user platform with a WebUI. The app sends real-time Firebase push notifications when appointments become available.
 
 ## Inspired on
 
@@ -10,10 +11,25 @@ The project experiments with automation of the search process in Medicover.
 
 ## Running
 
+### Prepare firebase project
+
+To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
+
+1. https://console.firebase.google.com/
+2. Create a Firebase Project
+3. Generate Service Account Key, place `firebase-service-account.json` in the project root
+4. Get Web App Configuration, update `/static/firebase-config.js` with your configuration.
+5. Generate VAPID Key, update it in `/static/firebase-config.js`
+6. Enable Notifications in Browser
+
+### Build & run the application with docker
+
 ```commandline
 docker build -t medibot .
 docker run --rm -p 3333:8000 medibot
 ```
+
+This will expose the WebUI on port 3333
 
 ## Development
 
