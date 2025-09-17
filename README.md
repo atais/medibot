@@ -59,6 +59,17 @@ start server from code
 python app.py
 ```
 
+## _scripts
+
+Folder contains helpers to generate:
+
+- `static/locations.json`
+- `static/specialities.json`
+
+files. Their content should contain all the available options.
+
+If it does not, this approach allows for manual fixes :smile:.
+
 ## License
 
 This project is licensed under the MIT License, one of the most permissive open-source licenses. 
