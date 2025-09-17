@@ -24,7 +24,7 @@ To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
 
 ### Prepare .env file
 
-1. Copy .env.example
+1. Copy `.env.example` as `.env`
 2. Fill with your values
 
 ### Build & run the application with docker
