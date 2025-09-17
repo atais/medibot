@@ -1,7 +1,7 @@
 import json
 import logging
 
-from sqlalchemy import create_engine, Column, String, Text
+from sqlalchemy import create_engine, Column, String, Text, Integer
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
@@ -15,18 +15,20 @@ class UserContextModel(Base):
 
     username = Column(String, primary_key=True)
     password = Column(String, nullable=False)
+    home_clinic = Column(Integer)
     user_agent = Column(Text)
     device_id = Column(String)
-    bearer_token = Column(Text, default="")
-    refresh_token = Column(Text, default="")
-    fcm_token = Column(Text, default="")
-    cookie_jar = Column(Text, default="")
+    bearer_token = Column(Text)
+    refresh_token = Column(Text)
+    fcm_token = Column(Text)
+    cookie_jar = Column(Text)
 
     def to_user_context(self, on_update=None):
         from user_context import UserContext
         return UserContext(
             username=self.username,
             password=self.password,
+            home_clinic=self.home_clinic,
             user_agent=self.user_agent,
             device_id=self.device_id,
             bearer_token=self.bearer_token,
@@ -63,6 +65,7 @@ class UserContextModel(Base):
         return cls(
             username=user_context.username,
             password=user_context.password,
+            home_clinic=user_context.home_clinic,
             user_agent=user_context.user_agent,
             device_id=user_context.device_id,
             bearer_token=user_context.bearer_token,
@@ -76,7 +79,7 @@ class UserContextStore:
 
     def __init__(self, db_url: str):
         logging.info(f"Opening UserContextStore @ {db_url}")
-        self.engine = create_engine(db_url)
+        self.engine = create_engine(db_url, echo=False)
         Base.metadata.create_all(self.engine)
         Session = sessionmaker(bind=self.engine)
         self.session = Session()

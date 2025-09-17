@@ -29,6 +29,7 @@ class UserContext(HTTPAdapter):
             refresh_token: str = "",
             fcm_token: str = "",
             cookie_jar: str = "",
+            home_clinic: int = None,
             on_update: Callable[['UserContext'], None] = None,
             *args,
             **kwargs
@@ -42,6 +43,7 @@ class UserContext(HTTPAdapter):
         self.refresh_token: str = refresh_token
         self.fcm_token: str = fcm_token
         self.on_update = on_update
+        self.home_clinic = home_clinic
 
         self.session = requests.Session()
         self.session.headers.update(_default_headers)

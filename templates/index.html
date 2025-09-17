@@ -16,14 +16,8 @@
                 <div class="card-body">
                     <h2 class="h4 mb-3">Utwórz monitor</h2>
                     <form method="get" action="/search" class="row g-3 mb-4" id="monitor-form">
-                        <div class="col-md-12">
-                            <label for="region_name" class="form-label">Region</label>
-                            <input type="text" class="form-control" id="region_name" name="region_name"
-                                   autocomplete="on" placeholder="Wybierz region...">
-                            <input type="hidden" id="region_ids" name="region_ids" required>
-                            <div id="region-autocomplete-list" class="list-group position-absolute w-100"
-                                 style="z-index: 1000;"></div>
-                        </div>
+                        <input type="hidden" id="search_region_ids" name="region_ids" value="{{ profile.home_clinic }}"
+                               required>
                         <div class="col-md-12">
                             <label for="specialty_name" class="form-label">Specjalności</label>
                             <input type="text" class="form-control" id="specialty_name" autocomplete="off"
@@ -35,7 +29,8 @@
                         </div>
                         <div class="col-md-12">
                             <label for="start_time" class="form-label">Data początkowa (YYYY-MM-DD)</label>
-                            <input type="text" class="form-control" id="start_time" name="start_time" required autocomplete="off">
+                            <input type="text" class="form-control" id="start_time" name="start_time" required
+                                   autocomplete="off">
                         </div>
                         <div class="col-md-12 d-flex justify-content-start">
                             <button type="submit" class="btn btn-success w-auto">
@@ -109,9 +104,9 @@
                                 <td>{{ referral.referralStatus }}</td>
                                 <td>
                                     {% if referral.services and referral.services[0].service %}
-                                        {{ referral.services[0].service.name }}
+                                    {{ referral.services[0].service.name }}
                                     {% else %}
-                                        -
+                                    -
                                     {% endif %}
                                 </td>
                             </tr>
@@ -127,6 +122,20 @@
             <div class="card shadow-sm h-100">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Profil</h2>
+                    <form method="post" action="/update_profile" class="mb-3">
+                        <div class="mb-3">
+                            <label for="region_name" class="form-label">Region</label>
+                            <input type="text" class="form-control" id="region_name" name="region_name"
+                                   autocomplete="on" placeholder="Wybierz region...">
+                            <input type="hidden" id="region_id" name="region_id" value="{{ profile.home_clinic }}"
+                                   required>
+                            <div id="region-autocomplete-list" class="list-group position-absolute w-100"
+                                 style="z-index: 1000;"></div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-save"></i> Zapisz zmiany
+                        </button>
+                    </form>
 
                 </div>
             </div>
@@ -135,7 +144,9 @@
 </div>
 
 <script>
-    document.addEventListener('DOMContentLoaded', function() {
+    document.addEventListener('DOMContentLoaded', function () {
+        // Expose profile.home_clinic to JS
+        const userHomeClinic = "{{ profile.home_clinic }}";
         let regions = [];
         let specialties = [];
         let selectedSpecialties = [];
@@ -144,8 +155,8 @@
             .then(response => response.json())
             .then(data => {
                 regions = data.regions || [];
-                const defaultRegion = regions.find(r => r.id === '204');
-                regionIdInput.value = '204';
+                const defaultRegion = regions.find(r => r.id === userHomeClinic);
+                regionIdInput.value = defaultRegion.id;
                 regionInput.value = defaultRegion.value;
             });
 
@@ -162,7 +173,7 @@
         const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
         const specialtiesSelectedList = document.getElementById('specialties-selected-list');
         const regionInput = document.getElementById('region_name');
-        const regionIdInput = document.getElementById('region_ids');
+        const regionIdInput = document.getElementById('region_id');
 
         function updateSpecialtyBadges() {
             specialtiesSelectedList.innerHTML = '';

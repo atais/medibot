@@ -12,21 +12,31 @@ if ('serviceWorker' in navigator) {
     navigator.serviceWorker.register('/firebase-messaging-sw.js')
         .then((registration) => {
             console.log('Service Worker registered:', registration);
+            // Initialize Firebase and request permission only after registration
+            initializeFirebase();
+            setupMessageHandler();
+            requestNotificationPermission(registration);
         })
         .catch((error) => {
             console.error('Service Worker registration failed:', error);
         });
+} else {
+    console.warn('Service workers are not supported in this browser.');
 }
 
 // Request permission and get FCM token
-async function requestNotificationPermission() {
+async function requestNotificationPermission(registration) {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
+            if (!registration) {
+                console.error('Service worker registration is undefined. Cannot get FCM token.');
+                return;
+            }
             const token = await messaging.getToken({
-                vapidKey: window.vapidKey
+                vapidKey: window.vapidKey,
+                serviceWorkerRegistration: registration
             });
-            
             if (token) {
                 console.log('FCM Token:', token);
                 // Send token to your backend
@@ -48,9 +58,9 @@ async function registerFCMToken(token) {
             headers: {
                 'Content-Type': 'application/json',
             },
-            body: JSON.stringify({ token: token })
+            body: JSON.stringify({token: token})
         });
-        
+
         if (response.ok) {
             console.log('FCM token registered successfully');
         } else {
@@ -74,13 +84,3 @@ function setupMessageHandler() {
         }
     });
 }
-
-// Initialize when page loads
-document.addEventListener('DOMContentLoaded', () => {
-    // Wait a bit for Firebase scripts to load
-    setTimeout(() => {
-        initializeFirebase();
-        setupMessageHandler();
-        requestNotificationPermission();
-    }, 100);
-});
