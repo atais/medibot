@@ -22,6 +22,11 @@ To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
 5. Generate VAPID Key, update it in `/static/firebase-config.js`
 6. Enable Notifications in Browser
 
+### Prepare .env file
+
+1. Copy .env.example
+2. Fill with your values
+
 ### Build & run the application with docker
 
 ```commandline
