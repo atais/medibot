@@ -17,12 +17,7 @@ user_contexts = UserContextStore(app_db_env)
 
 # Initialize FCM with environment variables
 fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")
-fcm_project_id = os.getenv("FCM_PROJECT_ID")
-
-if not fcm_service_account_path or not fcm_project_id:
-    raise RuntimeError("FCM_SERVICE_ACCOUNT_PATH and FCM_PROJECT_ID must be set in environment variables")
-
-fcm = FCMNotification(service_account_file=fcm_service_account_path, project_id=fcm_project_id)
+fcm = FCMNotification(service_account_file=fcm_service_account_path)
 
 
 def get_current_user_context(request: Request) -> UserContext:
