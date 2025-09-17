@@ -1,18 +1,9 @@
 // Firebase configuration and FCM setup
-const firebaseConfig = {
-    apiKey: "AIzaSyBvcV3PSz5MPmT79h30QzhSdQ1I87RPbSs",
-    authDomain: "medi-fd6b8.firebaseapp.com",
-    projectId: "medi-fd6b8",
-    storageBucket: "medi-fd6b8.firebasestorage.app",
-    messagingSenderId: "691901736893",
-    appId: "1:691901736893:web:9f7e08b853bb03668754d4"
-};
-
 let messaging;
 
 // Initialize Firebase after scripts are loaded
 function initializeFirebase() {
-    const app = firebase.initializeApp(firebaseConfig);
+    const app = firebase.initializeApp(window.firebaseConfig);
     messaging = firebase.messaging();
 }
 
