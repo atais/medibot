@@ -19,6 +19,8 @@ user_contexts = UserContextStore(app_db_env)
 fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")
 fcm = FCMNotification(service_account_file=fcm_service_account_path)
 
+session_secret_key = os.getenv("SESSION_KEY")
+
 
 def get_current_user_context(request: Request) -> UserContext:
     username = next(
