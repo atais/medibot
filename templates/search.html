@@ -19,14 +19,12 @@
                     <form method="get" action="/search" class="g-3 align-items-end" id="search-form">
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
-                                <label for="region_name" class="col-form-label">Region</label>
+                                <label for="region_select" class="col-form-label">Region</label>
                             </div>
-                            <div class="col-md-9 position-relative">
-                                <input type="text" class="form-control" id="region_name" name="region_name"
-                                       autocomplete="off" placeholder="Wybierz region...">
-                                <input type="hidden" id="region_ids" name="region_ids" value="{{ region_ids }}" required>
-                                <div id="region-autocomplete-list" class="list-group position-absolute w-100"
-                                     style="z-index: 1000;"></div>
+                            <div class="col-md-9">
+                                <select class="selectpicker w-100" id="region_select" name="region_ids" data-live-search="true" required>
+                                    <!-- Options will be populated by JS -->
+                                </select>
                             </div>
                         </div>
                         <div class="row mb-3 align-items-center">
@@ -71,9 +69,7 @@
                         let regions = [];
                         let specialties = [];
                         let selectedSpecialties = [];
-                        const regionInput = document.getElementById('region_name');
-                        const regionIdInput = document.getElementById('region_ids');
-                        const autocompleteList = document.getElementById('region-autocomplete-list');
+                        const regionSelect = document.getElementById('region_select');
                         const specialtyInput = document.getElementById('specialty_name');
                         const specialtyIdsInput = document.getElementById('specialty_ids');
                         const specialtyAutocompleteList = document.getElementById('specialty-autocomplete-list');
@@ -85,83 +81,29 @@
                             specialtyIdsInput.value = specialtyIdsFromUrl;
                         }
 
-                        // Fetch regions and set region name from region_ids
+                        // Fetch regions and set region select from region_ids
                         fetch('/static/locations.json')
                             .then(response => response.json())
                             .then(data => {
                                 regions = data.regions || [];
-                                const regionIdFromParam = regionIdInput.value;
-                                if (regionIdFromParam) {
-                                    const regionObj = regions.find(r => r.id === regionIdFromParam);
-                                    if (regionObj) {
-                                        regionInput.value = regionObj.value;
-                                    } else {
-                                        regionInput.value = '';
+                                const regionIdFromParam = "{{ region_ids }}";
+                                regionSelect.innerHTML = '';
+                                regions.forEach(region => {
+                                    const option = document.createElement('option');
+                                    option.value = region.id;
+                                    option.textContent = region.value;
+                                    if (region.id == regionIdFromParam) {
+                                        option.selected = true;
                                     }
-                                } else {
-                                    regionInput.value = '';
-                                }
+                                    regionSelect.appendChild(option);
+                                });
+                                $('.selectpicker').selectpicker('refresh');
                             });
 
-                        // Region autocomplete logic
-                        regionInput.addEventListener('input', function () {
-                            const val = this.value.toLowerCase();
-                            autocompleteList.innerHTML = '';
-                            if (!val) return;
-                            const matches = regions.filter(r => r.value.toLowerCase().includes(val));
-                            matches.forEach(region => {
-                                const item = document.createElement('button');
-                                item.type = 'button';
-                                item.className = 'list-group-item list-group-item-action';
-                                item.textContent = region.value;
-                                item.onclick = function () {
-                                    regionInput.value = region.value;
-                                    regionIdInput.value = region.id;
-                                    autocompleteList.innerHTML = '';
-                                };
-                                autocompleteList.appendChild(item);
-                            });
-                        });
-                        regionInput.addEventListener('focus', function () {
-                            if (this.value === '' && regions.length > 0) {
-                                autocompleteList.innerHTML = '';
-                                regions.forEach(region => {
-                                    const item = document.createElement('button');
-                                    item.type = 'button';
-                                    item.className = 'list-group-item list-group-item-action';
-                                    item.textContent = region.value;
-                                    item.onclick = function () {
-                                        regionInput.value = region.value;
-                                        regionIdInput.value = region.id;
-                                        autocompleteList.innerHTML = '';
-                                    };
-                                    autocompleteList.appendChild(item);
-                                });
-                            }
-                        });
-                        document.addEventListener('click', function (e) {
-                            if (!regionInput.contains(e.target) && !autocompleteList.contains(e.target)) {
-                                autocompleteList.innerHTML = '';
-                            }
-                        });
-                        // On form submit, ensure region_ids is set to the selected region's ID
+                        // On form submit, nothing special needed, select value will be submitted as region_ids
                         const searchForm = document.getElementById('search-form');
                         searchForm.addEventListener('submit', function (e) {
-                            const selected = regions.find(r => r.value === regionInput.value);
-                            if (selected) {
-                                regionIdInput.value = selected.id;
-                            } else {
-                                regionIdInput.value = '';
-                                regionInput.value = '';
-                                e.preventDefault();
-                                regionInput.classList.add('is-invalid');
-                                regionInput.setCustomValidity('Wybierz region z listy.');
-                                regionInput.reportValidity();
-                            }
-                        });
-                        regionInput.addEventListener('input', function () {
-                            regionInput.classList.remove('is-invalid');
-                            regionInput.setCustomValidity('');
+                            // Nothing special to do here
                         });
 
                         // Fetch specialties and set badges from specialty_ids
@@ -362,4 +304,3 @@
 </body>
 
 </html>
-
