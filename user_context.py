@@ -1,12 +1,12 @@
 import json
 import logging
 import uuid
+from typing import Callable
 
 import requests
 from fake_useragent import UserAgent
 from requests.adapters import HTTPAdapter
 
-import app_context
 import medicover
 
 _default_headers = {
@@ -29,6 +29,7 @@ class UserContext(HTTPAdapter):
             refresh_token: str = "",
             fcm_token: str = "",
             cookie_jar: str = "",
+            on_update: Callable[['UserContext'], None] = None,
             *args,
             **kwargs
     ):
@@ -40,6 +41,7 @@ class UserContext(HTTPAdapter):
         self.bearer_token: str = bearer_token
         self.refresh_token: str = refresh_token
         self.fcm_token: str = fcm_token
+        self.on_update = on_update
 
         self.session = requests.Session()
         self.session.headers.update(_default_headers)
@@ -85,7 +87,8 @@ class UserContext(HTTPAdapter):
         self.bearer_token = at
         self.refresh_token = rt
         self.session.headers["authorization"] = "Bearer " + self.bearer_token
-        app_context.user_contexts.set(self.username, self)
+        if self.on_update:
+            self.on_update(self)
 
     def _refresh(self) -> None:
         logging.info(f"Keep alive {self.username}")
@@ -93,7 +96,8 @@ class UserContext(HTTPAdapter):
         self.bearer_token = at
         self.refresh_token = rt
         self.session.headers["authorization"] = "Bearer " + self.bearer_token
-        app_context.user_contexts.set(self.username, self)
+        if self.on_update:
+            self.on_update(self)
 
     def send(self, request, **kwargs):
         response = super().send(request, **kwargs)

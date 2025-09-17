@@ -41,6 +41,7 @@ def appointments(
         session: Session,
         specialty_ids: list[int],
         start_time: str,
+        clinic_ids: list[int] = None,
         page: int = 1,
         page_size: int = 5000,
         region_ids: int = 204,
@@ -55,7 +56,8 @@ def appointments(
     params.extend([("SpecialtyIds", x) for x in specialty_ids])
     params.append(("StartTime", start_time))
     params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
-
+    if clinic_ids is not None:
+        params.extend([("ClinicIds", x) for x in clinic_ids])
     response = session.get(f"{API}/appointments/api/v2/search-appointments/slots", params=params)
     response.raise_for_status()
     items = response.json().get("items", [])

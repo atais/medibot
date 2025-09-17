@@ -3,8 +3,8 @@ import os
 
 from dotenv import load_dotenv
 
-from _scripts.user_context import UserContext
 from medicover.keywords import get_locations
+from user_context import UserContext
 
 load_dotenv()
 

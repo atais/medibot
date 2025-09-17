@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Form
 from starlette.responses import RedirectResponse, HTMLResponse
 
 import medicover
-from app_context import templates
+from app_context import templates, user_contexts
 from user_context import UserContext
 
 router = APIRouter()
@@ -18,7 +18,7 @@ async def show_login(request: Request):
 @router.post("/login", response_class=HTMLResponse)
 async def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     try:
-        uc = UserContext(username, password)
+        uc = UserContext(username, password, on_update=user_contexts.set)
         me = medicover.me(uc.session)
         request.session["username"] = username
         response = RedirectResponse(url="/", status_code=303)

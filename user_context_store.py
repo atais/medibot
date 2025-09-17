@@ -22,7 +22,7 @@ class UserContextModel(Base):
     fcm_token = Column(Text, default="")
     cookie_jar = Column(Text, default="")
 
-    def to_user_context(self):
+    def to_user_context(self, on_update=None):
         from user_context import UserContext
         return UserContext(
             username=self.username,
@@ -32,7 +32,8 @@ class UserContextModel(Base):
             bearer_token=self.bearer_token,
             refresh_token=self.refresh_token,
             fcm_token=self.fcm_token,
-            cookie_jar=self.cookie_jar
+            cookie_jar=self.cookie_jar,
+            on_update=on_update
         )
 
     @classmethod
@@ -83,12 +84,12 @@ class UserContextStore:
     def get(self, username: str) -> UserContext | None:
         context_model = self.session.query(UserContextModel).filter_by(username=username).first()
         if context_model:
-            return context_model.to_user_context()
+            return context_model.to_user_context(on_update=self.set)
         else:
             return None
 
-    def set(self, username: str, user_context: UserContext):
-        existing = self.session.query(UserContextModel).filter_by(username=username).first()
+    def set(self, user_context: UserContext):
+        existing = self.session.query(UserContextModel).filter_by(username=user_context.username).first()
         if existing:
             self.session.delete(existing)
             self.session.commit()
