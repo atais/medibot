@@ -1,8 +1,8 @@
 from fastapi import APIRouter, Request, Form, Depends
-from starlette.responses import HTMLResponse
+from starlette.responses import HTMLResponse, RedirectResponse
 
 import medicover
-from app_context import templates, get_current_user_context
+from app_context import get_current_user_context
 
 router = APIRouter()
 
@@ -13,10 +13,4 @@ async def search(request: Request, booking_string: str = Form(...), user_context
         user_context.session,
         booking_string=booking_string
     )
-    return templates.TemplateResponse(
-        "index.html",
-        {
-            "request": request,
-            "appointments": []
-        }
-    )
+    return RedirectResponse(url="/", status_code=303)
