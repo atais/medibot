@@ -3,7 +3,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from app_context import templates, get_current_user_context
 from app_context import user_contexts
-from medicover.referrals import get_referrals
+from medicover import get_person_appointments, get_referrals
 from scheduler import get_jobs
 
 router = APIRouter()
@@ -13,12 +13,14 @@ router = APIRouter()
 async def home(request: Request, user_context=Depends(get_current_user_context)):
     jobs = get_jobs(user_context.username)
     referrals = get_referrals(user_context.session)
+    appointments = get_person_appointments(user_context.session)
     return templates.TemplateResponse("index.html", {
         "request": request,
         "user": user_context.username,
         "profile": user_context,
         "jobs": jobs,
-        "referrals": referrals
+        "referrals": referrals,
+        "appointments": appointments
     })
 
 

@@ -103,3 +103,36 @@ def get_filters(
     response.raise_for_status()
     data = FiltersResponse(**response.json())
     return data
+
+
+class PersonAppointment(BaseModel):
+    id: str
+    clinic: IdName
+    doctor: IdName
+    region: IdName
+    specialty: IdName
+    visitType: str
+    date: str
+    state: str
+    payment: Optional[str] = None
+
+
+class PersonAppointmentsResponse(BaseModel):
+    items: list[PersonAppointment]
+
+
+def get_person_appointments(
+    session: Session,
+    appointment_state: str = "Planned",
+    page: int = 1,
+    page_size: int = 10
+) -> PersonAppointmentsResponse:
+    params = [
+        ("AppointmentState", appointment_state),
+        ("Page", page),
+        ("PageSize", page_size)
+    ]
+    response = session.get(f"{API}/appointments/api/v2/person-appointments/appointments", params=params)
+    response.raise_for_status()
+    data = PersonAppointmentsResponse(**response.json())
+    return data

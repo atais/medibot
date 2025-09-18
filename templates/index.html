@@ -90,6 +90,38 @@
             </div>
         </div>
 
+
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Zaplanowane wizyty</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Specjalność</th>
+                                <th>Klinika</th>
+                                <th>Lekarz</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for appointment in appointments.items %}
+                            <tr>
+                                <td>{{ appointment.date }}</td>
+                                <td>{{ appointment.specialty.name }}</td>
+                                <td>{{ appointment.clinic.name }}</td>
+                                <td>{{ appointment.doctor.name }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+
         <div class="col-12 col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
