@@ -5,16 +5,20 @@ from requests import Session
 
 from ._constants import API
 
+
 class Metadata(BaseModel):
     appointmentSource: str = "Direct"
+
 
 class Booking(BaseModel):
     bookingString: str
     reportingId: Optional[str] = None
     metadata: Metadata = Field(default_factory=Metadata)
 
+
 class BookingResponse(BaseModel):
     appointmentId: int
+
 
 def book(session: Session, booking_string: str) -> BookingResponse:
     url = f"{API}/appointments/api/v2/search-appointments/book-appointment"
@@ -25,3 +29,7 @@ def book(session: Session, booking_string: str) -> BookingResponse:
     return BookingResponse(**booking_json)
 
 
+def delete(session: Session, aid: str) -> None:
+    url = f"{API}/appointments/api/v2/person-appointments/appointments/{aid}"
+    response = session.delete(url)
+    response.raise_for_status()

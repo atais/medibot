@@ -107,6 +107,7 @@
                                 <th>Specjalność</th>
                                 <th>Klinika</th>
                                 <th>Lekarz</th>
+                                <th>Usuń</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -116,6 +117,14 @@
                                 <td>{{ appointment.specialty.name }}</td>
                                 <td>{{ appointment.clinic.name }}</td>
                                 <td>{{ appointment.doctor.name }}</td>
+                                <td>
+                                    <form method="get" action="/delete" style="display:inline;">
+                                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                             </tbody>
