@@ -25,7 +25,9 @@
                                 <select class="selectpicker w-100" id="region_select" name="region_ids"
                                         data-none-Selected-Text="Wybierz region"
                                         data-live-search="true" required>
-                                    <!-- Options will be populated by JS -->
+                                    {% for region in all_regions %}
+                                        <option value="{{ region.id }}" {% if region_ids|string == region.id|string %}selected{% endif %}>{{ region.value }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -37,7 +39,9 @@
                                 <select class="selectpicker w-100" id="specialty_select" name="specialty_ids"
                                         data-none-Selected-Text="Wybierz specjalności"
                                         multiple data-live-search="true" required>
-                                    <!-- Options will be populated by JS -->
+                                    {% for specialty in all_specialities %}
+                                        <option value="{{ specialty.id }}" {% if specialty_ids and specialty.id|string in specialty_ids|map('string')|list %}selected{% endif %}>{{ specialty.name }}</option>
+                                    {% endfor %}
                                 </select>
                             </div>
                         </div>
@@ -100,64 +104,6 @@
 
                     <script>
                     document.addEventListener('DOMContentLoaded', function() {
-                        let regions = [];
-                        const regionSelect = document.getElementById('region_select');
-                        const specialtySelect = document.getElementById('specialty_select');
-
-                        // Fetch regions and set region select from region_ids
-                        fetch('/static/locations.json')
-                            .then(response => response.json())
-                            .then(data => {
-                                regions = data.regions || [];
-                                const regionIdFromParam = "{{ region_ids }}";
-
-                                regionSelect.innerHTML = '';
-                                let selectedSet = false;
-                                regions.forEach(region => {
-                                    const option = document.createElement('option');
-                                    option.value = region.id;
-                                    option.textContent = region.value;
-                                    if (!selectedSet && region.id == regionIdFromParam) {
-                                        option.selected = true;
-                                        selectedSet = true;
-                                    }
-                                    regionSelect.appendChild(option);
-                                });
-                                $(regionSelect).selectpicker('refresh');
-                            });
-
-                        // Fetch specialties and set specialty select from specialty_ids
-                        fetch('/static/specialities.json')
-                            .then(response => response.json())
-                            .then(data => {
-                                // Get selected specialties from URL or form
-                                const url = new URL(window.location.href);
-                                let selectedSpecialties = url.searchParams.getAll('specialty_ids');
-                                specialtySelect.innerHTML = '';
-                                data.forEach(spec => {
-                                    const option = document.createElement('option');
-                                    option.value = spec.id;
-                                    option.textContent = spec.name;
-                                    if (selectedSpecialties.includes(spec.id)) {
-                                        option.selected = true;
-                                    }
-                                    specialtySelect.appendChild(option);
-                                });
-                                $(specialtySelect).selectpicker('refresh');
-                            });
-                        // Validate specialties on submit
-                        const searchForm = document.getElementById('search-form');
-                        searchForm.addEventListener('submit', function (e) {
-                            if (!specialtySelect.value) {
-                                e.preventDefault();
-                                $(specialtySelect).addClass('is-invalid');
-                                specialtySelect.setCustomValidity('Wybierz co najmniej jedną specjalność.');
-                                specialtySelect.reportValidity();
-                            } else {
-                                $(specialtySelect).removeClass('is-invalid');
-                                specialtySelect.setCustomValidity('');
-                            }
-                        });
 
                         // Set up datepicker for start_time
                         const startTimeInput = document.getElementById('start_time');

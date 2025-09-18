@@ -2,7 +2,7 @@ from fastapi import APIRouter, Request, Query, Depends
 from starlette.responses import HTMLResponse
 
 import medicover
-from app_context import templates, get_current_user_context
+from app_context import templates, get_current_user_context, all_regions, all_specialities
 
 router = APIRouter()
 
@@ -42,5 +42,7 @@ async def search(request: Request,
             "doctor_ids": doctor_ids,
             "all_clinics": filters.clinics,
             "all_doctors": filters.doctors,
+            "all_regions": all_regions,
+            "all_specialities": all_specialities,
         }
     )
