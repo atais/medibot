@@ -1,3 +1,4 @@
+import json
 import os
 
 from dotenv import load_dotenv
@@ -20,6 +21,22 @@ fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")
 fcm = FCMNotification(service_account_file=fcm_service_account_path)
 
 session_secret_key = os.getenv("SESSION_KEY")
+
+
+def load_all_regions():
+    locations_path = os.path.join(os.path.dirname(__file__), 'static', 'locations.json')
+    with open(locations_path, encoding='utf-8') as f:
+        data = json.load(f)
+    return data.get('regions', [])
+
+def load_all_specialties():
+    specialties_path = os.path.join(os.path.dirname(__file__), 'static', 'specialities.json')
+    with open(specialties_path, encoding='utf-8') as f:
+        data = json.load(f)
+    return data
+
+all_regions = load_all_regions()
+all_specialities = load_all_specialties()
 
 
 def get_current_user_context(request: Request) -> UserContext:

@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Request, Depends, Form
 from starlette.responses import HTMLResponse, RedirectResponse
 
+from app_context import all_regions, all_specialities
 from app_context import templates, get_current_user_context
 from app_context import user_contexts
 from medicover import get_person_appointments, get_referrals
@@ -20,7 +21,9 @@ async def home(request: Request, user_context=Depends(get_current_user_context))
         "profile": user_context,
         "jobs": jobs,
         "referrals": referrals,
-        "appointments": appointments
+        "appointments": appointments,
+        "all_regions": all_regions,
+        "all_specialities": all_specialities,
     })
 
 
