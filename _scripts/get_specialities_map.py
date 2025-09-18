@@ -4,7 +4,7 @@ import os
 
 from dotenv import load_dotenv
 
-from medicover.book import get_specialties
+from medicover import get_filters
 from medicover.keywords import get_keyword_details
 from user_context import UserContext
 from medicover.keywords import get_keywords
@@ -87,11 +87,10 @@ print(f"[SUCCESS] Extracted {len(sorted_ids)} unique specialty IDs to {spec_list
 with open(spec_list, 'r', encoding='utf-8') as f:
     specialty_ids = json.load(f)
 
-slot_search_type = "Standard"  # Default slot search type, adjust as needed
 
 results = []
 for specialty_id in specialty_ids:
-    response = get_specialties(user_context.session, region_id, slot_search_type, str(specialty_id))
+    response = get_filters(user_context.session, [specialty_id], int(region_id))
     for specialty in response.specialties:
         print(specialty)
         results.append({"id": specialty.id, "name": specialty.value})

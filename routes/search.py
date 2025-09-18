@@ -20,8 +20,6 @@ async def search(request: Request,
         region_ids=region_ids,
         specialty_ids=specialty_ids
     )
-    all_clinics = filters.get("clinics", [])
-    all_doctors = filters.get("doctors", [])
     slots = medicover.get_slots(
         user_context.session,
         region_ids=region_ids,
@@ -42,7 +40,7 @@ async def search(request: Request,
             "start_time": start_time,
             "clinic_ids": clinic_ids,
             "doctor_ids": doctor_ids,
-            "all_clinics": all_clinics,
-            "all_doctors": all_doctors,
+            "all_clinics": filters.clinics,
+            "all_doctors": filters.doctors,
         }
     )

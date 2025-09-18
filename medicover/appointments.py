@@ -15,6 +15,7 @@ class IdValue(BaseModel):
     id: str
     value: str
 
+
 class Appointment(BaseModel):
     appointmentDate: str
     clinic: IdName
@@ -74,19 +75,31 @@ def get_slots(
     return result
 
 
+class Specialty(BaseModel):
+    id: str
+    value: str
+    type: str
+    kind: str
+
+
+class FiltersResponse(BaseModel):
+    specialties: list[Specialty]
+    clinics: list[IdValue]
+    doctors: list[IdValue]
+    regions: list[IdValue]
+
+
 def get_filters(
         session: Session,
         specialty_ids: list[int],
         region_ids: int = 204,
         slot_search_type: str = "Standard",
-) -> dict:
+) -> FiltersResponse:
     params = []
     params.append(("RegionIds", region_ids))
     params.append(("SlotSearchType", slot_search_type))
     params.extend([("SpecialtyIds", x) for x in specialty_ids])
     response = session.get(f"{API}/appointments/api/v2/search-appointments/filters", params=params)
     response.raise_for_status()
-    data = response.json()
-    clinics = [IdValue(**item) for item in data.get("clinics", [])]
-    doctors = [IdValue(**item) for item in data.get("doctors", [])]
-    return {"clinics": clinics, "doctors": doctors}
+    data = FiltersResponse(**response.json())
+    return data
