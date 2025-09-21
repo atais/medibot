@@ -164,7 +164,7 @@
                             <tbody>
                             {% for a in appointments %}
                             <tr>
-                                <td>{{ a.appointmentDate }}</td>
+                                <td>{{ a.appointmentDate | datetimeformat('%Y-%m-%d %H:%M') }}</td>
                                 <td>{{ a.clinic.name }}</td>
                                 <td>{{ a.doctor.name }}</td>
                                 <td>{{ a.specialty.name }}</td>

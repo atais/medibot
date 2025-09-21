@@ -1,5 +1,6 @@
 import json
 import os
+from datetime import datetime
 
 from dotenv import load_dotenv
 from fastapi import Request, HTTPException
@@ -55,3 +56,20 @@ def get_current_user_context(request: Request) -> UserContext:
         if user_context:
             return user_context
     raise HTTPException(status_code=302, headers={"Location": "/login"})
+
+
+def datetimeformat(value, format='%d.%m.%Y %H:%M'):
+    if value is None:
+        return ""
+    try:
+        if hasattr(value, 'strftime'):
+            return value.strftime(format)
+        else:
+            dt = datetime.fromisoformat(value)
+            return dt.strftime(format)
+    except Exception:
+        return str(value)
+
+
+# Register the filter with Jinja2
+templates.env.filters['datetimeformat'] = datetimeformat

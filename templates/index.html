@@ -62,7 +62,7 @@
                             {% for job in jobs %}
                             <tr>
                                 <td>{{ job.name }}</td>
-                                <td>{{ job.next_run_time }}</td>
+                                <td>{{ job.next_run_time | datetimeformat('%Y-%m-%d %H:%M:%S') }}</td>
                                 <td>
                                     {% if job.next_run_time is none %}
                                     <form method="get" action="/resume_job/{{ job.id }}">
@@ -114,7 +114,7 @@
                             <tbody>
                             {% for a in appointments.items %}
                             <tr>
-                                <td>{{ a.date }}</td>
+                                <td>{{ a.date | datetimeformat('%Y-%m-%d %H:%M') }}</td>
                                 <td>{{ a.specialty.name }}</td>
                                 <td>{{ a.clinic.name }}</td>
                                 <td>{{ a.doctor.name }}</td>
@@ -158,7 +158,7 @@
                             <tbody>
                             {% for referral in referrals.items %}
                             <tr>
-                                <td>{{ referral.expirationDate }}</td>
+                                <td>{{ referral.expirationDate | datetimeformat('%Y-%m-%d') }}</td>
                                 <td>{{ referral.referralStatus }}</td>
                                 <td>
                                     {% if referral.services and referral.services[0].service %}
