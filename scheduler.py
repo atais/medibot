@@ -79,7 +79,7 @@ def create_job(username: str, search_params: SearchParams, search_url: str, name
         func=_search,
         trigger='interval',
         minutes=5,
-        start_date=datetime.now(timezone.utc) + timedelta(minutes=5),
+        start_date=datetime.now(timezone.utc) + timedelta(seconds=30),
         args=[username, search_params, search_url, autobook, job_id],
         id=job_id,
         name=name

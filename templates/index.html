@@ -23,8 +23,8 @@
                             <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple
                                     data-none-Selected-Text="Wybierz specjalności"
                                     data-live-search="true" required>
-                                {% for i in all_specialities %}
-                                    <option value="{{ i.id }}">{{ i.name }}</option>
+                                {% for specialty_id, specialty_name in all_specialities.items() %}
+                                    <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                                 {% endfor %}
                             </select>
                         </div>
@@ -177,8 +177,8 @@
                         <div class="mb-3 w-100">
                             <label for="region_select" class="form-label">Region</label>
                             <select class="selectpicker w-100" id="region_select" name="region_id" data-live-search="true" required>
-                                {% for region in all_regions %}
-                                    <option value="{{ region.id }}" {% if profile.home_clinic|string == region.id|string %}selected{% endif %}>{{ region.value }}</option>
+                                {% for region_id, region_value in all_regions.items() %}
+                                <option value="{{ region_id }}" {% if profile.home_clinic == region_id %}selected{% endif %}>{{ region_value }}</option>
                                 {% endfor %}
                             </select>
                         </div>

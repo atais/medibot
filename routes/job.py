@@ -1,11 +1,11 @@
 from typing import List
 
-from fastapi import APIRouter, Request, Depends
+from fastapi import APIRouter, Request, Depends, Query
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app_context import get_current_user_context
-from medicover.appointments import SearchParams
+from app_context import get_current_user_context, all_regions, all_specialities
+from medicover.appointments import SearchParams, FiltersResponse, get_filters
 from scheduler import scheduler, create_job
 
 router = APIRouter()
@@ -26,38 +26,44 @@ class SelectedData(BaseModel):
     autobook: bool
 
 
-
 @router.post("/remove_job/{job_id}", response_class=HTMLResponse)
 async def remove_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.remove_job(job_id)
     return RedirectResponse(url="/", status_code=302)
 
 
-@router.post("/add_job", response_class=HTMLResponse)
+@router.get("/add_job", response_class=HTMLResponse)
 async def add_job(request: Request,
-                  selected_data: SelectedData,
+                  region_ids: int = Query(...),
+                  specialty_ids: list[int] = Query(...),
+                  doctor_ids: list[int] = Query(None),
+                  clinic_ids: list[int] = Query(None),
+                  start_time: str = Query(...),
+                  autobook: bool = Query(False),
                   user_context=Depends(get_current_user_context)):
-    # Extract values from selectedData structure
-    region_ids = int(selected_data.region[0].value)
-    specialty_ids = [int(opt.value) for opt in selected_data.specialties]
-    doctor_ids = [int(opt.value) for opt in selected_data.doctors] if selected_data.doctors else None
-    clinic_ids = [int(opt.value) for opt in selected_data.clinics] if selected_data.clinics else None
+    filters: FiltersResponse = get_filters(
+        user_context.session,
+        region_ids=region_ids,
+        specialty_ids=specialty_ids
+    )
 
-    name = ", ".join([
-        selected_data.region[0].label,
-        ", ".join([opt.label for opt in selected_data.specialties]),
-        ", ".join([opt.label for opt in selected_data.clinics]) if selected_data.clinics else "",
-        ", ".join([opt.label for opt in selected_data.doctors]) if selected_data.doctors else ""
-    ]).strip(", ")
+    parts = [
+        all_regions.get(region_ids),
+        *[all_specialities.get(id) for id in specialty_ids],
+        *(c.value for c in filters.clinics for id in (clinic_ids or []) if c.id == str(id)),
+        *(d.value for d in filters.doctors for id in (doctor_ids or []) if d.id == str(id))
+    ]
+    name = ", ".join(part for part in parts if part)
 
     search_params = SearchParams(
         region_ids=region_ids,
         specialty_ids=specialty_ids,
         doctor_ids=doctor_ids,
         clinic_ids=clinic_ids,
-        start_time=selected_data.start_time
+        start_time=start_time
     )
-    create_job(user_context.username, search_params, selected_data.url, name, selected_data.autobook)
+    url = "/search" + (f"?{request.url.query}" if request.url.query else "")
+    create_job(user_context.username, search_params, url, name, autobook)
     return RedirectResponse(url="/", status_code=302)
 
 
@@ -65,6 +71,7 @@ async def add_job(request: Request,
 async def pause_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.pause_job(job_id)
     return RedirectResponse(url="/", status_code=302)
+
 
 @router.get("/resume_job/{job_id}", response_class=HTMLResponse)
 async def resume_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):

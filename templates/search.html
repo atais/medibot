@@ -16,7 +16,7 @@
             <div class="card shadow-sm">
                 <div class="card-body">
                     <h2 class="h4 mb-3">Szukaj wizyt</h2>
-                    <form method="get" action="/search" class="g-3 align-items-end" id="search-form">
+                    <form class="g-3 align-items-end" id="search-form">
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
                                 <label for="region_select" class="col-form-label">Region</label>
@@ -25,8 +25,8 @@
                                 <select class="selectpicker w-100" id="region_select" name="region_ids"
                                         data-none-Selected-Text="Wybierz region"
                                         data-live-search="true" required>
-                                    {% for region in all_regions %}
-                                        <option value="{{ region.id }}" {% if region_ids|string == region.id|string %}selected{% endif %}>{{ region.value }}</option>
+                                    {% for region_id, region_value in all_regions.items() %}
+                                        <option value="{{ region_id }}" {% if region_ids == region_id %}selected{% endif %}>{{ region_value }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -39,8 +39,8 @@
                                 <select class="selectpicker w-100" id="specialty_select" name="specialty_ids"
                                         data-none-Selected-Text="Wybierz specjalności"
                                         multiple data-live-search="true" required>
-                                    {% for specialty in all_specialities %}
-                                        <option value="{{ specialty.id }}" {% if specialty_ids and specialty.id|string in specialty_ids|map('string')|list %}selected{% endif %}>{{ specialty.name }}</option>
+                                    {% for specialty_id, specialty_name in all_specialities.items() %}
+                                        <option value="{{ specialty_id }}" {% if specialty_ids and specialty_id in specialty_ids %}selected{% endif %}>{{ specialty_name }}</option>
                                     {% endfor %}
                                 </select>
                             </div>
@@ -92,10 +92,10 @@
                         <div class="row mb-3">
                             <div class="col-md-3"></div>
                             <div class="col-md-9 d-flex gap-2">
-                                <button type="submit" class="btn btn-primary flex-fill">
+                                <button type="submit" class="btn btn-primary flex-fill" formaction="/search" formmethod="get">
                                     <i class="bi bi-search"></i> Szukaj wizyt
                                 </button>
-                                <button type="button" class="btn btn-success flex-fill" onclick="scheduleMonitor()">
+                                <button type="submit" class="btn btn-success flex-fill" formaction="/add_job" formmethod="get">
                                     <i class="bi bi-clock"></i> Zaplanuj monitor
                                 </button>
                             </div>
@@ -131,37 +131,6 @@
                             }
                         }
                     });
-
-                    // Make scheduleMonitor globally available and submit to /add_job
-                    function scheduleMonitor() {
-                        // Helper to get selected values and labels from a select
-                        function getSelectedOptions(selectId) {
-                            const select = document.getElementById(selectId);
-                            if (!select) return [];
-                            return Array.from(select.selectedOptions).map(opt => ({ value: opt.value, label: opt.textContent.trim() }));
-                        }
-                        const selectedData = {
-                            url: window.location.pathname + window.location.search,
-                            region: getSelectedOptions('region_select'),
-                            specialties: getSelectedOptions('specialty_select'),
-                            clinics: getSelectedOptions('clinic_select'),
-                            doctors: getSelectedOptions('doctor_select'),
-                            start_time: document.getElementById('start_time').value,
-                            autobook: document.getElementById('autobook').checked
-                        };
-
-                        fetch('/add_job', {
-                            method: 'POST',
-                            headers: {
-                                'Content-Type': 'application/json',
-                            },
-                            body: JSON.stringify(selectedData)
-                        }).then(response => {
-                            if (response.redirected) {
-                                window.location.href = response.url;
-                            }
-                        });
-                    }
                     </script>
                 </div>
             </div>
@@ -180,11 +149,7 @@
                                 <th>Data</th>
                                 <th>Klinika</th>
                                 <th>Lekarz</th>
-<!--                                <th>Języki</th>-->
                                 <th>Specjalność</th>
-<!--                                <th>Typ wizyty</th>-->
-<!--                                <th>Typ konsultacji</th>-->
-<!--                                <th>Pochodzenie</th>-->
                                 <th>Zarezerwuj</th>
                             </tr>
                             </thead>
@@ -194,17 +159,7 @@
                                 <td>{{ a.appointmentDate }}</td>
                                 <td>{{ a.clinic.name }}</td>
                                 <td>{{ a.doctor.name }}</td>
-<!--                                <td>-->
-<!--                                    {% if a.doctorLanguages %}-->
-<!--                                    {{ a.doctorLanguages | map(attribute='name') | join(', ') }}-->
-<!--                                    {% else %}-->
-<!--                                    - -->
-<!--                                    {% endif %}-->
-<!--                                </td>-->
                                 <td>{{ a.specialty.name }}</td>
-<!--                                <td>{{ a.visitType }}</td>-->
-<!--                                <td>{{ a.sysSpecialtyConsultationTypeId }}</td>-->
-<!--                                <td>{{ a.visitOrigin }}</td>-->
                                 <td>
                                     <form method="post" action="/book" class="d-inline">
                                         <input type="hidden" name="booking_string" value="{{ a.bookingString }}">

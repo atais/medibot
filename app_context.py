@@ -23,20 +23,22 @@ fcm = FCMNotification(service_account_file=fcm_service_account_path)
 session_secret_key = os.getenv("SESSION_KEY")
 
 
-def load_all_regions():
+def load_all_regions() -> dict[int, str]:
     locations_path = os.path.join(os.path.dirname(__file__), 'static', 'locations.json')
     with open(locations_path, encoding='utf-8') as f:
         data = json.load(f)
-    return data.get('regions', [])
+    return {int(region['id']): region['value'] for region in data.get('regions', [])}
 
-def load_all_specialties():
+
+def load_all_specialties() -> dict[int, str]:
     specialties_path = os.path.join(os.path.dirname(__file__), 'static', 'specialities.json')
     with open(specialties_path, encoding='utf-8') as f:
         data = json.load(f)
-    return data
+    return {int(specialty['id']): specialty['name'] for specialty in data}
 
-all_regions = load_all_regions()
-all_specialities = load_all_specialties()
+
+all_regions: dict[int, str] = load_all_regions()
+all_specialities: dict[int, str] = load_all_specialties()
 
 
 def get_current_user_context(request: Request) -> UserContext:
