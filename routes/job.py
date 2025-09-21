@@ -40,6 +40,7 @@ async def add_job(request: Request,
                   clinic_ids: list[int] = Query(None),
                   start_time: str = Query(...),
                   autobook: bool = Query(False),
+                  previous_id: str = Query(None),
                   user_context=Depends(get_current_user_context)):
     filters: FiltersResponse = get_filters(
         user_context.session,
@@ -60,6 +61,7 @@ async def add_job(request: Request,
         specialty_ids=specialty_ids,
         doctor_ids=doctor_ids,
         clinic_ids=clinic_ids,
+        previous_id=previous_id,
         start_time=start_time
     )
     url = "/search" + (f"?{request.url.query}" if request.url.query else "")

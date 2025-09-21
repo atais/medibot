@@ -1,32 +1,41 @@
 from typing import Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel
 from requests import Session
 
 from ._constants import API
 
 
-class Metadata(BaseModel):
-    appointmentSource: str = "Direct"
-
-
-class Booking(BaseModel):
-    bookingString: str
-    reportingId: Optional[str] = None
-    metadata: Metadata = Field(default_factory=Metadata)
-
-
 class BookingResponse(BaseModel):
     appointmentId: int
 
+class Response(BaseModel):
+    status: str
+    message: Optional[str] = None
+    errorDetails: Optional[str] = None
 
-def book(session: Session, booking_string: str) -> BookingResponse:
-    url = f"{API}/appointments/api/v2/search-appointments/book-appointment"
-    booking = Booking(bookingString=booking_string)
-    response = session.post(url, json=booking.model_dump())
-    response.raise_for_status()
-    booking_json = response.json()
-    return BookingResponse(**booking_json)
+def book(session: Session, booking_string: str, old_id: Optional[str] = None):
+    if old_id:
+        url = f"{API}/appointments/api/v2/person-appointments/reschedule-appointment"
+        payload = {
+            "oldAppointmentString": old_id,
+            "bookingString": booking_string
+        }
+        response = session.post(url, json=payload)
+        response.raise_for_status()
+        return Response(**response.json())
+    else:
+        url = f"{API}/appointments/api/v2/search-appointments/book-appointment"
+        payload = {
+            "metadata": {
+                "appointmentSource": "Direct"
+            },
+            "bookingString": booking_string
+        }
+        response = session.post(url, json=payload)
+        response.raise_for_status()
+        booking_json = response.json()
+        return BookingResponse(**booking_json)
 
 
 def delete(session: Session, aid: str) -> None:

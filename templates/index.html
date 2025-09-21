@@ -108,22 +108,29 @@
                                 <th>Klinika</th>
                                 <th>Lekarz</th>
                                 <th>Usuń</th>
+                                <th>Zamień</th>
                             </tr>
                             </thead>
                             <tbody>
-                            {% for appointment in appointments.items %}
+                            {% for a in appointments.items %}
                             <tr>
-                                <td>{{ appointment.date }}</td>
-                                <td>{{ appointment.specialty.name }}</td>
-                                <td>{{ appointment.clinic.name }}</td>
-                                <td>{{ appointment.doctor.name }}</td>
+                                <td>{{ a.date }}</td>
+                                <td>{{ a.specialty.name }}</td>
+                                <td>{{ a.clinic.name }}</td>
+                                <td>{{ a.doctor.name }}</td>
                                 <td>
                                     <form method="get" action="/delete" style="display:inline;">
-                                        <input type="hidden" name="appointment_id" value="{{ appointment.id }}">
+                                        <input type="hidden" name="appointment_id" value="{{ a.id }}">
                                         <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
                                             <i class="bi bi-trash"></i>
                                         </button>
                                     </form>
+                                </td>
+                                <td>
+                                    <a href="/search?region_ids={{ a.region.id }}&specialty_ids={{ a.specialty.id }}&clinic_ids={{ a.clinic.id }}&doctor_ids={{ a.doctor.id }}&previous_id={{ a.id }}"
+                                       class="btn btn-outline-primary btn-sm" aria-label="Zamień">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
                                 </td>
                             </tr>
                             {% endfor %}

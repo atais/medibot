@@ -17,6 +17,9 @@
                 <div class="card-body">
                     <h2 class="h4 mb-3">Szukaj wizyt</h2>
                     <form class="g-3 align-items-end" id="search-form">
+                        {% if previous_id %}
+                            <input type="hidden" name="previous_id" value="{{ previous_id }}">
+                        {% endif %}
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
                                 <label for="region_select" class="col-form-label">Region</label>
@@ -37,6 +40,7 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="specialty_select" name="specialty_ids"
+                                        data-actions-box="true"
                                         data-none-Selected-Text="Wybierz specjalności"
                                         multiple data-live-search="true" required>
                                     {% for specialty_id, specialty_name in all_specialities.items() %}
@@ -51,6 +55,7 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="clinic_select" name="clinic_ids"
+                                        data-actions-box="true"
                                         data-none-Selected-Text="Wybierz placówki / BRAK WYBORU = WSZYSTKIE"
                                         multiple data-live-search="true">
                                     {% for clinic in all_clinics %}
@@ -65,6 +70,7 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="doctor_select" name="doctor_ids"
+                                        data-actions-box="true"
                                         data-none-Selected-Text="Wybierz lekarzy / BRAK WYBORU = WSZYSCY"
                                         multiple data-live-search="true">
                                     {% for doctor in all_doctors %}
@@ -86,7 +92,9 @@
                                 <label for="autobook" class="col-form-label">Automatycznie zaakceptuj 1. dostępny termin</label>
                             </div>
                             <div class="col-md-9">
-                                <input class="form-check-input" type="checkbox" id="autobook" name="autobook" checked>
+                                <input class="form-check-input" type="checkbox"
+                                       id="autobook" name="autobook"
+                                       {% if autobook %}checked{% endif %}>
                             </div>
                         </div>
                         <div class="row mb-3">
@@ -163,6 +171,9 @@
                                 <td>
                                     <form method="post" action="/book" class="d-inline">
                                         <input type="hidden" name="booking_string" value="{{ a.bookingString }}">
+                                        {% if previous_id %}
+                                            <input type="hidden" name="previous_booking_id" value="{{ previous_id }}">
+                                        {% endif %}
                                         <button type="submit" class="btn btn-primary btn-sm">
                                             <i class="bi bi-calendar-check"></i>
                                         </button>

@@ -19,7 +19,7 @@ class IdValue(BaseModel):
 class Appointment(BaseModel):
     appointmentDate: str
     clinic: IdName
-    doctor: IdName
+    doctor: Optional[IdName]
     doctorLanguages: List[IdName]
     specialty: IdName
     visitType: str
@@ -33,13 +33,14 @@ class Appointment(BaseModel):
 
 
 class SearchParams(BaseModel):
+    region_ids: int
     specialty_ids: list[int]
     doctor_ids: Optional[list[int]] = None
     clinic_ids: Optional[list[int]] = None
+    previous_id: Optional[str] = None
     start_time: str
     page: int = 1
     page_size: int = 5000
-    region_ids: int = 204
     slot_search_type: str = "Standard"
     is_overbooking_search_disabled: bool = False
 

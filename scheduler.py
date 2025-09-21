@@ -31,35 +31,35 @@ scheduler = BackgroundScheduler(
 
 
 def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool, job_id: str):
-    user_context = user_contexts.get(username)
-    result: list[Appointment] = medicover.get_slots(
-        user_context.session,
-        region_ids=search_params.region_ids,
-        doctor_ids=search_params.doctor_ids,
-        clinic_ids=search_params.clinic_ids,
-        specialty_ids=search_params.specialty_ids,
-        start_time=search_params.start_time
-    )
+    try:
+        user_context = user_contexts.get(username)
+        result: list[Appointment] = medicover.get_slots(
+            user_context.session,
+            region_ids=search_params.region_ids,
+            doctor_ids=search_params.doctor_ids,
+            clinic_ids=search_params.clinic_ids,
+            specialty_ids=search_params.specialty_ids,
+            start_time=search_params.start_time
+        )
 
-    if len(result) > 0 and autobook:
-        try:
+        if len(result) > 0 and autobook:
             b = result[0]
             medicover.book(
                 user_context.session,
-                booking_string=b.bookingString
+                booking_string=b.bookingString,
+                old_id=search_params.previous_id
             )
             fcm.notify(
                 fcm_token=user_context.fcm_token,
                 notification_title="Medibot Search",
                 notification_body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate}",
-                data_payload={}
+                data_payload={
+                    "click_action": "/"
+                }
             )
             logging.info(f"Notification sent to {username}")
             scheduler.pause_job(job_id)
-        except Exception as e:
-            logging.error(f"Failed to send notification to {username}: {e}")
-    elif len(result) > 0 and not autobook:
-        try:
+        elif len(result) > 0 and not autobook:
             fcm.notify(
                 fcm_token=user_context.fcm_token,
                 notification_title="Medibot Search",
@@ -69,8 +69,8 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
                 }
             )
             logging.info(f"Notification sent to {username}")
-        except Exception as e:
-            logging.error(f"Failed to send notification to {username}: {e}")
+    except Exception as e:
+        logging.error(f"Failed _search of to {username}: {e}")
 
 
 def create_job(username: str, search_params: SearchParams, search_url: str, name: str, autobook: bool) -> Job:
