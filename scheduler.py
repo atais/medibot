@@ -33,13 +33,18 @@ scheduler = BackgroundScheduler(
 def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool, job_id: str):
     try:
         user_context = user_contexts.get(username)
+
+        # do not run search for past-date
+        today = datetime.now().date().strftime("%Y-%m-%d")
+        start_time = max(search_params.start_time, today)
+
         result: list[Appointment] = medicover.get_slots(
             user_context.session,
             region_ids=search_params.region_ids,
             doctor_ids=search_params.doctor_ids,
             clinic_ids=search_params.clinic_ids,
             specialty_ids=search_params.specialty_ids,
-            start_time=search_params.start_time
+            start_time=start_time
         )
 
         if len(result) > 0 and autobook:
