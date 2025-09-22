@@ -1,3 +1,4 @@
+from datetime import datetime
 from typing import Optional, List
 
 from pydantic import BaseModel
@@ -17,7 +18,7 @@ class IdValue(BaseModel):
 
 
 class Appointment(BaseModel):
-    appointmentDate: str
+    appointmentDate: datetime
     clinic: IdName
     doctor: Optional[IdName]
     doctorLanguages: List[IdName]
@@ -39,6 +40,7 @@ class SearchParams(BaseModel):
     clinic_ids: Optional[list[int]] = None
     previous_id: Optional[str] = None
     start_time: str
+    end_time: Optional[str] = None
     page: int = 1
     page_size: int = 5000
     slot_search_type: str = "Standard"
@@ -47,32 +49,28 @@ class SearchParams(BaseModel):
 
 def get_slots(
         session: Session,
-        specialty_ids: list[int],
-        start_time: str,
-        clinic_ids: list[int] = None,
-        doctor_ids: list[int] = None,
-        page: int = 1,
-        page_size: int = 5000,
-        region_ids: int = 204,
-        slot_search_type: str = "Standard",
-        is_overbooking_search_disabled: bool = False
+        sp: SearchParams
 ) -> list[Appointment]:
     params = []
-    params.append(("Page", page))
-    params.append(("PageSize", page_size))
-    params.append(("RegionIds", region_ids))
-    params.append(("SlotSearchType", slot_search_type))
-    params.extend([("SpecialtyIds", x) for x in specialty_ids])
-    params.append(("StartTime", start_time))
-    params.append(("isOverbookingSearchDisabled", is_overbooking_search_disabled))
-    if clinic_ids is not None:
-        params.extend([("ClinicIds", x) for x in clinic_ids])
-    if doctor_ids is not None:
-        params.extend([("DoctorIds", x) for x in doctor_ids])
+    params.append(("Page", sp.page))
+    params.append(("PageSize", sp.page_size))
+    params.append(("RegionIds", sp.region_ids))
+    params.append(("SlotSearchType", sp.slot_search_type))
+    params.extend([("SpecialtyIds", x) for x in sp.specialty_ids])
+    params.append(("StartTime", sp.start_time))
+    params.append(("isOverbookingSearchDisabled", sp.is_overbooking_search_disabled))
+    params.extend([("ClinicIds", x) for x in sp.clinic_ids or []])
+    params.extend([("DoctorIds", x) for x in sp.doctor_ids or []])
+
     response = session.get(f"{API}/appointments/api/v2/search-appointments/slots", params=params)
     response.raise_for_status()
     items = response.json().get("items", [])
     result = [Appointment(**item) for item in items]
+
+    if sp.end_time:
+        end_time_dt = datetime.strptime(sp.end_time, "%Y-%m-%d")
+        result = [r for r in result if r.appointmentDate.date() <= end_time_dt.date()]
+
     return result
 
 
@@ -123,10 +121,10 @@ class PersonAppointmentsResponse(BaseModel):
 
 
 def get_person_appointments(
-    session: Session,
-    appointment_state: str = "Planned",
-    page: int = 1,
-    page_size: int = 10
+        session: Session,
+        appointment_state: str = "Planned",
+        page: int = 1,
+        page_size: int = 10
 ) -> PersonAppointmentsResponse:
     params = [
         ("AppointmentState", appointment_state),

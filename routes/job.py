@@ -39,6 +39,7 @@ async def add_job(request: Request,
                   doctor_ids: list[int] = Query(None),
                   clinic_ids: list[int] = Query(None),
                   start_time: str = Query(...),
+                  end_time: str = Query(None),
                   autobook: bool = Query(False),
                   previous_id: str = Query(None),
                   user_context=Depends(get_current_user_context)):
@@ -62,7 +63,8 @@ async def add_job(request: Request,
         doctor_ids=doctor_ids,
         clinic_ids=clinic_ids,
         previous_id=previous_id,
-        start_time=start_time
+        start_time=start_time,
+        end_time=end_time
     )
     url = "/search" + (f"?{request.url.query}" if request.url.query else "")
     create_job(user_context.username, search_params, url, name, autobook)

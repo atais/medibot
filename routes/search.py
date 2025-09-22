@@ -1,11 +1,12 @@
+from datetime import datetime
 from typing import Optional
 
 from fastapi import APIRouter, Request, Query, Depends
 from starlette.responses import HTMLResponse
-from datetime import datetime
 
 import medicover
 from app_context import templates, get_current_user_context, all_regions, all_specialities
+from medicover.appointments import SearchParams
 
 router = APIRouter()
 
@@ -17,6 +18,7 @@ async def search(request: Request,
                  doctor_ids: list[int] = Query(None),
                  clinic_ids: list[int] = Query(None),
                  start_time: str = Query(None),
+                 end_time: str = Query(None),
                  previous_id: Optional[str] = Query(None),
                  user_context=Depends(get_current_user_context)):
     if start_time is None:
@@ -28,12 +30,16 @@ async def search(request: Request,
     )
     slots = medicover.get_slots(
         user_context.session,
-        region_ids=region_ids,
-        doctor_ids=doctor_ids,
-        clinic_ids=clinic_ids,
-        specialty_ids=specialty_ids,
-        start_time=start_time
+        SearchParams(
+            region_ids=region_ids,
+            doctor_ids=doctor_ids,
+            clinic_ids=clinic_ids,
+            specialty_ids=specialty_ids,
+            start_time=start_time,
+            end_time=end_time
+        )
     )
+
     appointments = [item.model_dump() for item in slots] if slots else []
     return templates.TemplateResponse(
         "search.html",
