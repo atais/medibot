@@ -46,10 +46,35 @@
         </div>
         <div class="mb-3">
             <label for="password" class="form-label">Hasło Medicover</label>
-            <input type="password" class="form-control" id="password" name="password" required>
+            <div class="input-group">
+                <input type="password" class="form-control" id="password" name="password" required>
+                <button class="btn btn-outline-secondary" type="button" id="togglePassword" tabindex="-1" aria-label="Pokaż/ukryj hasło">
+                    <i class="bi bi-eye" id="togglePasswordIcon"></i>
+                </button>
+            </div>
         </div>
         <button type="submit" class="btn btn-primary w-100">Zaloguj się</button>
     </form>
 </div>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    var passwordInput = document.getElementById('password');
+    var toggleBtn = document.getElementById('togglePassword');
+    var toggleIcon = document.getElementById('togglePasswordIcon');
+    if (passwordInput && toggleBtn && toggleIcon) {
+        toggleBtn.addEventListener('click', function () {
+            if (passwordInput.type === 'password') {
+                passwordInput.type = 'text';
+                toggleIcon.classList.remove('bi-eye');
+                toggleIcon.classList.add('bi-eye-slash');
+            } else {
+                passwordInput.type = 'password';
+                toggleIcon.classList.remove('bi-eye-slash');
+                toggleIcon.classList.add('bi-eye');
+            }
+        });
+    }
+});
+</script>
 </body>
 </html>
