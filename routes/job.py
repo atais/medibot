@@ -1,4 +1,4 @@
-from typing import List
+from typing import List, Optional
 
 from fastapi import APIRouter, Request, Depends, Query
 from pydantic import BaseModel
@@ -39,7 +39,7 @@ async def add_job(request: Request,
                   doctor_ids: list[int] = Query(None),
                   clinic_ids: list[int] = Query(None),
                   start_time: str = Query(...),
-                  end_time: str = Query(None),
+                  end_time: Optional[str] = Query(None),
                   autobook: bool = Query(False),
                   previous_id: str = Query(None),
                   user_context=Depends(get_current_user_context)):

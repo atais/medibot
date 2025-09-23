@@ -10,6 +10,7 @@ from pytz import utc
 import medicover
 from app_context import user_contexts, fcm, app_db_env
 from medicover.appointments import SearchParams, Appointment
+from user_context import UserContext
 
 jobstores = {
     'default': SQLAlchemyJobStore(url=app_db_env)
@@ -32,7 +33,7 @@ scheduler = BackgroundScheduler(
 
 def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool, job_id: str):
     try:
-        user_context = user_contexts.get(username)
+        user_context: UserContext = user_contexts.get(username)
 
         # do not run search for past-date
         today = datetime.now().date().strftime("%Y-%m-%d")
@@ -47,27 +48,31 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
                 old_id=search_params.previous_id
             )
             fcm.notify(
-                fcm_token=user_context.fcm_token,
+                fcm_token=user_context.data.fcm_token,
                 notification_title="Medibot Search",
                 notification_body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}",
                 data_payload={
                     "click_action": "/"
                 }
             )
-            logging.info(f"Notification sent to {username}")
+            logging.info(f"Booked {job_id}, pausing.")
             scheduler.pause_job(job_id)
         elif len(result) > 0 and not autobook:
             fcm.notify(
-                fcm_token=user_context.fcm_token,
+                fcm_token=user_context.data.fcm_token,
                 notification_title="Medibot Search",
                 notification_body=f"Found {len(result)} appointments!",
                 data_payload={
                     "click_action": search_url
                 }
             )
-            logging.info(f"Notification sent to {username}")
+            logging.info(f"Found appointments for {job_id}, notification sent to {username}")
         elif search_params.end_time is not None and today > search_params.end_time:
+            logging.info(f"Search {job_id} is past its endtime, pausing.")
             scheduler.pause_job(job_id)
+        else:
+            pass
+
     except Exception as e:
         logging.error(f"Failed _search of to {username}: {e}")
 

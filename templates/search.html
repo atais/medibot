@@ -162,6 +162,17 @@
                                 $(endTimeInput).datepicker('update', endTimeParam);
                             }
                         }
+
+                        // Remove empty end_time from form before submit
+                        const searchForm = document.getElementById('search-form');
+                        if (searchForm) {
+                            searchForm.addEventListener('submit', function(e) {
+                                const endTimeInput = document.getElementById('end_time');
+                                if (endTimeInput && !endTimeInput.value) {
+                                    endTimeInput.removeAttribute('name');
+                                }
+                            });
+                        }
                     });
                     </script>
                 </div>

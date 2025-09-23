@@ -18,7 +18,7 @@ async def search(request: Request,
                  doctor_ids: list[int] = Query(None),
                  clinic_ids: list[int] = Query(None),
                  start_time: str = Query(None),
-                 end_time: str = Query(None),
+                 end_time: Optional[str] = Query(None),
                  previous_id: Optional[str] = Query(None),
                  autobook: Optional[bool] = Query(False),
                  user_context=Depends(get_current_user_context)):
