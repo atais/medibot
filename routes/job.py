@@ -67,7 +67,7 @@ async def add_job(request: Request,
         end_time=end_time
     )
     url = "/search" + (f"?{request.url.query}" if request.url.query else "")
-    create_job(user_context.username, search_params, url, name, autobook)
+    create_job(user_context.data.username, search_params, url, name, autobook)
     return RedirectResponse(url="/", status_code=302)
 
 

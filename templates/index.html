@@ -16,7 +16,7 @@
                 <div class="card-body">
                     <h2 class="h4 mb-3">Utwórz monitor</h2>
                     <form method="get" action="/search" class="row g-3 mb-4" id="monitor-form">
-                        <input type="hidden" id="search_region_ids" name="region_ids" value="{{ profile.home_clinic }}"
+                        <input type="hidden" id="search_region_ids" name="region_ids" value="{{ user.homeClinicId }}"
                                required>
                         <div class="col-md-12">
                             <label for="specialty_select" class="form-label">Specjalności</label>
@@ -185,7 +185,7 @@
                             <label for="region_select" class="form-label">Region</label>
                             <select class="selectpicker w-100" id="region_select" name="region_id" data-live-search="true" required>
                                 {% for region_id, region_value in all_regions.items() %}
-                                <option value="{{ region_id }}" {% if profile.home_clinic == region_id %}selected{% endif %}>{{ region_value }}</option>
+                                <option value="{{ region_id }}" {% if user.homeClinicId == region_id|string %}selected{% endif %}>{{ region_value }}</option>
                                 {% endfor %}
                             </select>
                         </div>

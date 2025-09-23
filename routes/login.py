@@ -18,14 +18,14 @@ async def show_login(request: Request):
 @router.post("/login", response_class=HTMLResponse)
 async def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     try:
-        uc = UserContext(username, password, on_update=user_contexts.set)
+        uc = UserContext.init(username, password, on_update=user_contexts.set)
         me = medicover.personal_data(uc.session)
 
         request.session["username"] = username
         response = RedirectResponse(url="/", status_code=303)
         response.set_cookie(key="username", value=username, max_age=60 * 60 * 24 * 30)
 
-        uc.home_clinic = int(me.homeClinicId)
+        uc.data.profile = me
         user_contexts.set(uc)
         return response
     except Exception as e:

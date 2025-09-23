@@ -12,13 +12,12 @@ router = APIRouter()
 
 @router.get("/", response_class=HTMLResponse)
 async def home(request: Request, user_context=Depends(get_current_user_context)):
-    jobs = get_jobs(user_context.username)
+    jobs = get_jobs(user_context.data.username)
     referrals = get_referrals(user_context.session)
     appointments = get_person_appointments(user_context.session)
     return templates.TemplateResponse("index.html", {
         "request": request,
-        "user": user_context.username,
-        "profile": user_context,
+        "user": user_context.data.profile,
         "jobs": jobs,
         "referrals": referrals,
         "appointments": appointments,
@@ -28,8 +27,7 @@ async def home(request: Request, user_context=Depends(get_current_user_context))
 
 
 @router.post("/update_profile", response_class=HTMLResponse)
-async def update_region(request: Request, region_id: int = Form(None), user_context=Depends(get_current_user_context)):
-    if region_id is not None:
-        user_context.home_clinic = region_id
-        user_contexts.set(user_context)
+async def update_region(request: Request, region_id: int = Form(...), user_context=Depends(get_current_user_context)):
+    user_context.data.profile.homeClinicId = str(region_id)
+    user_contexts.set(user_context)
     return RedirectResponse(url="/", status_code=303)

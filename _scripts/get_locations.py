@@ -13,7 +13,7 @@ PASSWORD = os.environ.get("MEDICOVER_PASS")
 
 print(USERNAME)
 
-user_context = UserContext(USERNAME, PASSWORD)
+user_context = UserContext.init(USERNAME, PASSWORD)
 user_context._login()
 session = user_context.session
 

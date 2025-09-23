@@ -14,7 +14,7 @@ load_dotenv()
 USERNAME = os.environ.get("MEDICOVER_USER")
 PASSWORD = os.environ.get("MEDICOVER_PASS")
 
-user_context = UserContext(USERNAME, PASSWORD)
+user_context = UserContext.init(USERNAME, PASSWORD)
 user_context._login()
 
 region_id = "204"
