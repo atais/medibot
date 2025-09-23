@@ -8,7 +8,7 @@ class PersonalData(BaseModel):
     firstName: str
     lastName: str
     homeClinicId: str
-    email: Optional[str]
+    email: Optional[str] = None
 
 def personal_data(session: Session) -> PersonalData:
     response = session.get(f"{API}/personal-data/api/personal")

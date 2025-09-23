@@ -4,7 +4,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 from app_context import all_regions, all_specialities
 from app_context import templates, get_current_user_context
 from app_context import user_contexts
-from medicover import get_person_appointments, get_referrals
+from medicover import get_person_appointments, get_referrals, personal_data
 from scheduler import get_jobs
 
 router = APIRouter()
@@ -27,7 +27,15 @@ async def home(request: Request, user_context=Depends(get_current_user_context))
 
 
 @router.post("/update_profile", response_class=HTMLResponse)
-async def update_region(request: Request, region_id: int = Form(...), user_context=Depends(get_current_user_context)):
+async def update_profile(request: Request, region_id: int = Form(...), user_context=Depends(get_current_user_context)):
     user_context.data.profile.homeClinicId = str(region_id)
+    user_contexts.set(user_context)
+    return RedirectResponse(url="/", status_code=303)
+
+
+@router.get("/refresh_profile", response_class=HTMLResponse)
+async def refresh_profile(request: Request, user_context=Depends(get_current_user_context)):
+    me = personal_data(user_context.session)
+    user_context.data.profile = me
     user_contexts.set(user_context)
     return RedirectResponse(url="/", status_code=303)
