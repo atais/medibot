@@ -56,25 +56,5 @@
         <button type="submit" class="btn btn-primary w-100">Zaloguj się</button>
     </form>
 </div>
-<script>
-document.addEventListener('DOMContentLoaded', function () {
-    var passwordInput = document.getElementById('password');
-    var toggleBtn = document.getElementById('togglePassword');
-    var toggleIcon = document.getElementById('togglePasswordIcon');
-    if (passwordInput && toggleBtn && toggleIcon) {
-        toggleBtn.addEventListener('click', function () {
-            if (passwordInput.type === 'password') {
-                passwordInput.type = 'text';
-                toggleIcon.classList.remove('bi-eye');
-                toggleIcon.classList.add('bi-eye-slash');
-            } else {
-                passwordInput.type = 'password';
-                toggleIcon.classList.remove('bi-eye-slash');
-                toggleIcon.classList.add('bi-eye');
-            }
-        });
-    }
-});
-</script>
 </body>
 </html>

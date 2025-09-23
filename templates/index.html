@@ -10,6 +10,12 @@
 {% include 'navbar.html' %}
 
 <div class="container-fluid px-2 px-md-4 py-3">
+    {% if flash_message %}
+    <div class="alert alert-{{ flash_category }} alert-dismissible fade show" role="alert">
+        {{ flash_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
     <div class="row g-4">
         <div class="col-12 col-lg-4">
             <div class="card shadow-sm h-100">
@@ -205,28 +211,6 @@
     </div>
 </div>
 
-<script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // Set up datepicker for start_time
-        const startTimeInput = document.getElementById('start_time');
-        if (startTimeInput) {
-            $(startTimeInput).datepicker({
-                format: 'yyyy-mm-dd',
-                language: 'pl',
-                autoclose: true,
-                todayHighlight: true
-            });
-            // Set default value to today if empty
-            if (!startTimeInput.value) {
-                const today = new Date();
-                const yyyy = today.getFullYear();
-                const mm = String(today.getMonth() + 1).padStart(2, '0');
-                const dd = String(today.getDate()).padStart(2, '0');
-                startTimeInput.value = `${yyyy}-${mm}-${dd}`;
-            }
-        }
-    });
-</script>
 </body>
 
 </html>

@@ -4,7 +4,7 @@ from fastapi import APIRouter, Request, Depends, Query
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app_context import get_current_user_context, all_regions, all_specialities
+from app_context import get_current_user_context, all_specialities
 from medicover.appointments import SearchParams, FiltersResponse, get_filters
 from scheduler import scheduler, create_job
 
@@ -43,31 +43,38 @@ async def add_job(request: Request,
                   autobook: bool = Query(False),
                   previous_id: str = Query(None),
                   user_context=Depends(get_current_user_context)):
-    filters: FiltersResponse = get_filters(
-        user_context.session,
-        region_ids=region_ids,
-        specialty_ids=specialty_ids
-    )
+    try:
+        filters: FiltersResponse = get_filters(
+            user_context.session,
+            region_ids=region_ids,
+            specialty_ids=specialty_ids
+        )
 
-    parts = [
-        all_regions.get(region_ids),
-        *[all_specialities.get(id) for id in specialty_ids],
-        *(c.value for c in filters.clinics for id in (clinic_ids or []) if c.id == str(id)),
-        *(d.value for d in filters.doctors for id in (doctor_ids or []) if d.id == str(id))
-    ]
-    name = ", ".join(part for part in parts if part)
+        parts = [
+            f"od {start_time}{f' do {end_time}' if end_time else ''}",
+            *(["autobook"] if autobook else []),
+            *[all_specialities.get(id) for id in specialty_ids],
+            *(c.value for c in filters.clinics for id in (clinic_ids or []) if c.id == str(id)),
+            *(d.value for d in filters.doctors for id in (doctor_ids or []) if d.id == str(id))
+        ]
+        name = ", ".join(part for part in parts if part)
 
-    search_params = SearchParams(
-        region_ids=region_ids,
-        specialty_ids=specialty_ids,
-        doctor_ids=doctor_ids,
-        clinic_ids=clinic_ids,
-        previous_id=previous_id,
-        start_time=start_time,
-        end_time=end_time
-    )
-    url = "/search" + (f"?{request.url.query}" if request.url.query else "")
-    create_job(user_context.data.username, search_params, url, name, autobook)
+        search_params = SearchParams(
+            region_ids=region_ids,
+            specialty_ids=specialty_ids,
+            doctor_ids=doctor_ids,
+            clinic_ids=clinic_ids,
+            previous_id=previous_id,
+            start_time=start_time,
+            end_time=end_time
+        )
+        url = "/search" + (f"?{request.url.query}" if request.url.query else "")
+        job = create_job(user_context.data.username, search_params, url, name, autobook)
+        request.session["flash_message"] = f"Stworzono nowy monitor: {job.name}"
+        request.session["flash_category"] = "success"
+    except Exception as e:
+        request.session["flash_message"] = f"Błąd podczas tworzenia monitora: {str(e)}"
+        request.session["flash_category"] = "danger"
     return RedirectResponse(url="/", status_code=302)
 
 
