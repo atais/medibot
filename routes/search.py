@@ -20,6 +20,7 @@ async def search(request: Request,
                  start_time: str = Query(None),
                  end_time: str = Query(None),
                  previous_id: Optional[str] = Query(None),
+                 autobook: Optional[bool] = Query(False),
                  user_context=Depends(get_current_user_context)):
     if start_time is None:
         start_time = datetime.now().strftime("%Y-%m-%d")
@@ -57,5 +58,6 @@ async def search(request: Request,
             "all_doctors": filters.doctors,
             "all_regions": all_regions,
             "all_specialities": all_specialities,
+            "autobook": autobook
         }
     )
