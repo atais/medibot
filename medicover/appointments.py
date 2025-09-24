@@ -7,6 +7,13 @@ from requests import Session
 from ._constants import API
 
 
+def _get_slot_search_type(speciality_id: int) -> str:
+    if speciality_id == 519:
+        return "DiagnosticProcedure"
+    else:
+        return "Standard"
+
+
 class IdName(BaseModel):
     id: str
     name: str
@@ -45,7 +52,6 @@ class SearchParams(BaseModel):
     end_hour: Optional[int] = None
     page: int = 1
     page_size: int = 5000
-    slot_search_type: str = "Standard"
     is_overbooking_search_disabled: bool = False
 
 
@@ -57,7 +63,7 @@ def get_slots(
     params.append(("Page", sp.page))
     params.append(("PageSize", sp.page_size))
     params.append(("RegionIds", sp.region_ids))
-    params.append(("SlotSearchType", sp.slot_search_type))
+    params.append(("SlotSearchType", _get_slot_search_type(sp.specialty_ids[0])))
     params.extend([("SpecialtyIds", x) for x in sp.specialty_ids])
     params.append(("StartTime", sp.start_time))
     params.append(("isOverbookingSearchDisabled", sp.is_overbooking_search_disabled))
@@ -100,11 +106,10 @@ def get_filters(
         session: Session,
         specialty_ids: list[int],
         region_ids: int = 204,
-        slot_search_type: str = "Standard",
 ) -> FiltersResponse:
     params = []
     params.append(("RegionIds", region_ids))
-    params.append(("SlotSearchType", slot_search_type))
+    params.append(("SlotSearchType", _get_slot_search_type(specialty_ids[0])))
     params.extend([("SpecialtyIds", x) for x in specialty_ids])
     response = session.get(f"{API}/appointments/api/v2/search-appointments/filters", params=params)
     response.raise_for_status()
