@@ -21,7 +21,7 @@ class ServiceItem(BaseModel):
     service: IdName
     canMakeAnAppointment: bool
     isAnyServiceStatusClassifiedAsDone: bool
-    serviceSpecialty: Optional[str]
+    # serviceSpecialty: Optional[str]
     makeAnAppointmentMessage: Optional[str]
     serviceParts: List[ServicePart]
 
