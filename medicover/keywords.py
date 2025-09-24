@@ -15,8 +15,8 @@ class Keyword(BaseModel):
     id: str
     value: str
     groupType: str
-    hasShortPath: bool
-    selectionPath: str
+    hasShortPath: Optional[bool] = None
+    selectionPath: Optional[str] = None
 
 class KeywordsListResponse(BaseModel):
     keywords: list[Keyword]

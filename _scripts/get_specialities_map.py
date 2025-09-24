@@ -42,16 +42,17 @@ spec_dir = os.path.join(os.path.dirname(__file__), 'tmp', 'specialties')
 os.makedirs(spec_dir, exist_ok=True)
 saved = []
 for kw in keywords:
-    kw_id = kw.get('id')
-    selection_path = kw.get('selectionPath', '').lower()
-    mode = 'triage' if selection_path == 'triage' else 'sections'
     try:
+        kw_id = kw.get('id')
+        selection_path = kw.get('selectionPath', '').lower()
+        mode = 'triage' if selection_path == 'triage' else 'sections'
         details = get_keyword_details(user_context.session, kw_id, region_id, mode=mode)
         spec_list = os.path.join(spec_dir, f"{kw_id}.json")
         with open(spec_list, 'w', encoding='utf-8') as f:
             json.dump(details, f, indent=2, ensure_ascii=False)
         saved.append(kw_id)
     except Exception as e:
+        print(f"ERROR on parsing {kw}")
         continue
 summary = {"saved_files": saved, "count": len(saved)}
 print(f"[SUCCESS] Saved {len(saved)} specialty JSON files to {spec_dir}")
