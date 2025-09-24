@@ -31,7 +31,7 @@ To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
 
 ```commandline
 docker build -t medibot .
-docker run --rm -p 3333:8000 medibot
+docker run --rm -p 3333:8000 -v /local/medibot.sqlite:/app/medibot.sqlite --name medibot medibot
 ```
 
 This will expose the WebUI on port 3333
