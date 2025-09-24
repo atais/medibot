@@ -95,6 +95,18 @@
                         </div>
                         <div class="row mb-3 align-items-center">
                             <div class="col-md-3">
+                                <label for="start_time" class="col-form-label">W godzinach</label>
+                            </div>
+                            <div class="col-md-9 px-4">
+                                <div id="slider-hide">
+                                    <div id="hour-range-slider"></div>
+                                </div>
+                                <input type="hidden" id="start_hour" name="start_hour" value="{{ start_hour }}">
+                                <input type="hidden" id="end_hour" name="end_hour" value="{{ end_hour }}">
+                            </div>
+                        </div>
+                        <div class="row mb-3 align-items-center">
+                            <div class="col-md-3">
                                 <label for="autobook" class="col-form-label">Automatycznie zaakceptuj 1. dostępny termin</label>
                             </div>
                             <div class="col-md-9">

@@ -72,6 +72,15 @@ document.addEventListener('DOMContentLoaded', function () {
             if (endTimeInput && !endTimeInput.value) {
                 endTimeInput.removeAttribute('name');
             }
+
+            // Remove hour range inputs if they have default values (0-24)
+            const startHourInput = document.getElementById('start_hour');
+            const endHourInput = document.getElementById('end_hour');
+            if (startHourInput && endHourInput &&
+                startHourInput.value == '0' && endHourInput.value == '24') {
+                startHourInput.removeAttribute('name');
+                endHourInput.removeAttribute('name');
+            }
         });
     }
 
@@ -117,5 +126,41 @@ document.addEventListener('DOMContentLoaded', function () {
     window.addEventListener('pageshow', function (event) {
         hideLoadingOverlay();
     });
+
+    const slider = document.getElementById('hour-range-slider');
+    if (slider) {
+        var inputFrom = document.getElementById('start_hour');
+        var inputTo = document.getElementById('end_hour');
+
+        // Get initial values from the hidden inputs (set by backend)
+        var initialFrom = parseInt(inputFrom.value) || 0;
+        var initialTo = parseInt(inputTo.value) || 24;
+
+        noUiSlider.create(slider, {
+            start: [initialFrom, initialTo],
+            connect: true,
+            step: 1,
+            range: {
+                'min': 0,
+                'max': 24
+            },
+            tooltips: [true, true],
+            format: {
+                to: function (value) {
+                    var h = Math.floor(value);
+                    return (h < 10 ? '0' : '') + h + ':00';
+                },
+                from: function (value) {
+                    return Number(value.replace(':00', ''));
+                }
+            }
+        });
+
+        slider.noUiSlider.on('update', function (values, handle) {
+            inputFrom.value = parseInt(values[0]);
+            inputTo.value = parseInt(values[1]);
+        });
+    }
+
 });
 

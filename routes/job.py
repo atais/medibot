@@ -40,6 +40,8 @@ async def add_job(request: Request,
                   clinic_ids: list[int] = Query(None),
                   start_time: str = Query(...),
                   end_time: Optional[str] = Query(None),
+                  start_hour: Optional[int] = Query(None),
+                  end_hour: Optional[int] = Query(None),
                   autobook: bool = Query(False),
                   previous_id: str = Query(None),
                   user_context=Depends(get_current_user_context)):
@@ -52,6 +54,7 @@ async def add_job(request: Request,
 
         parts = [
             f"od {start_time}{f' do {end_time}' if end_time else ''}",
+            *([f"{start_hour}:00-{end_hour}:00"] if start_hour and end_hour else []),
             *(["autobook"] if autobook else []),
             *[all_specialities.get(id) for id in specialty_ids],
             *(c.value for c in filters.clinics for id in (clinic_ids or []) if c.id == str(id)),
@@ -66,7 +69,9 @@ async def add_job(request: Request,
             clinic_ids=clinic_ids,
             previous_id=previous_id,
             start_time=start_time,
-            end_time=end_time
+            end_time=end_time,
+            start_hour=start_hour,
+            end_hour=end_hour
         )
         url = "/search" + (f"?{request.url.query}" if request.url.query else "")
         job = create_job(user_context.data.username, search_params, url, name, autobook)

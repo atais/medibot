@@ -19,6 +19,8 @@ async def search(request: Request,
                  clinic_ids: list[int] = Query(None),
                  start_time: str = Query(None),
                  end_time: Optional[str] = Query(None),
+                 start_hour: Optional[int] = Query(None),
+                 end_hour: Optional[int] = Query(None),
                  previous_id: Optional[str] = Query(None),
                  autobook: Optional[bool] = Query(False),
                  user_context=Depends(get_current_user_context)):
@@ -37,7 +39,9 @@ async def search(request: Request,
             clinic_ids=clinic_ids,
             specialty_ids=specialty_ids,
             start_time=start_time,
-            end_time=end_time
+            end_time=end_time,
+            start_hour=start_hour,
+            end_hour=end_hour
         )
     )
 
@@ -54,6 +58,8 @@ async def search(request: Request,
             "previous_id": previous_id,
             "clinic_ids": clinic_ids,
             "doctor_ids": doctor_ids,
+            "start_hour": start_hour,
+            "end_hour": end_hour,
             "all_clinics": filters.clinics,
             "all_doctors": filters.doctors,
             "all_regions": all_regions,

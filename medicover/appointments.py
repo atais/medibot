@@ -41,6 +41,8 @@ class SearchParams(BaseModel):
     previous_id: Optional[str] = None
     start_time: str
     end_time: Optional[str] = None
+    start_hour: Optional[int] = None
+    end_hour: Optional[int] = None
     page: int = 1
     page_size: int = 5000
     slot_search_type: str = "Standard"
@@ -70,6 +72,12 @@ def get_slots(
     if sp.end_time:
         end_time_dt = datetime.strptime(sp.end_time, "%Y-%m-%d")
         result = [r for r in result if r.appointmentDate.date() <= end_time_dt.date()]
+
+    if sp.start_hour:
+        result = [r for r in result if r.appointmentDate.hour >= sp.start_hour]
+
+    if sp.end_hour:
+        result = [r for r in result if r.appointmentDate.hour < sp.end_hour]
 
     return result
 
