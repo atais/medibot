@@ -16,40 +16,159 @@
         <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
     </div>
     {% endif %}
-    <div class="row g-4">
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h2 class="h4 mb-3">Utwórz monitor</h2>
-                    <form method="get" action="/search" class="row g-3 mb-4" id="monitor-form">
-                        <input type="hidden" id="search_region_ids" name="region_ids" value="{{ user.homeClinicId }}"
-                               required>
-                        <div class="col-md-12">
-                            <label for="specialty_select" class="form-label">Specjalności</label>
-                            <select class="selectpicker w-100" id="specialty_select" name="specialty_ids" multiple
-                                    data-none-Selected-Text="Wybierz specjalności"
-                                    data-live-search="true" required>
-                                {% for specialty_id, specialty_name in all_specialities.items() %}
+
+    <!-- Modern Search Section -->
+    <div class="row text-center mb-5">
+        <div class="col-12">
+            <div class="text-center mb-4">
+                <h1 class="h2 mb-3">Znajdź wizytę u specjalisty</h1>
+                <p class="text-muted">Wybierz specjalności i rozpocznij monitorowanie dostępnych terminów</p>
+            </div>
+
+            <div class="col-12">
+
+                <!-- Desktop form -->
+                <div class="d-none d-md-block">
+                    <form method="get" action="/search" id="monitor-form" style="max-width: 50rem; margin: 0 auto;">
+                        <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
+                        <div class="d-flex align-items-stretch shadow-lg"
+                             style="border-radius: 50px; overflow: visible; border: 2px solid #e9ecef; background: white;">
+                            <div style="flex: 1; display: flex; align-items: center; padding: 0.2rem 0 0 1.5rem;">
+                                <select class="selectpicker"
+                                        id="specialty_select"
+                                        name="specialty_ids"
+                                        data-none-selected-text="Wybierz specjalności..."
+                                        data-live-search="true"
+                                        data-style="btn-light bg-white border-0 fs-5 fw-normal"
+                                        style="font-size: 1.1rem; border: none; outline: none;"
+                                        multiple
+                                        required>
+                                    {% for specialty_id, specialty_name in all_specialities.items() %}
                                     <option value="{{ specialty_id }}">{{ specialty_name }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="col-md-12">
-                            <label for="start_time" class="form-label">Data początkowa</label>
-                            <div class="input-group">
-                                <input type="text" id="start_time" name="start_time" required class="form-control" />
-                                <span class="input-group-text"><i class="bi bi-calendar3"></i></span>
+                                    {% endfor %}
+                                </select>
                             </div>
-                        </div>
-                        <div class="col-md-12 d-flex justify-content-start">
-                            <button type="submit" class="btn btn-success w-auto">
-                                <i class="bi bi-search"></i> Szukaj wizyt
+                            <button type="submit" class="btn btn-primary px-4"
+                                    style="border-radius: 0 50px 50px 0; border: none; min-width: 80px; height: 60px; padding-top: 0.3rem;">
+                                <i class="bi bi-search fs-4"></i>
                             </button>
                         </div>
                     </form>
                 </div>
+
+                <!-- Mobile form -->
+                <div class="d-block d-md-none">
+                    <form method="get" action="/search" id="mobile-monitor-form"
+                          style="max-width: 32rem; margin: 0 auto;">
+                        <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
+                        <select class="selectpicker w-100 mb-2"
+                                id="specialty_select_mobile"
+                                name="specialty_ids"
+                                data-none-selected-text="Wybierz specjalności..."
+                                data-live-search="true"
+                                data-style="btn-light bg-white text-start"
+                                multiple
+                                required>
+                            {% for specialty_id, specialty_name in all_specialities.items() %}
+                            <option value="{{ specialty_id }}">{{ specialty_name }}</option>
+                            {% endfor %}
+                        </select>
+                        <button type="submit" class="btn btn-primary w-50 rounded-pill mt-2">
+                            <i class="bi bi-search"></i> Szukaj
+                        </button>
+                    </form>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+    <!-- First row -->
+    <div class="row mb-4 g-4">
+        <!-- Zaplanowane wizyty -->
+        <div class="col-12 col-lg-8">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Zaplanowane wizyty</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Data</th>
+                                <th>Specjalność</th>
+                                <th>Klinika</th>
+                                <th>Lekarz</th>
+                                <th>Zamień</th>
+                                <th>Usuń</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for a in appointments.items %}
+                            <tr>
+                                <td>{{ a.date | datetimeformat('%Y-%m-%d %H:%M') }}</td>
+                                <td>{{ a.specialty.name }}</td>
+                                <td>{{ a.clinic.name }}</td>
+                                <td>{{ a.doctor.name }}</td>
+                                <td>
+                                    <a href="/search?region_ids={{ a.region.id }}&specialty_ids={{ a.specialty.id }}&clinic_ids={{ a.clinic.id }}&doctor_ids={{ a.doctor.id }}&previous_id={{ a.id }}"
+                                       class="btn btn-outline-primary btn-sm" aria-label="Zamień">
+                                        <i class="bi bi-arrow-repeat"></i>
+                                    </a>
+                                </td>
+                                <td>
+                                    <form method="get" action="/delete" style="display:inline;">
+                                        <input type="hidden" name="appointment_id" value="{{ a.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Profile -->
+        <div class="col-12 col-lg-4">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Profil</h2>
+                    <form method="post" action="/update_profile" class="mb-3">
+                        <div class="mb-3 w-100">
+                            <label for="region_select" class="form-label">Region</label>
+                            <select class="selectpicker w-100" id="region_select" name="region_id"
+                                    data-live-search="true" required>
+                                {% for region_id, region_value in all_regions.items() %}
+                                <option value="{{ region_id }}" {% if user.homeClinicId== region_id|string %}selected{%
+                                        endif %}>{{ region_value }}
+                                </option>
+                                {% endfor %}
+                            </select>
+                        </div>
+                        <div class="d-flex gap-2 align-items-center mt-2">
+                            <a href="/refresh_profile" class="btn btn-success">
+                                <i class="bi bi-arrow-repeat"></i> Odśwież z Medicover
+                            </a>
+                            <button type="submit" class="btn btn-primary">
+                                <i class="bi bi-save"></i> Zapisz zmiany
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Second row -->
+    <div class="row g-4">
+
+        <!-- Monitors -->
         <div class="col-12 col-lg-8">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -100,54 +219,7 @@
             </div>
         </div>
 
-
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h2 class="h4 mb-3">Zaplanowane wizyty</h2>
-                    <div class="table-responsive">
-                        <table class="table table-bordered align-middle">
-                            <thead class="table-light">
-                            <tr>
-                                <th>Data</th>
-                                <th>Specjalność</th>
-                                <th>Klinika</th>
-                                <th>Lekarz</th>
-                                <th>Usuń</th>
-                                <th>Zamień</th>
-                            </tr>
-                            </thead>
-                            <tbody>
-                            {% for a in appointments.items %}
-                            <tr>
-                                <td>{{ a.date | datetimeformat('%Y-%m-%d %H:%M') }}</td>
-                                <td>{{ a.specialty.name }}</td>
-                                <td>{{ a.clinic.name }}</td>
-                                <td>{{ a.doctor.name }}</td>
-                                <td>
-                                    <form method="get" action="/delete" style="display:inline;">
-                                        <input type="hidden" name="appointment_id" value="{{ a.id }}">
-                                        <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                </td>
-                                <td>
-                                    <a href="/search?region_ids={{ a.region.id }}&specialty_ids={{ a.specialty.id }}&clinic_ids={{ a.clinic.id }}&doctor_ids={{ a.doctor.id }}&previous_id={{ a.id }}"
-                                       class="btn btn-outline-primary btn-sm" aria-label="Zamień">
-                                        <i class="bi bi-arrow-repeat"></i>
-                                    </a>
-                                </td>
-                            </tr>
-                            {% endfor %}
-                            </tbody>
-                        </table>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-
+        <!-- Skierowania -->
         <div class="col-12 col-lg-4">
             <div class="card shadow-sm h-100">
                 <div class="card-body">
@@ -178,33 +250,6 @@
                             </tbody>
                         </table>
                     </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-lg-4">
-            <div class="card shadow-sm h-100">
-                <div class="card-body">
-                    <h2 class="h4 mb-3">Profil</h2>
-                    <form method="post" action="/update_profile" class="mb-3">
-                        <div class="mb-3 w-100">
-                            <label for="region_select" class="form-label">Region</label>
-                            <select class="selectpicker w-100" id="region_select" name="region_id" data-live-search="true" required>
-                                {% for region_id, region_value in all_regions.items() %}
-                                <option value="{{ region_id }}" {% if user.homeClinicId == region_id|string %}selected{% endif %}>{{ region_value }}</option>
-                                {% endfor %}
-                            </select>
-                        </div>
-                        <div class="d-flex gap-2 align-items-center mt-2">
-                            <a href="/refresh_profile" class="btn btn-success">
-                                <i class="bi bi-arrow-repeat"></i> Odśwież z Medicover
-                            </a>
-                            <button type="submit" class="btn btn-primary">
-                                <i class="bi bi-save"></i> Zapisz zmiany
-                            </button>
-                        </div>
-                    </form>
-
                 </div>
             </div>
         </div>
