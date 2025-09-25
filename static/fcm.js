@@ -75,13 +75,12 @@ async function registerFCMToken(token) {
 function setupMessageHandler() {
     messaging.onMessage((payload) => {
         console.log('Message received in foreground:', payload);
-        // Only show notification in foreground if payload.notification is missing
-        if (!payload.notification && payload.data) {
-            new Notification(payload.data.title || 'Notification', {
-                body: payload.data.body || '',
+        // Display notification to user
+        if (payload.notification) {
+            new Notification(payload.notification.title, {
+                body: payload.notification.body,
                 icon: '/favicon.ico'
             });
         }
-        // If payload.notification exists, do not show manually; let Android system handle background notifications
     });
 }
