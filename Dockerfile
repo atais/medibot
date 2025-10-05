@@ -1,4 +1,4 @@
-FROM python:3.12-slim
+FROM python:3.13-slim
 
 WORKDIR /app
 
@@ -17,4 +17,3 @@ ENV PYTHONUNBUFFERED=1
 
 # Start the FastAPI app with Uvicorn
 CMD ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
-

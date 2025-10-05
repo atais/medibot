@@ -40,7 +40,7 @@ This will expose the WebUI on port 3333
 
 first time:
 ```commandline
-python3 -m venv 
+python3.13 -m venv .venv
 pip install -r requirements.txt
 ```
 
