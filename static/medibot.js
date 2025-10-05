@@ -162,5 +162,12 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
-});
+    // Always show datepicker on input focus (mobile-friendly)
+    startTimeInput.addEventListener('click', function () {
+        $(startTimeInput).datepicker('show');
+    });
+    endTimeInput.addEventListener('click', function () {
+        $(endTimeInput).datepicker('show');
+    });
 
+});
