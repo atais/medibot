@@ -1,6 +1,6 @@
 import logging
 import uuid
-from typing import Callable, Optional, List
+from typing import Callable, Optional, List, Set
 
 import requests
 from fake_useragent import UserAgent
@@ -35,7 +35,7 @@ class UserData(BaseModel):
     device_id: str = str(uuid.uuid4())
     bearer_token: str = ""
     refresh_token: str = ""
-    fcm_token: Optional[str] = None
+    fcm_token: Set[str] = set()
     profile: Optional[PersonalData] = None
     cookie_jar: List[CookieInfo] = []
 

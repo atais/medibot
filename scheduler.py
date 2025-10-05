@@ -1,10 +1,12 @@
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import Optional, Dict
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.job import Job
 from apscheduler.jobstores.sqlalchemy import SQLAlchemyJobStore
 from apscheduler.schedulers.background import BackgroundScheduler
+from pyfcm.errors import FCMNotRegisteredError
 from pytz import utc
 
 import medicover
@@ -31,6 +33,28 @@ scheduler = BackgroundScheduler(
 )
 
 
+def _notify(user_context: UserContext, body: str, payload: Optional[Dict]) -> None:
+    user = user_context.data.username
+    logging.info(f"Sending notifications to {user} to {len(user_context.data.fcm_token)} devices")
+    tokens_to_remove = set()
+    for token in set(user_context.data.fcm_token):
+        try:
+            fcm.notify(
+                fcm_token=token,
+                notification_title="Medibot Search",
+                notification_body=body,
+                data_payload=payload
+            )
+        except FCMNotRegisteredError:
+            logging.info(f"FCM token not registered or invalid for {user}, removing: {token}")
+            tokens_to_remove.add(token)
+        except Exception as e:
+            logging.error(f"Error sending notification to {user} using token {token}: {e}")
+    if tokens_to_remove:
+        user_context.data.fcm_token -= tokens_to_remove
+        user_contexts.set(user_context)
+
+
 def _search(username: str, search_params: SearchParams, search_url: str, autobook: bool, job_id: str):
     try:
         user_context: UserContext = user_contexts.get(username)
@@ -47,22 +71,20 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
                 booking_string=b.bookingString,
                 old_id=search_params.previous_id
             )
-            fcm.notify(
-                fcm_token=user_context.data.fcm_token,
-                notification_title="Medibot Search",
-                notification_body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}",
-                data_payload={
+            _notify(
+                user_context=user_context,
+                body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}",
+                payload={
                     "click_action": "/"
                 }
             )
             logging.info(f"Booked {job_id}, pausing.")
             scheduler.pause_job(job_id)
         elif len(result) > 0 and not autobook:
-            fcm.notify(
-                fcm_token=user_context.data.fcm_token,
-                notification_title="Medibot Search",
-                notification_body=f"Found {len(result)} appointments!",
-                data_payload={
+            _notify(
+                user_context=user_context,
+                body=f"Found {len(result)} appointments!",
+                payload={
                     "click_action": search_url
                 }
             )
@@ -74,7 +96,7 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
             pass
 
     except Exception as e:
-        logging.error(f"Failed _search of to {username}: {e}")
+        logging.error(f"Failed _search execution to {username}: {e}")
 
 
 def create_job(username: str, search_params: SearchParams, search_url: str, name: str, autobook: bool) -> Job:
