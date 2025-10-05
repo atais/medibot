@@ -1,4 +1,5 @@
 from typing import List, Optional
+from datetime import datetime, timezone
 
 from fastapi import APIRouter, Request, Depends, Query
 from pydantic import BaseModel
@@ -92,4 +93,11 @@ async def pause_job(request: Request, job_id: str, user_context=Depends(get_curr
 @router.get("/resume_job/{job_id}", response_class=HTMLResponse)
 async def resume_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.resume_job(job_id)
+    return RedirectResponse(url="/", status_code=302)
+
+
+@router.get("/fire_job/{job_id}", response_class=HTMLResponse)
+async def fire_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
+    job = scheduler.get_job(job_id)
+    job.modify(next_run_time=datetime.now(timezone.utc))
     return RedirectResponse(url="/", status_code=302)

@@ -12,24 +12,35 @@ const messaging = firebase.messaging();
 messaging.onBackgroundMessage((payload) => {
     console.log('Background message received:', payload);
 
-    const notificationTitle = payload.notification.title;
+    const notificationTitle = payload.data.title;
     const notificationOptions = {
-        body: payload.notification.body,
+        body: payload.data.body,
         icon: '/favicon.ico',
         data: payload.data // Attach data for click_action
     };
 
-    self.registration.showNotification(notificationTitle, notificationOptions);
+    return self.registration.showNotification(notificationTitle, notificationOptions);
+});
+
+// Handle push event for data-only FCM messages (required for Android Chrome)
+self.addEventListener('push', event => {
+    let payload = event.data.json();
+    console.log('Push event received:', data);
+
+    const notificationTitle = payload.data.title;
+    const notificationOptions = {
+        body: payload.data.body,
+        icon: '/favicon.ico',
+        data: payload.data
+    };
+
+    return event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
 });
 
 // Handle notification click to support click_action
-self.addEventListener('notificationclick', function(event) {
+self.addEventListener('notificationclick', function (event) {
     event.notification.close();
-    let clickAction = '/';
-    if (event.notification.data && event.notification.data.click_action) {
-        clickAction = event.notification.data.click_action;
-    }
     event.waitUntil(
-        clients.openWindow(clickAction)
+        clients.openWindow(event.notification.data.click_action)
     );
 });
