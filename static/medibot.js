@@ -42,6 +42,11 @@ document.addEventListener('DOMContentLoaded', function () {
             startTimeInput.value = todayStr;
             $(startTimeInput).datepicker('update', todayStr);
         }
+
+        // Always show datepicker on input focus (mobile-friendly)
+        startTimeInput.addEventListener('click', function () {
+            $(startTimeInput).datepicker('show');
+        });
     }
 
     // Set up datepicker for end_time
@@ -62,6 +67,11 @@ document.addEventListener('DOMContentLoaded', function () {
             endTimeInput.value = endTimeParam;
             $(endTimeInput).datepicker('update', endTimeParam);
         }
+
+        // Always show datepicker on input focus (mobile-friendly)
+        endTimeInput.addEventListener('click', function () {
+            $(endTimeInput).datepicker('show');
+        });
     }
 
     // Remove empty end_time from form before submit
@@ -161,13 +171,5 @@ document.addEventListener('DOMContentLoaded', function () {
             inputTo.value = parseInt(values[1]);
         });
     }
-
-    // Always show datepicker on input focus (mobile-friendly)
-    startTimeInput.addEventListener('click', function () {
-        $(startTimeInput).datepicker('show');
-    });
-    endTimeInput.addEventListener('click', function () {
-        $(endTimeInput).datepicker('show');
-    });
 
 });
