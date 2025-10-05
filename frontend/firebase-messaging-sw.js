@@ -1,7 +1,7 @@
 // Firebase Messaging Service Worker
-importScripts('https://www.gstatic.com/firebasejs/12.2.1/firebase-app-compat.js');
-importScripts('https://www.gstatic.com/firebasejs/12.2.1/firebase-messaging-compat.js');
-importScripts('/static/firebase-config.js');
+import firebase from 'firebase/compat/app';
+import 'firebase/compat/messaging';
+import './firebase-config.js';
 
 // Initialize Firebase in service worker
 firebase.initializeApp(self.firebaseConfig);
@@ -25,7 +25,7 @@ messaging.onBackgroundMessage((payload) => {
 // Handle push event for data-only FCM messages (required for Android Chrome)
 self.addEventListener('push', event => {
     let payload = event.data.json();
-    console.log('Push event received:', data);
+    console.log('Push event received:', payload);
 
     const notificationTitle = payload.data.title;
     const notificationOptions = {

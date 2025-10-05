@@ -1,67 +1,75 @@
 const esbuild = require('esbuild');
 const fs = require('fs');
-const crypto = require('crypto');
 const path = require('path');
 
 const DIST_DIR = 'static/dist';
 const DIST_HTML_FILE = 'templates/dist.html';
-const TEMP_JS_OUTFILE = path.join(DIST_DIR, 'app.temp.js');
-const TEMP_JS_MAPFILE = path.join(DIST_DIR, 'app.temp.js.map');
-const TEMP_CSS_OUTFILE = path.join(DIST_DIR, 'app.temp.css');
+const SW_SRC = 'frontend/firebase-messaging-sw.js';
+const APP_JS_SRC = 'frontend/app.entry.js';
+const APP_CSS_SRC = 'frontend/app.entry.css';
 
-// Step 1: Build JS
-esbuild.build({
-  entryPoints: ['frontend/app.entry.js'],
-  bundle: true,
-  minify: true,
-  sourcemap: true,
-  outfile: TEMP_JS_OUTFILE,
-  target: ['es2017'],
-  format: 'iife',
-  loader: { '.js': 'js' },
-  logLevel: 'info',
-}).then(() => {
-  // Step 2: Build CSS
-  return esbuild.build({
-    entryPoints: ['frontend/app.entry.css'],
+// Clean dist directory before building
+if (fs.existsSync(DIST_DIR)) {
+  fs.rmSync(DIST_DIR, { recursive: true, force: true });
+}
+
+(async () => {
+  // Step 1: Build service worker with hash in filename
+  await esbuild.build({
+    entryPoints: { sw: SW_SRC },
+    outdir: DIST_DIR,
     bundle: true,
     minify: true,
-    outfile: TEMP_CSS_OUTFILE,
+    sourcemap: true,
+    entryNames: 'firebase-messaging-sw-[hash]',
+    format: 'iife',
+    target: ['es2017'],
+    loader: { '.js': 'js' },
+    logLevel: 'info',
+  });
+
+  // Find the generated service worker filename
+  const swFile = fs.readdirSync(DIST_DIR).find(f => /^firebase-messaging-sw-[a-zA-Z0-9]+\.js$/.test(f));
+  if (!swFile) throw new Error('Service worker file not found');
+
+  // Step 2: Build main JS, inject service worker filename
+  await esbuild.build({
+    entryPoints: { app: APP_JS_SRC },
+    outdir: DIST_DIR,
+    bundle: true,
+    minify: true,
+    sourcemap: true,
+    entryNames: '[name].[hash]',
+    format: 'iife',
+    target: ['es2017'],
+    loader: { '.js': 'js' },
+    logLevel: 'info',
+    define: {
+      'SW_FILENAME': JSON.stringify(swFile)
+    }
+  });
+
+  // Step 3: Build CSS
+  await esbuild.build({
+    entryPoints: { app: APP_CSS_SRC },
+    outdir: DIST_DIR,
+    bundle: true,
+    minify: true,
+    sourcemap: true,
+    entryNames: '[name].[hash]',
     loader: { '.css': 'css', '.woff': 'file', '.woff2': 'file', '.ttf': 'file', '.eot': 'file', '.svg': 'file' },
     logLevel: 'info',
   });
-}).then(() => {
-  // Step 3: Hash and rename JS
-  const jsBuffer = fs.readFileSync(TEMP_JS_OUTFILE);
-  const jsHash = crypto.createHash('sha256').update(jsBuffer).digest('hex').slice(0, 8);
-  const jsVersionedName = `app.${jsHash}.js`;
-  const jsVersionedPath = path.join(DIST_DIR, jsVersionedName);
-  const jsMapVersionedName = `app.${jsHash}.js.map`;
-  const jsMapVersionedPath = path.join(DIST_DIR, jsMapVersionedName);
-  fs.renameSync(TEMP_JS_OUTFILE, jsVersionedPath);
-  if (fs.existsSync(TEMP_JS_MAPFILE)) {
-    fs.renameSync(TEMP_JS_MAPFILE, jsMapVersionedPath);
-  }
-  let jsContent = fs.readFileSync(jsVersionedPath, 'utf8');
-  jsContent = jsContent.replace(/(\n|\r)?\/\/\s*#\s*sourceMappingURL=app\.temp\.js\.map/, `\n//# sourceMappingURL=${jsMapVersionedName}`);
-  fs.writeFileSync(jsVersionedPath, jsContent);
 
-  // Step 4: Hash and rename CSS
-  const cssBuffer = fs.readFileSync(TEMP_CSS_OUTFILE);
-  const cssHash = crypto.createHash('sha256').update(cssBuffer).digest('hex').slice(0, 8);
-  const cssVersionedName = `app.${cssHash}.css`;
-  const cssVersionedPath = path.join(DIST_DIR, cssVersionedName);
-  fs.renameSync(TEMP_CSS_OUTFILE, cssVersionedPath);
+  // Find the generated JS and CSS filenames
+  const jsFile = fs.readdirSync(DIST_DIR).find(f => /^app\.[a-zA-Z0-9]+\.js$/.test(f));
+  const cssFile = fs.readdirSync(DIST_DIR).find(f => /^app\.[a-zA-Z0-9]+\.css$/.test(f));
+  if (!jsFile || !cssFile) throw new Error('JS or CSS file not found');
 
-  // Step 5: Create dist.html with injected assets
-  const distHtml = `
-<link rel="stylesheet" href="/static/dist/${cssVersionedName}">
-<script src="/static/dist/${jsVersionedName}"></script>
-`;
+  // Step 4: Create dist.html with injected assets
+  const distHtml = `<link rel="stylesheet" href="/static/dist/${cssFile}">\n` +
+                    `<script src="/static/dist/${jsFile}"></script>\n`;
   fs.writeFileSync(DIST_HTML_FILE, distHtml);
 
-  console.log(`Build complete: ${jsVersionedName} and ${cssVersionedName} injected into dist.html.`);
-}).catch((err) => {
-  console.error('Build failed:', err);
-  process.exit(1);
-});
+  console.log(`Build complete: ${jsFile}, ${cssFile}, and ${swFile}.`);
+})();

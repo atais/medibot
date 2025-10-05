@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException
+import os
+
+from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
 from starlette.responses import FileResponse
 
@@ -26,6 +28,10 @@ async def register_fcm_token(request: FCMTokenRequest, user_context: UserContext
 
 
 # Serve Firebase service worker from root path (required for security scope)
-@router.get("/firebase-messaging-sw.js")
-async def firebase_service_worker():
-    return FileResponse("static/firebase-messaging-sw.js", media_type="application/javascript")
+@router.get("/firebase-messaging-sw-{suffix}")
+async def firebase_service_worker(suffix: str = Path(...)):
+    filename = f"firebase-messaging-sw-{suffix}"
+    filepath = os.path.join("static", "dist", filename)
+    if not os.path.isfile(filepath):
+        raise HTTPException(status_code=404, detail="Service worker file not found")
+    return FileResponse(filepath, media_type="application/javascript")
