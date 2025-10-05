@@ -3,47 +3,71 @@ const fs = require('fs');
 const crypto = require('crypto');
 const path = require('path');
 
-const TEMP_OUTFILE = 'static/dist/app.temp.js';
-const TEMP_MAPFILE = 'static/dist/app.temp.js.map';
 const DIST_DIR = 'static/dist';
 const HTML_FILE = 'templates/head.html';
+const TEMP_JS_OUTFILE = path.join(DIST_DIR, 'app.temp.js');
+const TEMP_JS_MAPFILE = path.join(DIST_DIR, 'app.temp.js.map');
+const TEMP_CSS_OUTFILE = path.join(DIST_DIR, 'app.temp.css');
 
-// Step 1: Build to temporary file with sourcemap
+// Step 1: Build JS
 esbuild.build({
   entryPoints: ['frontend/app.entry.js'],
   bundle: true,
   minify: true,
   sourcemap: true,
-  outfile: TEMP_OUTFILE,
+  outfile: TEMP_JS_OUTFILE,
   target: ['es2017'],
   format: 'iife',
   loader: { '.js': 'js' },
   logLevel: 'info',
 }).then(() => {
-  // Step 2: Calculate SHA256 hash of output
-  const fileBuffer = fs.readFileSync(TEMP_OUTFILE);
-  const hash = crypto.createHash('sha256').update(fileBuffer).digest('hex').slice(0, 8);
-  const versionedName = `app.${hash}.js`;
-  const versionedPath = path.join(DIST_DIR, versionedName);
-  const versionedMapName = `app.${hash}.js.map`;
-  const versionedMapPath = path.join(DIST_DIR, versionedMapName);
+  // Step 2: Build CSS
+  return esbuild.build({
+    entryPoints: ['frontend/app.entry.css'],
+    bundle: true,
+    minify: true,
+    outfile: TEMP_CSS_OUTFILE,
+    loader: { '.css': 'css', '.woff': 'file', '.woff2': 'file', '.ttf': 'file', '.eot': 'file', '.svg': 'file' },
+    logLevel: 'info',
+  });
+}).then(() => {
+  // Step 3: Hash and rename JS
+  const jsBuffer = fs.readFileSync(TEMP_JS_OUTFILE);
+  const jsHash = crypto.createHash('sha256').update(jsBuffer).digest('hex').slice(0, 8);
+  const jsVersionedName = `app.${jsHash}.js`;
+  const jsVersionedPath = path.join(DIST_DIR, jsVersionedName);
+  const jsMapVersionedName = `app.${jsHash}.js.map`;
+  const jsMapVersionedPath = path.join(DIST_DIR, jsMapVersionedName);
+  fs.renameSync(TEMP_JS_OUTFILE, jsVersionedPath);
+  if (fs.existsSync(TEMP_JS_MAPFILE)) {
+    fs.renameSync(TEMP_JS_MAPFILE, jsMapVersionedPath);
+  }
+  let jsContent = fs.readFileSync(jsVersionedPath, 'utf8');
+  jsContent = jsContent.replace(/(\n|\r)?\/\/\s*#\s*sourceMappingURL=app\.temp\.js\.map/, `\n//# sourceMappingURL=${jsMapVersionedName}`);
+  fs.writeFileSync(jsVersionedPath, jsContent);
 
-  // Step 3: Rename temp file and map file to versioned files
-  fs.renameSync(TEMP_OUTFILE, versionedPath);
-  fs.renameSync(TEMP_MAPFILE, versionedMapPath);
+  // Step 4: Hash and rename CSS
+  const cssBuffer = fs.readFileSync(TEMP_CSS_OUTFILE);
+  const cssHash = crypto.createHash('sha256').update(cssBuffer).digest('hex').slice(0, 8);
+  const cssVersionedName = `app.${cssHash}.css`;
+  const cssVersionedPath = path.join(DIST_DIR, cssVersionedName);
+  fs.renameSync(TEMP_CSS_OUTFILE, cssVersionedPath);
 
-  // Step 4: Update sourceMappingURL in JS file to match new map name
-  let jsContent = fs.readFileSync(versionedPath, 'utf8');
-  jsContent = jsContent.replace(/(\n|\r)?\/\/\s*#\s*sourceMappingURL=app\.temp\.js\.map/, `\n//# sourceMappingURL=${versionedMapName}`);
-  fs.writeFileSync(versionedPath, jsContent);
-
-  // Step 5: Update head.html to reference new versioned file
+  // Step 5: Inject CSS and JS under <!-- AUTO INJECT BELOW --> in head.html
   let html = fs.readFileSync(HTML_FILE, 'utf8');
-  html = html.replace(/<script src="\/static\/dist\/app(\.[a-zA-Z0-9]+)?\.js"><\/script>/,
-    `<script src="/static/dist/${versionedName}"></script>`);
-  fs.writeFileSync(HTML_FILE, html);
+  const injectTag = '<!-- AUTO INJECT BELOW -->';
+  const injectContent = `\n<link rel="stylesheet" href="/static/dist/${cssVersionedName}">\n<script src="/static/dist/${jsVersionedName}"></script>\n`;
+  const idx = html.indexOf(injectTag);
+  if (idx !== -1) {
+    const before = html.slice(0, idx + injectTag.length);
+    html = before + injectContent;
+    fs.writeFileSync(HTML_FILE, html);
+    console.log(`Injected CSS and JS under ${injectTag} in head.html.`);
+  } else {
+    console.error(`Could not find ${injectTag} in head.html.`);
+  }
 
-  console.log(`Build complete: ${versionedName} and sourcemap injected.`);
+  console.log(`Build complete: ${jsVersionedName} and ${cssVersionedName} injected into head.html.`);
 }).catch((err) => {
   console.error('Build failed:', err);
   process.exit(1);
