@@ -1,6 +1,5 @@
 import logging
 from datetime import datetime, timedelta, timezone
-from typing import Optional, Dict
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.job import Job
@@ -33,17 +32,20 @@ scheduler = BackgroundScheduler(
 )
 
 
-def _notify(user_context: UserContext, body: str, payload: Optional[Dict]) -> None:
+def _notify(user_context: UserContext, body: str, click_action: str) -> None:
     user = user_context.data.username
     logging.info(f"Sending notifications to {user} to {len(user_context.data.fcm_token)} devices")
     tokens_to_remove = set()
-    for token in set(user_context.data.fcm_token):
+    for token in user_context.data.fcm_token:
         try:
+            # Send a data-only message
             fcm.notify(
                 fcm_token=token,
-                notification_title="Medibot Search",
-                notification_body=body,
-                data_payload=payload
+                data_payload={
+                    "title": "Medibot Search",
+                    "body": body,
+                    "click_action": click_action
+                }
             )
         except FCMNotRegisteredError:
             logging.info(f"FCM token not registered or invalid for {user}, removing: {token}")
@@ -74,9 +76,7 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
             _notify(
                 user_context=user_context,
                 body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}",
-                payload={
-                    "click_action": "/"
-                }
+                click_action="/"
             )
             logging.info(f"Booked {job_id}, pausing.")
             scheduler.pause_job(job_id)
@@ -84,9 +84,7 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
             _notify(
                 user_context=user_context,
                 body=f"Found {len(result)} appointments!",
-                payload={
-                    "click_action": search_url
-                }
+                click_action=search_url
             )
             logging.info(f"Found appointments for {job_id}, notification sent to {username}")
         elif search_params.end_time is not None and today > search_params.end_time:
