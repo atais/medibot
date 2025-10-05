@@ -1,5 +1,5 @@
 .idea
-venv
+.venv
 
 _scripts/tmp
 
@@ -8,5 +8,6 @@ medibot.sqlite
 .env
 firebase-service-account.json
 
+node_modules
 static/dist
 package-lock.json
