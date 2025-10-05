@@ -3,8 +3,8 @@ let messaging;
 
 // Initialize Firebase after scripts are loaded
 function initializeFirebase() {
-    const app = firebase.initializeApp(window.firebaseConfig);
-    messaging = firebase.messaging();
+    const app = window.firebase.initializeApp(window.firebaseConfig);
+    messaging = window.firebase.messaging();
 }
 
 // Register service worker for FCM

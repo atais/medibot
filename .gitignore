@@ -7,3 +7,6 @@ medibot.iml
 medibot.sqlite
 .env
 firebase-service-account.json
+
+static/dist
+package-lock.json
