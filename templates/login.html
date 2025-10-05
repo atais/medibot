@@ -3,33 +3,8 @@
 <head>
     <title>MEDIBOT | Login</title>
     {% include 'head.html' %}
-    <style>
-        body {
-            background: #f5f6fa;
-            min-height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .login-container {
-            background: #fff;
-            padding: 2.5rem 2rem;
-            border-radius: 1rem;
-            box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
-            width: 100%;
-            max-width: 370px;
-            margin: 2rem auto;
-        }
-
-        .login-logo {
-            display: block;
-            margin: 0 auto 1.5rem auto;
-            width: 120px;
-        }
-    </style>
 </head>
-<body>
+<body class="login">
 <div class="login-container">
     {% if error %}
     <div class="alert alert-danger" role="alert">
