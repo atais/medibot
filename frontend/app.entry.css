@@ -1,0 +1,83 @@
+@import 'bootstrap/dist/css/bootstrap.min.css';
+@import 'bootstrap-icons/font/bootstrap-icons.css';
+@import 'bootstrap-select/dist/css/bootstrap-select.min.css';
+@import 'bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css';
+@import 'nouislider/dist/nouislider.min.css';
+
+/* Custom styles from head.html */
+body {
+    background: #f5f6fa;
+    min-height: 100vh;
+}
+#monitor-form .bootstrap-select>.dropdown-toggle {
+    width: auto;
+}
+#monitor-form .bootstrap-select> button::after {
+    content: none;
+}
+#slider-hide .noUi-tooltip {
+    display: none;
+}
+#slider-hide .noUi-active .noUi-tooltip {
+    display: block;
+}
+#slider-hide .noUi-tooltip {
+    font-size: 1rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    min-width: unset;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+#slider-hide .noUi-connect {
+    background: #004996;
+}
+.btn-primary,
+.bg-primary {
+    background-color: #004996 !important;
+    border-color: #004996 !important;
+}
+.btn-primary:hover,
+.btn-primary:focus,
+.btn-primary:active {
+    background-color: #003a7a !important;
+    border-color: #003a7a !important;
+}
+.text-primary {
+    color: #004996 !important;
+}
+.btn-outline-primary {
+    color: #004996 !important;
+    border-color: #004996 !important;
+}
+.btn-outline-primary:hover,
+.btn-outline-primary:focus,
+.btn-outline-primary:active {
+    color: #fff !important;
+    background-color: #004996 !important;
+    border-color: #004996 !important;
+}
+
+/* Custom styles for login */
+body.login {
+    background: #f5f6fa;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.login-container {
+    background: #fff;
+    padding: 2.5rem 2rem;
+    border-radius: 1rem;
+    box-shadow: 0 2px 16px rgba(0, 0, 0, 0.08);
+    width: 100%;
+    max-width: 370px;
+    margin: 2rem auto;
+}
+
+.login-logo {
+    display: block;
+    margin: 0 auto 1.5rem auto;
+    width: 120px;
+}

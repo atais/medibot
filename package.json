@@ -1,0 +1,21 @@
+{
+  "name": "medibot-static-build",
+  "version": "1.0.0",
+  "description": "Frontend asset bundling for Medibot using esbuild",
+  "scripts": {
+    "build": "node build.js"
+  },
+  "devDependencies": {
+    "esbuild": "^0.19.0"
+  },
+  "dependencies": {
+    "bootstrap": "^5.3.8",
+    "bootstrap-datepicker": "^1.10.1",
+    "bootstrap-select": "^1.14.0-beta3",
+    "firebase": "^12.3.0",
+    "jquery": "^3.7.1",
+    "js-loading-overlay": "^1.2.0",
+    "nouislider": "^15.8.1",
+    "bootstrap-icons": "^1.11.3"
+  }
+}

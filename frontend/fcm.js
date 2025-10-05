@@ -3,13 +3,14 @@ let messaging;
 
 // Initialize Firebase after scripts are loaded
 function initializeFirebase() {
-    const app = firebase.initializeApp(window.firebaseConfig);
-    messaging = firebase.messaging();
+    const app = window.firebase.initializeApp(window.firebaseConfig);
+    messaging = window.firebase.messaging();
 }
 
 // Register service worker for FCM
 if ('serviceWorker' in navigator) {
-    navigator.serviceWorker.register('/firebase-messaging-sw.js')
+    // SW_FILENAME is injected by the esbuild
+    navigator.serviceWorker.register('/' + SW_FILENAME)
         .then((registration) => {
             console.log('Service Worker registered:', registration);
             // Initialize Firebase and request permission only after registration
@@ -76,11 +77,12 @@ function setupMessageHandler() {
     messaging.onMessage((payload) => {
         console.log('Message received in foreground:', payload);
         // Display notification to user
-        if (payload.notification) {
-            new Notification(payload.notification.title, {
-                body: payload.notification.body,
-                icon: '/favicon.ico'
-            });
-        }
+        let notification = new Notification(payload.data.title, {
+            body: payload.data.body,
+            icon: '/favicon.ico'
+        });
+        notification.onclick = function () {
+            window.open(payload.data.click_action, '_blank');
+        };
     });
 }

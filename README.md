@@ -40,6 +40,9 @@ This will expose the WebUI on port 3333
 
 first time:
 ```commandline
+npm install
+npm run build
+
 python3.13 -m venv .venv
 pip install -r requirements.txt
 ```
@@ -50,14 +53,12 @@ source .venv/bin/activate
 deactivate
 ```
 
-start server from cmd
-```commandline
-uvicorn app:app --reload
-```
 start server from code
 ```commandline
 python app.py
 ```
+
+If you change JS or CSS, rebuild the frontend with `npm run build`!
 
 ## _scripts
 
