@@ -67,8 +67,10 @@ if (fs.existsSync(DIST_DIR)) {
   if (!jsFile || !cssFile) throw new Error('JS or CSS file not found');
 
   // Step 4: Create dist.html with injected assets
-  const distHtml = `<link rel="stylesheet" href="/static/dist/${cssFile}">\n` +
-                    `<script src="/static/dist/${jsFile}"></script>\n`;
+  if (!fs.existsSync('templates')) {
+    fs.mkdirSync('templates', { recursive: true });
+  }
+  const distHtml = `<link rel="stylesheet" href="/static/dist/${cssFile}">\n<script src="/static/dist/${jsFile}"></script>\n`;
   fs.writeFileSync(DIST_HTML_FILE, distHtml);
 
   console.log(`Build complete: ${jsFile}, ${cssFile}, and ${swFile}.`);
