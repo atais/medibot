@@ -2,9 +2,9 @@ import os
 
 from fastapi import APIRouter, Depends, HTTPException, Path
 from pydantic import BaseModel
-from starlette.responses import FileResponse
+from starlette.responses import FileResponse, JSONResponse
 
-from app_context import get_current_user_context, user_contexts
+from app_context import get_current_user_context, user_contexts, firebase_config
 from user_context import UserContext
 
 router = APIRouter()
@@ -35,3 +35,8 @@ async def firebase_service_worker(suffix: str = Path(...)):
     if not os.path.isfile(filepath):
         raise HTTPException(status_code=404, detail="Service worker file not found")
     return FileResponse(filepath, media_type="application/javascript")
+
+
+@router.get("/firebase-config")
+async def firebase_config_endpoint():
+    return JSONResponse(firebase_config)

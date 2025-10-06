@@ -16,6 +16,5 @@ import firebase from 'firebase/compat/app';
 import 'firebase/compat/messaging';
 window.firebase = firebase;
 
-import './firebase-config.js';
 import './fcm.js';
 import './medibot.js';

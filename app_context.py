@@ -21,6 +21,16 @@ user_contexts = UserContextStore(app_db_env)
 fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")
 fcm = FCMNotification(service_account_file=fcm_service_account_path)
 
+firebase_config = {
+    "apiKey": os.environ["FIREBASE_API_KEY"],
+    "authDomain": os.environ["FIREBASE_AUTH_DOMAIN"],
+    "projectId": os.environ["FIREBASE_PROJECT_ID"],
+    "storageBucket": os.environ["FIREBASE_STORAGE_BUCKET"],
+    "messagingSenderId": os.environ["FIREBASE_MESSAGING_SENDER_ID"],
+    "appId": os.environ["FIREBASE_APP_ID"],
+    "vapidKey": os.environ["FIREBASE_VAPID_KEY"]
+}
+
 session_secret_key = os.getenv("SESSION_KEY")
 
 
