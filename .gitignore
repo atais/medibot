@@ -6,7 +6,6 @@ _scripts/tmp
 medibot.iml
 medibot.sqlite
 .env
-firebase-config.js
 firebase-service-account.json
 
 node_modules
