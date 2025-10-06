@@ -7,6 +7,11 @@ from requests import Session
 from ._constants import API
 
 
+# weird mapping, both are "USG sutka (piersi)"
+def remap_specialty_ids(specialty_ids: list[int]) -> list[int]:
+    return [519 if x == 3118 else x for x in specialty_ids]
+
+
 def _get_slot_search_type(speciality_id: int) -> str:
     if speciality_id == 519:
         return "DiagnosticProcedure"
@@ -59,6 +64,7 @@ def get_slots(
         session: Session,
         sp: SearchParams
 ) -> list[Appointment]:
+    sp.specialty_ids = remap_specialty_ids(sp.specialty_ids)
     params = []
     params.append(("Page", sp.page))
     params.append(("PageSize", sp.page_size))
@@ -107,6 +113,7 @@ def get_filters(
         specialty_ids: list[int],
         region_ids: int = 204,
 ) -> FiltersResponse:
+    specialty_ids = remap_specialty_ids(specialty_ids)
     params = []
     params.append(("RegionIds", region_ids))
     params.append(("SlotSearchType", _get_slot_search_type(specialty_ids[0])))
