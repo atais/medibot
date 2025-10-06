@@ -11,6 +11,24 @@ a multi-user platform with a WebUI. The app sends real-time Firebase push notifi
 
 ## Running
 
+### Docker Compose
+
+Use this template to expose medibot on port 3333
+
+```
+services:
+  medibot:
+    image: atais/medibot:latest
+    container_name: medibot
+    ports:
+      - "3333:8000"
+    volumes:
+      - /your/path/medibot.sqlite:/app/medibot.sqlite
+      - /your/path/firebase-service-account.json:/app/firebase-service-account.json
+      - /your/path/.env:/app/.env
+    restart: unless-stopped
+```
+
 ### Prepare .env file
 
 1. Copy `.env.example` as `.env`
