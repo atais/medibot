@@ -25,6 +25,17 @@ if ('serviceWorker' in navigator) {
     console.warn('Service workers are not supported in this browser.');
 }
 
+// Set FCM bell icon status
+function setFCMBellStatus(status) {
+    const bell = document.getElementById('fcm-bell');
+    if (!bell) return;
+    if (status === 'success') {
+        bell.className = 'bi bi-bell-fill text-success me-3';
+    } else {
+        bell.className = 'bi bi-bell-slash-fill text-danger me-3';
+    }
+}
+
 // Request permission and get FCM token
 async function requestNotificationPermission(registration) {
     try {
@@ -45,9 +56,11 @@ async function requestNotificationPermission(registration) {
             }
         } else {
             console.log('Notification permission denied');
+            setFCMBellStatus('error');
         }
     } catch (error) {
         console.error('Error getting FCM token:', error);
+        setFCMBellStatus('error');
     }
 }
 
@@ -64,11 +77,14 @@ async function registerFCMToken(token) {
 
         if (response.ok) {
             console.log('FCM token registered successfully');
+            setFCMBellStatus('success');
         } else {
             console.error('Failed to register FCM token');
+            setFCMBellStatus('error');
         }
     } catch (error) {
         console.error('Error registering FCM token:', error);
+        setFCMBellStatus('error');
     }
 }
 
