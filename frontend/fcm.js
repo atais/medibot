@@ -2,8 +2,8 @@
 let messaging;
 
 // Initialize Firebase after scripts are loaded
-function initializeFirebase() {
-    const app = window.firebase.initializeApp(window.firebaseConfig);
+function initializeFirebase(config) {
+    const app = window.firebase.initializeApp(config);
     messaging = window.firebase.messaging();
 }
 
@@ -11,12 +11,19 @@ function initializeFirebase() {
 if ('serviceWorker' in navigator) {
     // SW_FILENAME is injected by the esbuild
     navigator.serviceWorker.register('/' + SW_FILENAME)
-        .then((registration) => {
+        .then(async (registration) => {
             console.log('Service Worker registered:', registration);
-            // Initialize Firebase and request permission only after registration
-            initializeFirebase();
+            // Fetch Firebase config from backend
+            const configRes = await fetch('/firebase-config');
+            if (!configRes.ok) {
+                console.error('Failed to fetch Firebase config');
+                return;
+            }
+            const config = await configRes.json();
+            // Initialize Firebase and request permission only after config is loaded
+            initializeFirebase(config);
             setupMessageHandler();
-            requestNotificationPermission(registration);
+            requestNotificationPermission(registration, config.vapidKey);
         })
         .catch((error) => {
             console.error('Service Worker registration failed:', error);
@@ -37,7 +44,7 @@ function setFCMBellStatus(status) {
 }
 
 // Request permission and get FCM token
-async function requestNotificationPermission(registration) {
+async function requestNotificationPermission(registration, vapidKey) {
     try {
         const permission = await Notification.requestPermission();
         if (permission === 'granted') {
@@ -46,7 +53,7 @@ async function requestNotificationPermission(registration) {
                 return;
             }
             const token = await messaging.getToken({
-                vapidKey: window.vapidKey,
+                vapidKey: vapidKey,
                 serviceWorkerRegistration: registration
             });
             if (token) {
