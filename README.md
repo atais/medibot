@@ -45,15 +45,6 @@ To enable push notifications, you need to set up Firebase Cloud Messaging (FCM):
 5. Generate VAPID Key, update it in `.env`
 6. Enable Notifications in Browser
 
-### Build & run the application with docker
-
-```commandline
-docker build -t medibot .
-docker run --rm -p 3333:8000 -v /local/medibot.sqlite:/app/medibot.sqlite --name medibot medibot
-```
-
-This will expose the WebUI on port 3333
-
 ## Development
 
 first time:
@@ -77,6 +68,13 @@ python app.py
 ```
 
 If you change JS or CSS, rebuild the frontend with `npm run build`!
+
+### (Optional) Build & run the application with docker
+
+```commandline
+docker build -t medibot .
+docker run --rm -p 3333:8000 -v /local/medibot.sqlite:/app/medibot.sqlite --name medibot medibot
+```
 
 ## _scripts
 
