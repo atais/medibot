@@ -17,6 +17,7 @@ from routes.login import router as login_router
 from routes.search import router as search_router
 from routes.fcm import router as fcm_router
 from routes.home import router as home_router
+from routes.admin import router as admin_router
 
 from scheduler import scheduler
 from app_context import session_secret_key
@@ -42,3 +43,4 @@ app.include_router(search_router)
 app.include_router(job_router)
 app.include_router(fcm_router)
 app.include_router(home_router)
+app.include_router(admin_router)

@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <title>MEDIBOT | Admin</title>
+    {% include 'head.html' %}
+</head>
+
+<body>
+{% include 'navbar.html' %}
+
+<div class="container-fluid px-2 px-md-4 py-3">
+    {% if flash_message %}
+    <div class="alert alert-{{ flash_category }} alert-dismissible fade show" role="alert">
+        {{ flash_message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {% endif %}
+
+    <!-- First row -->
+    <div class="row mb-4 g-4">
+        <div class="col-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Użytkownicy</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>ID</th>
+                                <th>Imię</th>
+                                <th>Nazwisko</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for u in users %}
+                            <tr
+                            {% if u.profile.mrn == user.mrn %} class="table-success"{% endif %}>
+                            <td>{{ u.username }}</td>
+                            <td>{{ u.profile.firstName }}</td>
+                            <td>{{ u.profile.lastName }}</td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Second row -->
+    <div class="row g-4">
+        <!-- Jobs -->
+        <div class="col-12">
+            <div class="card shadow-sm h-100">
+                <div class="card-body">
+                    <h2 class="h4 mb-3">Aktywne monitory</h2>
+                    <div class="table-responsive">
+                        <table class="table table-bordered align-middle">
+                            <thead class="table-light">
+                            <tr>
+                                <th>Właściciel</th>
+                                <th>Nazwa</th>
+                                <th>Następne uruchomienie</th>
+                                <th>Uruchom teraz</th>
+                                <th>Status</th>
+                                <th>Usuń</th>
+                            </tr>
+                            </thead>
+                            <tbody>
+                            {% for job in jobs %}
+                            <tr>
+                                <td>{{ job.id.split('_')[0] }}</td>
+                                <td>{{ job.name }}</td>
+                                <td>{{ job.next_run_time | datetimeformat('%Y-%m-%d %H:%M:%S') }}</td>
+                                <td>
+                                    <form method="get" action="/fire_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="Run now">
+                                            <i class="bi bi-fast-forward-fill"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                                <td>
+                                    {% if job.next_run_time is none %}
+                                    <form method="get" action="/resume_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-success btn-sm" aria-label="Resume job">
+                                            <i class="bi bi-play-fill"></i>
+                                        </button>
+                                    </form>
+                                    {% else %}
+                                    <form method="get" action="/pause_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm" aria-label="Pause job">
+                                            <i class="bi bi-pause-fill"></i>
+                                        </button>
+                                    </form>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <form method="post" action="/remove_job/{{ job.id }}">
+                                        <button type="submit" class="btn btn-danger btn-sm" aria-label="Usuń">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+
+</html>

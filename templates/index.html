@@ -188,13 +188,7 @@
                             <tr>
                                 <td>{{ job.name }}</td>
                                 <td>{{ job.next_run_time | datetimeformat('%Y-%m-%d %H:%M:%S') }}</td>
-                                <td class="d-flex gap-1">
-                                    <!-- debug notifications -->
-                                    <!-- <form method="get" action="/fire_job/{{ job.id }}">-->
-                                    <!--     <button type="submit" class="btn btn-secondary btn-sm" aria-label="Run now">-->
-                                    <!--         <i class="bi bi-fast-forward-fill"></i>-->
-                                    <!--     </button>-->
-                                    <!-- </form>-->
+                                <td>
                                     {% if job.next_run_time is none %}
                                     <form method="get" action="/resume_job/{{ job.id }}">
                                         <button type="submit" class="btn btn-success btn-sm" aria-label="Resume job">

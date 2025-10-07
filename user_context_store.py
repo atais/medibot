@@ -1,4 +1,5 @@
 import logging
+from typing import List
 
 from sqlalchemy import create_engine, Column, String, Text
 from sqlalchemy.ext.declarative import declarative_base
@@ -47,6 +48,15 @@ class UserContextStore:
         self.engine = create_engine(db_url, echo=False)
         Base.metadata.create_all(self.engine)
         self.Session = sessionmaker(bind=self.engine)
+
+    def get_all(self) -> List[UserData]:
+        session = self.Session()
+        try:
+            context_models = session.query(UserContextModel).all()
+            ucs = [model.to_user_context(on_update=lambda ctx: ctx) for model in context_models]
+            return [u.data for u in ucs]
+        finally:
+            session.close()
 
     def get(self, username: str) -> UserContext | None:
         session = self.Session()

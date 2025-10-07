@@ -32,6 +32,8 @@ firebase_config = {
 }
 
 session_secret_key = os.getenv("SESSION_KEY")
+admins_env = os.getenv("APP_ADMINS")
+admins: list[str] = [admin.strip() for admin in admins_env.split(",") if admin.strip()]
 
 
 def load_all_regions() -> dict[int, str]:
