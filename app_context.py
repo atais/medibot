@@ -1,4 +1,5 @@
 import json
+import logging
 import os
 from datetime import datetime
 
@@ -6,7 +7,10 @@ from dotenv import load_dotenv
 from fastapi import Request, HTTPException
 from fastapi.templating import Jinja2Templates
 from pyfcm import FCMNotification
+from sqlalchemy import create_engine, Engine
+from sqlalchemy.orm import sessionmaker, Session
 
+from scheduler_context import SchedulerContextStore
 from user_context import UserContext
 from user_context_store import UserContextStore
 
@@ -14,8 +18,13 @@ load_dotenv()
 
 templates = Jinja2Templates(directory="templates")
 
-app_db_env = os.getenv("APP_DB")
-user_contexts = UserContextStore(app_db_env)
+db_url = os.getenv("APP_DB")
+logging.info(f"Opening DB connection @ {db_url}")
+engine: Engine = create_engine(db_url, echo=False)
+session: sessionmaker[Session] = sessionmaker(bind=engine)
+
+user_contexts = UserContextStore(engine, session)
+scheduler_contexts = SchedulerContextStore(engine, session)
 
 # Initialize FCM with environment variables
 fcm_service_account_path = os.getenv("FCM_SERVICE_ACCOUNT_PATH")

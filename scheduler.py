@@ -1,5 +1,6 @@
 import logging
 from datetime import datetime, timedelta, timezone
+from typing import List, Set
 
 from apscheduler.executors.pool import ThreadPoolExecutor
 from apscheduler.job import Job
@@ -9,12 +10,12 @@ from pyfcm.errors import FCMNotRegisteredError
 from pytz import utc
 
 import medicover
-from app_context import user_contexts, fcm, app_db_env
+from app_context import user_contexts, fcm, db_url, scheduler_contexts
 from medicover.appointments import SearchParams, Appointment
 from user_context import UserContext
 
 jobstores = {
-    'default': SQLAlchemyJobStore(url=app_db_env)
+    'default': SQLAlchemyJobStore(url=db_url)
 }
 executors = {
     'default': ThreadPoolExecutor(1)
@@ -64,10 +65,10 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
         # do not run search for past-date
         today = datetime.now().date().strftime("%Y-%m-%d")
         search_params.start_time = max(search_params.start_time, today)
-        result: list[Appointment] = medicover.get_slots(user_context.session, search_params)
+        results: list[Appointment] = medicover.get_slots(user_context.session, search_params)
 
-        if len(result) > 0 and autobook:
-            b = result[0]
+        if len(results) > 0 and autobook:
+            b = results[0]
             medicover.book(
                 user_context.session,
                 booking_string=b.bookingString,
@@ -80,16 +81,26 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
             )
             logging.info(f"Booked {job_id}, pausing.")
             scheduler.pause_job(job_id)
-        elif len(result) > 0 and not autobook:
-            _notify(
-                user_context=user_context,
-                body=f"Found {len(result)} appointments!",
-                click_action=search_url
-            )
-            logging.info(f"Found appointments for {job_id}, notification sent to {username}")
+            scheduler_contexts.remove(job_id)
+        elif len(results) > 0 and not autobook:
+            # notify only once about new results
+            previously_seen: Set[str] = scheduler_contexts.get(job_id)
+            new_results: List[Appointment] = [x for x in results if x.bookingString not in previously_seen]
+            scheduler_contexts.put(job_id, [x.bookingString for x in results])
+
+            if len(new_results) > 0:
+                _notify(
+                    user_context=user_context,
+                    body=f"Found {len(new_results)} appointments!",
+                    click_action=search_url
+                )
+                logging.info(f"Found {len(new_results)} appointments for {job_id}, notification sent to {username}")
+            else:
+                logging.info(f"No new appointments for {job_id}, skipping notification to {username}")
         elif search_params.end_time is not None and today > search_params.end_time:
             logging.info(f"Search {job_id} is past its endtime, pausing.")
             scheduler.pause_job(job_id)
+            scheduler_contexts.remove(job_id)
         else:
             pass
 

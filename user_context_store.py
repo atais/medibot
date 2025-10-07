@@ -1,9 +1,8 @@
-import logging
 from typing import List
 
-from sqlalchemy import create_engine, Column, String, Text
+from sqlalchemy import Column, String, Text, Engine
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
+from sqlalchemy.orm import sessionmaker, Session
 
 from user_context import CookieInfo, UserContext, UserData
 
@@ -43,14 +42,13 @@ class UserContextModel(Base):
 
 
 class UserContextStore:
-    def __init__(self, db_url: str):
-        logging.info(f"Opening UserContextStore @ {db_url}")
-        self.engine = create_engine(db_url, echo=False)
+    def __init__(self, engine: Engine, session: sessionmaker[Session]):
+        self.engine = engine
+        self.session = session
         Base.metadata.create_all(self.engine)
-        self.Session = sessionmaker(bind=self.engine)
 
     def get_all(self) -> List[UserData]:
-        session = self.Session()
+        session = self.session()
         try:
             context_models = session.query(UserContextModel).all()
             ucs = [model.to_user_context(on_update=lambda ctx: ctx) for model in context_models]
@@ -59,7 +57,7 @@ class UserContextStore:
             session.close()
 
     def get(self, username: str) -> UserContext | None:
-        session = self.Session()
+        session = self.session()
         try:
             context_model = session.query(UserContextModel).filter_by(username=username).first()
             if context_model:
@@ -70,7 +68,7 @@ class UserContextStore:
             session.close()
 
     def set(self, user_context: UserContext):
-        session = self.Session()
+        session = self.session()
         try:
             existing = session.query(UserContextModel).filter_by(username=user_context.data.username).first()
             if existing:

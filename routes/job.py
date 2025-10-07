@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request, Depends, Query
 from pydantic import BaseModel
 from starlette.responses import HTMLResponse, RedirectResponse
 
-from app_context import get_current_user_context, all_specialities
+from app_context import get_current_user_context, all_specialities, scheduler_contexts
 from medicover.appointments import SearchParams, FiltersResponse, get_filters
 from scheduler import scheduler, create_job
 
@@ -30,6 +30,7 @@ class SelectedData(BaseModel):
 @router.post("/remove_job/{job_id}", response_class=HTMLResponse)
 async def remove_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.remove_job(job_id)
+    scheduler_contexts.remove(job_id)
     return RedirectResponse(url=request.headers.get("referer", "/"), status_code=302)
 
 
@@ -87,6 +88,7 @@ async def add_job(request: Request,
 @router.get("/pause_job/{job_id}", response_class=HTMLResponse)
 async def pause_job(request: Request, job_id: str, user_context=Depends(get_current_user_context)):
     scheduler.pause_job(job_id)
+    scheduler_contexts.remove(job_id)
     return RedirectResponse(url=request.headers.get("referer", "/"), status_code=302)
 
 
