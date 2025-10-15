@@ -30,15 +30,23 @@
                                 <th>ID</th>
                                 <th>Imię</th>
                                 <th>Nazwisko</th>
+                                <th>Wyślij testową notyfikacje</th>
                             </tr>
                             </thead>
                             <tbody>
                             {% for u in users %}
-                            <tr
-                            {% if u.profile.mrn == user.mrn %} class="table-success"{% endif %}>
-                            <td>{{ u.username }}</td>
-                            <td>{{ u.profile.firstName }}</td>
-                            <td>{{ u.profile.lastName }}</td>
+                            <tr {% if u.profile.mrn== user.mrn %} class="table-success" {% endif %}>
+                                <td>{{ u.username }}</td>
+                                <td>{{ u.profile.firstName }}</td>
+                                <td>{{ u.profile.lastName }}</td>
+                                <td>
+                                    <form method="get" action="/notify/{{ u.profile.mrn }}">
+                                        <button type="submit" class="btn btn-secondary btn-sm"
+                                                aria-label="Wyślij testową notyfikację">
+                                            <i class="bi bi-send-fill"></i>
+                                        </button>
+                                    </form>
+                                </td>
                             </tr>
                             {% endfor %}
                             </tbody>

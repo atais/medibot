@@ -25,25 +25,25 @@ import 'firebase/compat/messaging';
         };
         return self.registration.showNotification(notificationTitle, notificationOptions);
     });
-
-    // Handle push event for data-only FCM messages (required for Android Chrome)
-    self.addEventListener('push', event => {
-        let payload = event.data.json();
-        console.log('Push event received:', payload);
-        const notificationTitle = payload.data.title;
-        const notificationOptions = {
-            body: payload.data.body,
-            icon: '/favicon.ico',
-            data: payload.data
-        };
-        return event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
-    });
-
-    // Handle notification click to support click_action
-    self.addEventListener('notificationclick', function (event) {
-        event.notification.close();
-        event.waitUntil(
-            clients.openWindow(event.notification.data.click_action)
-        );
-    });
 })();
+
+// Handle push event for data-only FCM messages (required for Android Chrome)
+self.addEventListener('push', event => {
+    let payload = event.data.json();
+    console.log('Push event received:', payload);
+    const notificationTitle = payload.data.title;
+    const notificationOptions = {
+        body: payload.data.body,
+        icon: '/favicon.ico',
+        data: payload.data
+    };
+    return event.waitUntil(self.registration.showNotification(notificationTitle, notificationOptions));
+});
+
+// Handle notification click to support click_action
+self.addEventListener('notificationclick', function (event) {
+    event.notification.close();
+    event.waitUntil(
+        clients.openWindow(event.notification.data.click_action)
+    );
+});
