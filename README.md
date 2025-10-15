@@ -1,5 +1,9 @@
 # Medibot
 
+[![Docker Pulls](https://img.shields.io/docker/pulls/atais/medibot.svg)](https://hub.docker.com/r/atais/medibot)
+[![Latest release](https://img.shields.io/github/v/release/atais/medibot)](https://github.com/atais/medibot/releases/latest)
+
+
 Exploring AI-assisted programming by interacting with online services using Python. 
 The project experiments with automation of the search process in Medicover by providing 
 a multi-user platform with a WebUI. The app sends real-time Firebase push notifications when appointments become available.
