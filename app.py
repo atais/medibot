@@ -7,7 +7,7 @@ logging.getLogger("urllib3").setLevel(logging.DEBUG)
 from contextlib import asynccontextmanager
 
 import uvicorn
-from fastapi import FastAPI
+from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
@@ -20,7 +20,7 @@ from routes.home import router as home_router
 from routes.admin import router as admin_router
 
 from scheduler import scheduler
-from app_context import session_secret_key
+from app_context import session_secret_key, templates
 
 if __name__ == "__main__":
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
@@ -44,3 +44,17 @@ app.include_router(job_router)
 app.include_router(fcm_router)
 app.include_router(home_router)
 app.include_router(admin_router)
+
+
+@app.exception_handler(Exception)
+async def global_exception_handler(request: Request, exc: Exception):
+    error_message = str(exc) or exc.__class__.__name__
+
+    return templates.TemplateResponse(
+        "maintenance.html",
+        {
+            "request": request,
+            "error_message": error_message
+        },
+        status_code=503,
+    )

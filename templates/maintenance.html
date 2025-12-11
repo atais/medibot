@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="pl">
+
+<head>
+    <title>MEDIBOT | Przerwa techniczna</title>
+    {% include 'head.html' %}
+</head>
+
+<body class="login">
+<div class="login-container" style="max-width: 800px;">
+    <img src="/static/medi_ico.png" class="login-logo" alt="Logo">
+    <h2 class="mb-4 text-primary text-center">Problemy techniczne</h2>
+
+    <div class="alert alert-warning" role="alert">
+        <p class="mb-2">
+            System Medicover jest niedostępny lub wystąpił nieoczekiwany błąd.
+        </p>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Szczegóły błędu</label>
+        <pre class="form-control" style="white-space: pre-wrap; max-height: 20rem; overflow: auto;">{{ error_message }}</pre>
+    </div>
+</div>
+</body>
+
+</html>
