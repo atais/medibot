@@ -52,6 +52,14 @@
     "name": "Gastroenterolog dorośli"
   },
   {
+    "id": "51",
+    "name": "Dietetyk dziecięcy"
+  },
+  {
+    "id": "52",
+    "name": "Endokrynolog dziecięcy"
+  },
+  {
     "id": "53",
     "name": "Hematolog"
   },
@@ -62,6 +70,14 @@
   {
     "id": "56",
     "name": "Proktolog dorośli"
+  },
+  {
+    "id": "75",
+    "name": "Neurolog dziecięcy"
+  },
+  {
+    "id": "76",
+    "name": "Chirurg dziecięcy"
   },
   {
     "id": "78",
@@ -76,6 +92,14 @@
     "name": "Neurochirurg"
   },
   {
+    "id": "83",
+    "name": "Ortopeda dziecięcy"
+  },
+  {
+    "id": "88",
+    "name": "Alergolog dziecięcy"
+  },
+  {
     "id": "96",
     "name": "Logopeda dorośli"
   },
@@ -84,8 +108,32 @@
     "name": "Diabetolog"
   },
   {
+    "id": "100",
+    "name": "Laryngolog dziecięcy"
+  },
+  {
+    "id": "106",
+    "name": "Nefrolog dziecięcy"
+  },
+  {
     "id": "112",
     "name": "Higienistka stomatologiczna"
+  },
+  {
+    "id": "124",
+    "name": "Alergolog dziecięcy odczulanie"
+  },
+  {
+    "id": "132",
+    "name": "Pediatra - dzieci zdrowe"
+  },
+  {
+    "id": "156",
+    "name": "Kriochirurgia dermatologiczna"
+  },
+  {
+    "id": "158",
+    "name": "Pediatra - dzieci chore"
   },
   {
     "id": "163",
@@ -108,12 +156,32 @@
     "name": "Laryngolog dorośli"
   },
   {
+    "id": "194",
+    "name": "Logopeda dziecięcy"
+  },
+  {
     "id": "198",
     "name": "Okulista dorośli"
   },
   {
+    "id": "200",
+    "name": "Okulista dziecięcy"
+  },
+  {
+    "id": "202",
+    "name": "Ortopeda dorośli i dzieci"
+  },
+  {
+    "id": "220",
+    "name": "Urolog dziecięcy"
+  },
+  {
     "id": "519",
     "name": "USG sutka (piersi)"
+  },
+  {
+    "id": "1188",
+    "name": "Dermatolog dziecięcy"
   },
   {
     "id": "1190",
@@ -140,6 +208,14 @@
     "name": "Ginekolog - prowadzenie ciąży"
   },
   {
+    "id": "4806",
+    "name": "Ginekolog dziecięcy"
+  },
+  {
+    "id": "5336",
+    "name": "Pediatra - dzieci zdrowe - szczepienie"
+  },
+  {
     "id": "5346",
     "name": "Chirurgia - zmiana opatrunku"
   },
@@ -152,8 +228,24 @@
     "name": "Cytologia"
   },
   {
+    "id": "8674",
+    "name": "Gastroenterolog dziecięcy"
+  },
+  {
+    "id": "9618",
+    "name": "Hematolog dziecięcy"
+  },
+  {
+    "id": "9974",
+    "name": "Medycyna podróży - dzieci"
+  },
+  {
     "id": "9976",
     "name": "Medycyna podróży - dorośli"
+  },
+  {
+    "id": "10210",
+    "name": "Pediatra - czat"
   },
   {
     "id": "10212",
@@ -180,6 +272,10 @@
     "name": "Internista - porada telefoniczna"
   },
   {
+    "id": "19048",
+    "name": "Pediatra - porada telefoniczna"
+  },
+  {
     "id": "19054",
     "name": "Okulistyka - badanie wzroku"
   },
@@ -202,6 +298,10 @@
   {
     "id": "27158",
     "name": "Poradnia Bólu Pleców i Układu Ruchu - dorośli"
+  },
+  {
+    "id": "27160",
+    "name": "Poradnia Układu Ruchu - dzieci"
   },
   {
     "id": "27952",
@@ -230,6 +330,10 @@
   {
     "id": "28770",
     "name": "Protetyk - leczenie"
+  },
+  {
+    "id": "28772",
+    "name": "Stomatolog dziecięcy - leczenie"
   },
   {
     "id": "29178",
@@ -268,12 +372,24 @@
     "name": "Gastroenterolog dorośli - porada telefoniczna"
   },
   {
+    "id": "44060",
+    "name": "Gastroenterolog dziecięcy - porada telefoniczna"
+  },
+  {
     "id": "44062",
     "name": "Alergolog dorośli - porada telefoniczna"
   },
   {
+    "id": "44064",
+    "name": "Alergolog dziecięcy - porada telefoniczna"
+  },
+  {
     "id": "44066",
     "name": "Laryngolog dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44068",
+    "name": "Laryngolog dziecięcy - porada telefoniczna"
   },
   {
     "id": "44070",
@@ -284,8 +400,16 @@
     "name": "Neurolog dorośli - porada telefoniczna"
   },
   {
+    "id": "44076",
+    "name": "Neurolog dziecięcy - porada telefoniczna"
+  },
+  {
     "id": "44078",
     "name": "Okulista dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44080",
+    "name": "Okulista dziecięcy - porada telefoniczna"
   },
   {
     "id": "44082",
@@ -296,12 +420,20 @@
     "name": "Reumatolog dorośli - porada telefoniczna"
   },
   {
+    "id": "44090",
+    "name": "Dermatolog dziecięcy - porada telefoniczna"
+  },
+  {
     "id": "44252",
     "name": "Chirurg dorośli - porada telefoniczna"
   },
   {
     "id": "44258",
     "name": "Choroby zakaźne dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44264",
+    "name": "Endokrynolog dziecięcy - porada telefoniczna"
   },
   {
     "id": "44266",
@@ -322,6 +454,10 @@
   {
     "id": "44278",
     "name": "Medycyna podróży - dorośli - porada telefoniczna"
+  },
+  {
+    "id": "44280",
+    "name": "Medycyna podróży - dzieci - porada telefoniczna"
   },
   {
     "id": "44284",
@@ -354,6 +490,10 @@
   {
     "id": "48082",
     "name": "Logopedia stomatologiczna"
+  },
+  {
+    "id": "48900",
+    "name": "Dietetyk dziecięcy - porada telefoniczna"
   },
   {
     "id": "49318",
@@ -416,6 +556,18 @@
     "name": "Ginekolog - założenie wkładki"
   },
   {
+    "id": "65148",
+    "name": "Punkt Pobrań - dzieci chore"
+  },
+  {
+    "id": "65150",
+    "name": "Punkt Pobrań - dzieci zdrowe"
+  },
+  {
+    "id": "69364",
+    "name": "Dermatolog dziecięcy - kurzajki - konsultacja"
+  },
+  {
     "id": "70770",
     "name": "Medicover Express - wymrażanie kurzajek"
   },
@@ -426,6 +578,10 @@
   {
     "id": "72984",
     "name": "Konsultacja stylisty"
+  },
+  {
+    "id": "76796",
+    "name": "Badanie dna oka - dzieci"
   },
   {
     "id": "76798",
@@ -474,5 +630,9 @@
   {
     "id": "102070",
     "name": "Stylista opraw okularowych - Pakiet Silver"
+  },
+  {
+    "id": "105496",
+    "name": "Dermatolog - porada umawiana wideo TeleCentrum"
   }
 ]
