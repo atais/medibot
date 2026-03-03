@@ -26,6 +26,27 @@ def _gen_code_challenge(seed: str) -> str:
 
 _oidc_url = f'{ONLINE24}/signin-oidc'
 
+
+def _extract_token(response):
+    parser = BeautifulSoup(response.content, "html.parser")
+    return parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
+
+
+def _handle_mfa(session, next_url, return_url):
+    if 'Account/MfaGate' not in next_url:
+        return next_url
+
+    response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
+    token = _extract_token(response)
+    input_form = {
+        "Input.ReturnUrl": return_url,
+        "__RequestVerificationToken": token
+    }
+    next_url = f"{LOGIN}/Account/MfaGate?handler=SkipMfaGate"
+    response = session.post(next_url, data=input_form, allow_redirects=False)
+    return response.headers.get("Location")
+
+
 def login(username: str, password: str, device_id: str, session: Session) -> Tuple[str, str]:
     state = "".join(random.choices(string.ascii_lowercase + string.digits, k=32))
     code_verifier = _uuid_v4() + _uuid_v4() + _uuid_v4()
@@ -56,8 +77,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     # 1. get __RequestVerificationToken
     # https://login-online24.medicover.pl/Account/Login?...
     response = session.get(next_url, allow_redirects=False)
-    login_form = BeautifulSoup(response.content, "html.parser")
-    token = login_form.find("input", {"name": "__RequestVerificationToken"}).get('value')
+    token = _extract_token(response)
 
     # 2. send the form
     # https://login-online24.medicover.pl/Account/Login....
@@ -72,17 +92,20 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     response = session.post(next_url, data=login_form, allow_redirects=False)
     next_url = response.headers.get("Location")
 
-    # 3. get code
+    # 3. handle MFA Gate
+    next_url = _handle_mfa(session, next_url, return_url)
+
+    # 4. get code
     # https://login-online24.medicover.pl/connect/authorize/callback...
     response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
     next_url = response.headers.get("Location")
     code = parse_qs(urlparse(next_url).query)["code"][0]
 
-    # 4. send code
+    # 5. send code
     # https://online24.medicover.pl/signin-oidc?code=...
     response = session.get(next_url)
 
-    # 5. get token
+    # 6. get token
     token_data = {
         "grant_type": "authorization_code",
         "redirect_uri": _oidc_url,
