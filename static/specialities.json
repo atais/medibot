@@ -117,7 +117,7 @@
   },
   {
     "id": "112",
-    "name": "Higienistka stomatologiczna"
+    "name": "Higienizacja standardowa"
   },
   {
     "id": "124",
@@ -225,7 +225,7 @@
   },
   {
     "id": "6254",
-    "name": "Cytologia"
+    "name": "Pobranie HPV / Cytologia"
   },
   {
     "id": "8674",
@@ -256,8 +256,16 @@
     "name": "Ginekologia - pobranie wymazu"
   },
   {
+    "id": "10864",
+    "name": "Hematolog - Szpital"
+  },
+  {
     "id": "11682",
     "name": "Badanie dna oka - dorośli"
+  },
+  {
+    "id": "12288",
+    "name": "Dermatolog - czat"
   },
   {
     "id": "16234",
@@ -481,7 +489,7 @@
   },
   {
     "id": "47068",
-    "name": "Higienistka stomatologiczna FFS"
+    "name": "Higienizacja 4w1"
   },
   {
     "id": "48080",
@@ -522,6 +530,10 @@
   {
     "id": "52110",
     "name": "Punkt Pobrań - ciężarne"
+  },
+  {
+    "id": "52706",
+    "name": "Immunolog dorośli"
   },
   {
     "id": "55112",
@@ -580,6 +592,10 @@
     "name": "Konsultacja stylisty"
   },
   {
+    "id": "77590",
+    "name": "Ginekolog - czat"
+  },
+  {
     "id": "76796",
     "name": "Badanie dna oka - dzieci"
   },
@@ -632,7 +648,31 @@
     "name": "Stylista opraw okularowych - Pakiet Silver"
   },
   {
+    "id": "104286",
+    "name": "Kwalifikacja i szczepienie - pielęgniarka medycyna podróży"
+  },
+  {
+    "id": "105494",
+    "name": "Internista - porada umawiana czat TeleCentrum"
+  },
+  {
     "id": "105496",
     "name": "Dermatolog - porada umawiana wideo TeleCentrum"
+  },
+  {
+    "id": "105894",
+    "name": "Pielęgniarka - infekcje pęcherza moczowego"
+  },
+  {
+    "id": "105896",
+    "name": "Pielęgniarka - infekcje pęcherza moczowego - porada telefoniczna"
+  },
+  {
+    "id": "105898",
+    "name": "Położna - infekcje pęcherza moczowego"
+  },
+  {
+    "id": "105900",
+    "name": "Położna - infekcje pęcherza moczowego - porada telefoniczna"
   }
 ]
