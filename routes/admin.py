@@ -23,14 +23,17 @@ async def book(request: Request,
 
     flash_message = request.session.pop("flash_message", None)
     flash_category = request.session.pop("flash_category", "info")
-    return templates.TemplateResponse("admin.html", {
-        "request": request,
-        "user": user_context.data.profile,
-        "users": users,
-        "jobs": jobs,
-        "flash_message": flash_message,
-        "flash_category": flash_category
-    })
+    return templates.TemplateResponse(
+        request,
+        "admin.html",
+        {
+            "user": user_context.data.profile,
+            "users": users,
+            "jobs": jobs,
+            "flash_message": flash_message,
+            "flash_category": flash_category
+        }
+    )
 
 
 @router.get("/notify/{mrn}")

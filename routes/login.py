@@ -12,7 +12,7 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 async def show_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(request, "login.html")
 
 
 @router.post("/login", response_class=HTMLResponse)
@@ -31,6 +31,9 @@ async def process_login(request: Request, username: str = Form(...), password: s
     except Exception as e:
         logging.error(e)
         return templates.TemplateResponse(
+            request,
             "login.html",
-            {"request": request, "error": str(e)}
+            {
+                "error": str(e)
+            }
         )

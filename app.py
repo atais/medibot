@@ -49,9 +49,9 @@ async def global_exception_handler(request: Request, exc: Exception):
     error_message = str(exc) or exc.__class__.__name__
 
     return templates.TemplateResponse(
+        request,
         "maintenance.html",
         {
-            "request": request,
             "error_message": error_message
         },
         status_code=503,
