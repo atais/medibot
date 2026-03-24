@@ -18,6 +18,9 @@ from scheduler import scheduler
 from app_context import session_secret_key, templates
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logging.getLogger("requests").setLevel(logging.DEBUG)
+    logging.getLogger("urllib3").setLevel(logging.DEBUG)
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 
 
@@ -40,9 +43,6 @@ app.include_router(fcm_router)
 app.include_router(home_router)
 app.include_router(admin_router)
 
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 
 @app.exception_handler(Exception)
