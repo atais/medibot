@@ -1,4 +1,3 @@
 lint:
-	@bash ./scripts/lint.sh
-
+	@python -m flake8 . --count --show-source --statistics
 
