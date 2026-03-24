@@ -1,11 +1,6 @@
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
-
 from contextlib import asynccontextmanager
 
+import logging
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -44,6 +39,10 @@ app.include_router(job_router)
 app.include_router(fcm_router)
 app.include_router(home_router)
 app.include_router(admin_router)
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 
 @app.exception_handler(Exception)

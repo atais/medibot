@@ -10,6 +10,7 @@ class IdName(BaseModel):
     id: str
     name: str
 
+
 class ServicePart(BaseModel):
     hasResult: bool
     isDone: bool

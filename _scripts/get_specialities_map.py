@@ -20,8 +20,7 @@ user_context._login()
 region_id = "204"
 
 
-
-### Get keywords
+# Get keywords
 keywords_response = get_keywords(user_context.session)
 keywords_dict = keywords_response.model_dump()
 tmp_dir = os.path.join(os.path.dirname(__file__), 'tmp')
@@ -33,7 +32,7 @@ with open(keywords_file, 'w', encoding='utf-8') as f:
 
 print(f"[SUCCESS] Keywords saved to {keywords_file}")
 
-### Get all the keywords consultations
+# Get all the keywords consultations
 with open(keywords_file, encoding='utf-8') as f:
     keywords_data = json.load(f)
 keywords = keywords_data.get('keywords', [])
@@ -51,15 +50,16 @@ for kw in keywords:
         with open(spec_list, 'w', encoding='utf-8') as f:
             json.dump(details, f, indent=2, ensure_ascii=False)
         saved.append(kw_id)
-    except Exception as e:
+    except Exception:
         print(f"ERROR on parsing {kw}")
         continue
 summary = {"saved_files": saved, "count": len(saved)}
 print(f"[SUCCESS] Saved {len(saved)} specialty JSON files to {spec_dir}")
 
-### Extract consultation ids
+# Extract consultation ids
 specialty_files = glob.glob(os.path.join(spec_dir, '*.json'))
 found_ids = set()
+
 
 def find_specialties(obj):
     if isinstance(obj, dict):
@@ -84,7 +84,7 @@ with open(spec_list, 'w', encoding='utf-8') as f:
     json.dump(sorted_ids, f, indent=2, ensure_ascii=False)
 print(f"[SUCCESS] Extracted {len(sorted_ids)} unique specialty IDs to {spec_list}")
 
-### Make a map
+# Make a map
 with open(spec_list, 'r', encoding='utf-8') as f:
     specialty_ids = json.load(f)
 

@@ -3,12 +3,15 @@ from typing import List, Optional
 from requests import Session
 from ._constants import API
 
+
 class Location(BaseModel):
     id: str
     value: str
 
+
 class KeywordsResponse(BaseModel):
     regions: List[Location]
+
 
 class Keyword(BaseModel):
     variant: str
@@ -17,6 +20,7 @@ class Keyword(BaseModel):
     groupType: str
     hasShortPath: Optional[bool] = None
     selectionPath: Optional[str] = None
+
 
 class KeywordsListResponse(BaseModel):
     keywords: list[Keyword]
