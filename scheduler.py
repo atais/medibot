@@ -76,7 +76,10 @@ def _search(username: str, search_params: SearchParams, search_url: str, autoboo
             )
             _notify(
                 user_context=user_context,
-                body=f"Booked {b.specialty.name}, {b.clinic.name}, {b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}",
+                body=(
+                    f"Booked {b.specialty.name}, {b.clinic.name}, "
+                    f"{b.doctor.name} @ {b.appointmentDate.strftime('%Y-%m-%d %H:%M')}"
+                ),
                 click_action="/"
             )
             logging.info(f"Booked {job_id}, pausing.")

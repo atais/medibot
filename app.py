@@ -1,11 +1,6 @@
-import logging
-
-logging.basicConfig(level=logging.INFO)
-logging.getLogger("requests").setLevel(logging.DEBUG)
-logging.getLogger("urllib3").setLevel(logging.DEBUG)
-
 from contextlib import asynccontextmanager
 
+import logging
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
@@ -23,6 +18,9 @@ from scheduler import scheduler
 from app_context import session_secret_key, templates
 
 if __name__ == "__main__":
+    logging.basicConfig(level=logging.INFO)
+    logging.getLogger("requests").setLevel(logging.DEBUG)
+    logging.getLogger("urllib3").setLevel(logging.DEBUG)
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 
 

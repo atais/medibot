@@ -9,10 +9,12 @@ from ._constants import API
 class BookingResponse(BaseModel):
     appointmentId: int
 
+
 class Response(BaseModel):
     status: str
     message: Optional[str] = None
     errorDetails: Optional[str] = None
+
 
 def book(session: Session, booking_string: str, old_id: Optional[str] = None):
     if old_id:
@@ -41,4 +43,5 @@ def book(session: Session, booking_string: str, old_id: Optional[str] = None):
 def delete(session: Session, aid: str) -> None:
     url = f"{API}/appointments/api/v2/person-appointments/appointments/{aid}"
     response = session.delete(url)
+
     response.raise_for_status()

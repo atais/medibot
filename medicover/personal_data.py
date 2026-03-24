@@ -3,12 +3,14 @@ from typing import Optional
 from requests import Session
 from ._constants import API
 
+
 class PersonalData(BaseModel):
     mrn: int
     firstName: str
     lastName: str
     homeClinicId: str
     email: Optional[str] = None
+
 
 def personal_data(session: Session) -> PersonalData:
     response = session.get(f"{API}/personal-data/api/personal")

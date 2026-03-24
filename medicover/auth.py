@@ -24,6 +24,7 @@ def _gen_code_challenge(seed: str) -> str:
     based = base64.urlsafe_b64encode(uuid_sha).decode("utf-8")
     return re.sub(r"=+$", "", based.replace("+", "-").replace("/", "_"))
 
+
 _oidc_url = f'{ONLINE24}/signin-oidc'
 
 
