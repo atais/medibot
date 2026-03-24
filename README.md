@@ -57,7 +57,7 @@ npm install
 npm run build
 
 python3.13 -m venv .venv
-pip install -r requirements.txt
+pip install -r dev-requirements.txt
 ```
 
 venv:
