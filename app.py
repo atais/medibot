@@ -44,7 +44,6 @@ app.include_router(home_router)
 app.include_router(admin_router)
 
 
-
 @app.exception_handler(Exception)
 async def global_exception_handler(request: Request, exc: Exception):
     error_message = str(exc) or exc.__class__.__name__
