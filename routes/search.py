@@ -47,9 +47,9 @@ async def search(request: Request,
 
     appointments = [item.model_dump() for item in slots] if slots else []
     return templates.TemplateResponse(
+        request,
         "search.html",
         {
-            "request": request,
             "user": user_context.data.profile,
             "appointments": appointments,
             "region_ids": region_ids,
