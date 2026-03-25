@@ -28,23 +28,31 @@ def _gen_code_challenge(seed: str) -> str:
 _oidc_url = f'{ONLINE24}/signin-oidc'
 
 
-def _extract_token(response):
-    parser = BeautifulSoup(response.content, "html.parser")
-    return parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
-
-
 def _handle_mfa(session, next_url, return_url):
-    if 'Account/MfaGate' not in next_url:
+    if 'Account/Mfa' not in next_url:
         return next_url
 
+    # 3a. GET the MFA page – extract token and MfaCodeId hidden input
     response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
-    token = _extract_token(response)
-    input_form = {
+    parser = BeautifulSoup(response.content, "html.parser")
+    token = parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
+    mfa_code_id = parser.find("input", {"name": "Input.MfaCodeId"}).get('value')
+    operation = parse_qs(urlparse(next_url).query).get("Operation", ["SIGN_IN"])[0]
+
+    # 3b. POST the MFA form (Operation moves from query string into form body)
+    post_url = next_url.split('&Operation=')[0] if '&Operation=' in next_url else next_url
+    mfa_form = {
+        "Input.MfaCodeId": mfa_code_id,
         "Input.ReturnUrl": return_url,
-        "__RequestVerificationToken": token
+        "Input.DeviceName": "Chrome",
+        "Input.MfaCode": "",  # TODO: supply actual OTP code
+        "Input.IsTrustedDevice": "true",
+        "Input.Channel": "SMS",
+        "Input.Operation": operation,
+        "Input.Button": "confirm",
+        "__RequestVerificationToken": token,
     }
-    next_url = f"{LOGIN}/Account/MfaGate?handler=SkipMfaGate"
-    response = session.post(next_url, data=input_form, allow_redirects=False)
+    response = session.post(f"{LOGIN}{post_url}", data=mfa_form, allow_redirects=False)
     return response.headers.get("Location")
 
 
@@ -63,7 +71,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
         "code_challenge_method": "S256",
         "response_mode": "query",
         "ui_locales": "pl",
-        "app_version": "3.9.3-beta.1.8",
+        "app_version": "3.24.0-beta.1.7",
         "device_id": device_id,
         "device_name": "Chrome",
         "ts": int(time.time() * 1000)
@@ -78,7 +86,8 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     # 1. get __RequestVerificationToken
     # https://login-online24.medicover.pl/Account/Login?...
     response = session.get(next_url, allow_redirects=False)
-    token = _extract_token(response)
+    parser = BeautifulSoup(response.content, "html.parser")
+    token = parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
 
     # 2. send the form
     # https://login-online24.medicover.pl/Account/Login....
@@ -88,12 +97,13 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
         "Input.Username": username,
         "Input.Password": password,
         "Input.Button": "login",
+        "Input.IsSimpleAccessRegulationAccepted": "false",
         "__RequestVerificationToken": token
     }
     response = session.post(next_url, data=login_form, allow_redirects=False)
     next_url = response.headers.get("Location")
 
-    # 3. handle MFA Gate
+    # 3. handle MFA
     next_url = _handle_mfa(session, next_url, return_url)
 
     # 4. get code
