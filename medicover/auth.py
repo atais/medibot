@@ -10,9 +10,25 @@ from typing import Tuple
 from urllib.parse import urlparse, parse_qs
 
 from bs4 import BeautifulSoup
+from pydantic import BaseModel
 from requests import Session
 
 from ._constants import ONLINE24, LOGIN
+
+
+class LoginSuccess(BaseModel):
+    access_token: str
+    refresh_token: str
+
+
+class LoginMFAPending(BaseModel):
+    code_verifier: str
+    token: str
+    mfa_code_id: str
+    return_url: str
+    channel: str
+    operation: str
+    post_url: str
 
 
 def _uuid_v4() -> str:
@@ -28,35 +44,46 @@ def _gen_code_challenge(seed: str) -> str:
 _oidc_url = f'{ONLINE24}/signin-oidc'
 
 
-def _handle_mfa(session, next_url, return_url):
-    if 'Account/Mfa' not in next_url:
-        return next_url
-
-    # 3a. GET the MFA page – extract token and MfaCodeId hidden input
+# 3a. GET the MFA page – extract token and MfaCodeId hidden input
+def _get_mfa(next_url: str, code_verifier: str, session: Session) -> LoginMFAPending:
     response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
     parser = BeautifulSoup(response.content, "html.parser")
     token = parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
     mfa_code_id = parser.find("input", {"name": "Input.MfaCodeId"}).get('value')
-    operation = parse_qs(urlparse(next_url).query).get("Operation", ["SIGN_IN"])[0]
+    return_url = parser.find("input", {"name": "Input.ReturnUrl"}).get('value')
+    channel = parser.find("input", {"name": "Input.Channel"}).get('value')
+    operation = parser.find("input", {"name": "Input.Operation"}).get('value')
+    post_url = next_url.split('&Operation=')[0]
 
-    # 3b. POST the MFA form (Operation moves from query string into form body)
-    post_url = next_url.split('&Operation=')[0] if '&Operation=' in next_url else next_url
+    return LoginMFAPending(
+        code_verifier=code_verifier,
+        token=token,
+        mfa_code_id=mfa_code_id,
+        return_url=return_url,
+        channel=channel,
+        operation=operation,
+        post_url=post_url
+    )
+
+
+# 3b. POST the MFA form (Operation moves from query string into form body)
+def handle_mfa(login: LoginMFAPending, otp_code: str, session: Session):
     mfa_form = {
-        "Input.MfaCodeId": mfa_code_id,
-        "Input.ReturnUrl": return_url,
+        "Input.MfaCodeId": login.mfa_code_id,
+        "Input.ReturnUrl": login.return_url,
         "Input.DeviceName": "Chrome",
-        "Input.MfaCode": "",  # TODO: supply actual OTP code
+        "Input.MfaCode": otp_code,
         "Input.IsTrustedDevice": "true",
-        "Input.Channel": "SMS",
-        "Input.Operation": operation,
+        "Input.Channel": login.channel,
+        "Input.Operation": login.operation,
         "Input.Button": "confirm",
-        "__RequestVerificationToken": token,
+        "__RequestVerificationToken": login.token,
     }
-    response = session.post(f"{LOGIN}{post_url}", data=mfa_form, allow_redirects=False)
+    response = session.post(f"{LOGIN}{login.post_url}", data=mfa_form, allow_redirects=False)
     return response.headers.get("Location")
 
 
-def login(username: str, password: str, device_id: str, session: Session) -> Tuple[str, str]:
+def login1(username: str, password: str, device_id: str, session: Session) -> LoginSuccess | LoginMFAPending:
     state = "".join(random.choices(string.ascii_lowercase + string.digits, k=32))
     code_verifier = _uuid_v4() + _uuid_v4() + _uuid_v4()
     code_challenge = _gen_code_challenge(code_verifier)
@@ -104,8 +131,13 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     next_url = response.headers.get("Location")
 
     # 3. handle MFA
-    next_url = _handle_mfa(session, next_url, return_url)
+    if 'Account/Mfa' not in next_url:
+        return login2(next_url, code_verifier, session)
+    else:
+        return _get_mfa(next_url, code_verifier, session)
 
+
+def login2(next_url: str, code_verifier: str, session: Session) -> LoginSuccess:
     # 4. get code
     # https://login-online24.medicover.pl/connect/authorize/callback...
     response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
@@ -129,7 +161,7 @@ def login(username: str, password: str, device_id: str, session: Session) -> Tup
     access_token = session_data.get("access_token")
     refresh_token = session_data.get("refresh_token")
 
-    return access_token, refresh_token
+    return LoginSuccess(access_token=access_token, refresh_token=refresh_token)
 
 
 def refresh(old_refresh: str, session: Session) -> Tuple[str, str]:

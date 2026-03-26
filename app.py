@@ -1,26 +1,26 @@
+import logging
 from contextlib import asynccontextmanager
 
-import logging
 import uvicorn
 from fastapi import FastAPI, Request
 from fastapi.staticfiles import StaticFiles
 from starlette.middleware.sessions import SessionMiddleware
 
+from app_context import session_secret_key, templates
+from routes.admin import router as admin_router
 from routes.book import router as book_router
+from routes.fcm import router as fcm_router
+from routes.home import router as home_router
 from routes.job import router as job_router
 from routes.login import router as login_router
 from routes.search import router as search_router
-from routes.fcm import router as fcm_router
-from routes.home import router as home_router
-from routes.admin import router as admin_router
-
 from scheduler import scheduler
-from app_context import session_secret_key, templates
+
+logging.basicConfig(level=logging.INFO)
+logging.getLogger("requests").setLevel(logging.DEBUG)
+logging.getLogger("urllib3").setLevel(logging.DEBUG)
 
 if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO)
-    logging.getLogger("requests").setLevel(logging.DEBUG)
-    logging.getLogger("urllib3").setLevel(logging.DEBUG)
     uvicorn.run("app:app", host="0.0.0.0", port=8000, reload=True)
 
 
