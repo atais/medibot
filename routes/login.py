@@ -109,9 +109,7 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
 
         uc.data.profile = me
         user_contexts.set(uc)
-
         return response
-
     except Exception as e:
         logging.error(e)
         return templates.TemplateResponse(
