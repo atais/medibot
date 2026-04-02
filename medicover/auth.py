@@ -7,7 +7,7 @@ import string
 import time
 import uuid
 from typing import Tuple
-from urllib.parse import urlparse, parse_qs
+from urllib.parse import urlparse, parse_qs, urlencode, urlunparse
 
 from bs4 import BeautifulSoup
 from pydantic import BaseModel
@@ -53,7 +53,13 @@ def _get_mfa(next_url: str, code_verifier: str, session: Session) -> LoginMFAPen
     return_url = parser.find("input", {"name": "Input.ReturnUrl"}).get('value')
     channel = parser.find("input", {"name": "Input.Channel"}).get('value')
     operation = parser.find("input", {"name": "Input.Operation"}).get('value')
-    post_url = next_url.split('&Operation=')[0]
+
+    # Strip the `Operation` query-parameter from the URL using proper URL parsing
+    # so the MFA form POST target never includes it (Operation moves to the form body).
+    parsed = urlparse(next_url)
+    qs = parse_qs(parsed.query, keep_blank_values=True)
+    qs.pop('Operation', None)
+    post_url = urlunparse(parsed._replace(query=urlencode(qs, doseq=True)))
 
     return LoginMFAPending(
         code_verifier=code_verifier,
@@ -67,7 +73,7 @@ def _get_mfa(next_url: str, code_verifier: str, session: Session) -> LoginMFAPen
 
 
 # 3b. POST the MFA form (Operation moves from query string into form body)
-def handle_mfa(login: LoginMFAPending, otp_code: str, session: Session):
+def handle_mfa(login: LoginMFAPending, otp_code: str, session: Session) -> str:
     mfa_form = {
         "Input.MfaCodeId": login.mfa_code_id,
         "Input.ReturnUrl": login.return_url,
