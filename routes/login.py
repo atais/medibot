@@ -96,11 +96,6 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
 
         # Call handle_mfa from medicover
         redirect_location = medicover.handle_mfa(mfa_pending, mfa, uc.session)
-        if not redirect_location:
-            return templates.TemplateResponse(
-                "mfa.html",
-                {"request": request, "error": "Invalid or expired MFA code, please try again"}
-            )
         res = medicover.login2(redirect_location, mfa_pending.code_verifier, uc.session)
 
         logger.info(f"Manual logging successful for {username}")
