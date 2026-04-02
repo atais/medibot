@@ -7,8 +7,6 @@ import medicover
 from app_context import templates, user_contexts
 from user_context import UserContext
 
-# Create logger for this module
-logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -20,12 +18,12 @@ async def show_login(request: Request):
 @router.post("/login", response_class=HTMLResponse)
 async def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     try:
-        logger.info(f"Manual logging in {username}")
+        logging.info(f"Manual logging in {username}")
         uc = UserContext.init(username, password, on_update=user_contexts.set)
         res = medicover.login1(uc.data.username, uc.data.password, uc.data.device_id, uc.session)
 
         if isinstance(res, medicover.LoginSuccess):
-            logger.info(f"Manual logging successful for {username}")
+            logging.info(f"Manual logging successful for {username}")
             uc.data.bearer_token = res.access_token
             uc.data.refresh_token = res.refresh_token
             uc.session.headers["authorization"] = "Bearer " + uc.data.bearer_token
@@ -42,7 +40,7 @@ async def process_login(request: Request, username: str = Form(...), password: s
             return response
 
         elif isinstance(res, medicover.LoginMFAPending):
-            logger.info(f"Manual logging requires MFA for {username}")
+            logging.info(f"Manual logging requires MFA for {username}")
 
             # Save UserContext for later retrieval
             user_contexts.set(uc)
@@ -54,7 +52,7 @@ async def process_login(request: Request, username: str = Form(...), password: s
             return RedirectResponse(url="/mfa", status_code=303)
 
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": str(e)}
@@ -74,7 +72,7 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
         username = request.session.get("username")
 
         if not mfa_pending_data or not username:
-            logger.error("MFA session data missing")
+            logging.error("MFA session data missing")
             return templates.TemplateResponse(
                 "login.html",
                 {"request": request, "error": "Session expired, please login again"}
@@ -86,19 +84,19 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
         # Get UserContext (should already be created during login1)
         uc = user_contexts.get(username)
         if not uc:
-            logger.error(f"UserContext not found for {username}")
+            logging.error(f"UserContext not found for {username}")
             return templates.TemplateResponse(
                 "login.html",
                 {"request": request, "error": "Session expired, please login again"}
             )
 
-        logger.info(f"Processing MFA for {username}")
+        logging.info(f"Processing MFA for {username}")
 
         # Call handle_mfa from medicover
         redirect_location = medicover.handle_mfa(mfa_pending, mfa, uc.session)
         res = medicover.login2(redirect_location, mfa_pending.code_verifier, uc.session)
 
-        logger.info(f"Manual logging successful for {username}")
+        logging.info(f"Manual logging successful for {username}")
         uc.data.bearer_token = res.access_token
         uc.data.refresh_token = res.refresh_token
         uc.session.headers["authorization"] = "Bearer " + uc.data.bearer_token
@@ -115,7 +113,7 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
         return response
 
     except Exception as e:
-        logger.error(e)
+        logging.error(e)
         return templates.TemplateResponse(
             "login.html",
             {"request": request, "error": str(e)}
