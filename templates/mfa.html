@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <title>MEDIBOT | Login</title>
+    {% include 'head.html' %}
+</head>
+<body class="login">
+<div class="login-container">
+    {% if error %}
+    <div class="alert alert-danger" role="alert">
+        {{ error }}
+    </div>
+    {% endif %}
+    <!-- Optionally add a logo here -->
+    <img src="/static/medi_ico.png" class="login-logo" alt="Logo">
+    <h2 class="mb-4 text-primary text-center">Weryfikacja dwuetapowa</h2>
+    <form method="post" action="/mfa">
+        <div class="mb-3">
+            <label for="mfa" class="form-label">Podaj kod MFA</label>
+            <input type="text" class="form-control" id="mfa" name="mfa" required autofocus>
+        </div>
+        <button type="submit" class="btn btn-primary w-100">Dalej</button>
+    </form>
+</div>
+</body>
+</html>
