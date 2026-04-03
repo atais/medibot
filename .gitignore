@@ -5,6 +5,7 @@ _scripts/tmp
 
 medibot.iml
 medibot.sqlite
+tests/test.sqlite
 .env
 firebase-service-account.json
 
