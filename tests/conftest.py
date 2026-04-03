@@ -74,4 +74,3 @@ def app_server():
 
     proc.kill()
     proc.wait()
-

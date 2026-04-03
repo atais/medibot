@@ -21,4 +21,3 @@ def test_login_page_shows_form(page: Page, app_server: str):
     expect(page.locator("input#username")).to_be_visible()
     expect(page.locator("input#password")).to_be_visible()
     expect(page.locator("button[type=submit]")).to_be_visible()
-
