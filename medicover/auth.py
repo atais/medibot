@@ -46,30 +46,33 @@ _oidc_url = f'{ONLINE24}/signin-oidc'
 
 # 3a. GET the MFA page – extract token and MfaCodeId hidden input
 def _get_mfa(next_url: str, code_verifier: str, session: Session) -> LoginMFAPending:
-    response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
-    parser = BeautifulSoup(response.content, "html.parser")
-    token = parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
-    mfa_code_id = parser.find("input", {"name": "Input.MfaCodeId"}).get('value')
-    return_url = parser.find("input", {"name": "Input.ReturnUrl"}).get('value')
-    channel = parser.find("input", {"name": "Input.Channel"}).get('value')
-    operation = parser.find("input", {"name": "Input.Operation"}).get('value')
+    try:
+        response = session.get(f"{LOGIN}{next_url}", allow_redirects=False)
+        parser = BeautifulSoup(response.content, "html.parser")
+        token = parser.find("input", {"name": "__RequestVerificationToken"}).get('value')
+        mfa_code_id = parser.find("input", {"name": "Input.MfaCodeId"}).get('value')
+        return_url = parser.find("input", {"name": "Input.ReturnUrl"}).get('value')
+        channel = parser.find("input", {"name": "Input.Channel"}).get('value')
+        operation = parser.find("input", {"name": "Input.Operation"}).get('value')
 
-    # Strip the `Operation` query-parameter from the URL using proper URL parsing
-    # so the MFA form POST target never includes it (Operation moves to the form body).
-    parsed = urlparse(next_url)
-    qs = parse_qs(parsed.query, keep_blank_values=True)
-    qs.pop('Operation', None)
-    post_url = urlunparse(parsed._replace(query=urlencode(qs, doseq=True)))
+        # Strip the `Operation` query-parameter from the URL using proper URL parsing
+        # so the MFA form POST target never includes it (Operation moves to the form body).
+        parsed = urlparse(next_url)
+        qs = parse_qs(parsed.query, keep_blank_values=True)
+        qs.pop('Operation', None)
+        post_url = urlunparse(parsed._replace(query=urlencode(qs, doseq=True)))
 
-    return LoginMFAPending(
-        code_verifier=code_verifier,
-        token=token,
-        mfa_code_id=mfa_code_id,
-        return_url=return_url,
-        channel=channel,
-        operation=operation,
-        post_url=post_url
-    )
+        return LoginMFAPending(
+            code_verifier=code_verifier,
+            token=token,
+            mfa_code_id=mfa_code_id,
+            return_url=return_url,
+            channel=channel,
+            operation=operation,
+            post_url=post_url
+        )
+    except Exception as e:
+        raise Exception(f"Could not initialize MFA, did you enable it? Original error: {e}") from e
 
 
 # 3b. POST the MFA form (Operation moves from query string into form body)
