@@ -1,4 +1,4 @@
-name: E2E tests
+name: CI
 
 on:
   push:
@@ -7,11 +7,24 @@ on:
     branches: [master]
 
 jobs:
-  e2e:
+  ci:
     runs-on: ubuntu-latest
-
     steps:
       - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: "pip"
+
+      - name: Install Python dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install -r dev-requirements.txt
+
+      - name: Run lint
+        run: make lint
 
       - name: Set up Node.js
         uses: actions/setup-node@v4
@@ -24,24 +37,8 @@ jobs:
           npm install
           npm run build
 
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.13"
-          cache: "pip"
-
-      - name: Install Python dependencies
-        run: pip install -r dev-requirements.txt
-
       - name: Install Playwright browsers
         run: playwright install --with-deps chromium
 
-      # The test server uses a fake service account committed in tests/.
-      # No real secrets are needed for this smoke test.
       - name: Run E2E tests
         run: make test
-
-
-
-
-
