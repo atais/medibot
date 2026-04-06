@@ -11,6 +11,8 @@ a multi-user platform with a WebUI. The app sends real-time Firebase push notifi
 ## Inspired on
 
 - https://github.com/apqlzm/medihunter
+- https://github.com/rafsaf/medichaser
+- https://github.com/SteveSteve24/MediCzuwacz
 - https://github.com/dyrkin/luxmed-bot
 
 ## Running

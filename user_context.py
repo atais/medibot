@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from requests.adapters import HTTPAdapter
 
 import medicover
+from medicover.auth import LoginSuccess
 from medicover.personal_data import PersonalData
 
 _default_headers = {
@@ -83,10 +84,14 @@ class UserContext(HTTPAdapter):
         return cls(data=user_data, on_update=on_update, *args, **kwargs)
 
     def _login(self) -> None:
-        logging.info(f"Logging in {self.data.username}")
-        at, rt = medicover.login(self.data.username, self.data.password, self.data.device_id, self.session)
-        self.data.bearer_token = at
-        self.data.refresh_token = rt
+        logging.info(f"Automatic logging in {self.data.username}")
+        result = medicover.login1(self.data.username, self.data.password, self.data.device_id, self.session)
+
+        if not isinstance(result, LoginSuccess):
+            raise Exception(f"MFA required for {self.data.username} - cannot auto-login")
+
+        self.data.bearer_token = result.access_token
+        self.data.refresh_token = result.refresh_token
         self.session.headers["authorization"] = "Bearer " + self.data.bearer_token
         if self.on_update:
             self.on_update(self)

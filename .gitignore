@@ -5,10 +5,10 @@ _scripts/tmp
 
 medibot.iml
 medibot.sqlite
+tests/test.sqlite
 .env
 firebase-service-account.json
 
 node_modules
 templates/dist.html
 static/dist
-package-lock.json
