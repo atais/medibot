@@ -2,7 +2,7 @@
 flake8==7.3.0
 flake8-annotations==3.2.0
 # E2E testing
-pytest==8.3.5
+pytest==9.0.3
 pytest-playwright==0.7.0
 requests==2.32.5
 cryptography==44.0.2
