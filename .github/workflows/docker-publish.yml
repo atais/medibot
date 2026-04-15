@@ -28,7 +28,7 @@ jobs:
         run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
 
       - name: Build and push Docker image (versioned)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
@@ -37,7 +37,7 @@ jobs:
           tags: ${{ secrets.DOCKERHUB_USERNAME }}/medibot:${{ steps.get_version.outputs.version }}
 
       - name: Build and push Docker image (latest)
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: .
           file: Dockerfile
