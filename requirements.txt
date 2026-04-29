@@ -6,7 +6,7 @@ beautifulsoup4==4.14.3
 fake-useragent==2.2.0
 python-dotenv==1.1.1
 requests==2.32.5
-fastapi==0.118.0
+fastapi==0.136.1
 Jinja2==3.1.6
 python-multipart==0.0.20
 itsdangerous==2.2.0
