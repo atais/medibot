@@ -96,5 +96,5 @@ def datetimeformat(value, format='%d.%m.%Y %H:%M'):
 templates.env.filters['datetimeformat'] = datetimeformat
 
 # Inject version into all templates globally
-app_version = os.getenv("APP_VERSION", "development")
+app_version = os.getenv("APP_VERSION", "master")
 templates.env.globals["app_version"] = app_version

@@ -37,9 +37,9 @@ function setFCMBellStatus(status) {
     const bell = document.getElementById('fcm-bell');
     if (!bell) return;
     if (status === 'success') {
-        bell.className = 'bi bi-bell-fill text-success me-3';
+        bell.className = 'bi bi-bell-fill text-success';
     } else {
-        bell.className = 'bi bi-bell-slash-fill text-danger me-3';
+        bell.className = 'bi bi-bell-slash-fill text-danger';
     }
 }
 
