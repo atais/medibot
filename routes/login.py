@@ -12,7 +12,10 @@ router = APIRouter()
 
 @router.get("/login", response_class=HTMLResponse)
 async def show_login(request: Request):
-    return templates.TemplateResponse("login.html", {"request": request})
+    return templates.TemplateResponse(
+        request,
+        "login.html"
+    )
 
 
 @router.post("/login", response_class=HTMLResponse)
@@ -54,14 +57,20 @@ async def process_login(request: Request, username: str = Form(...), password: s
     except Exception as e:
         logging.error(e)
         return templates.TemplateResponse(
+            request,
             "login.html",
-            {"request": request, "error": str(e)}
+            {
+                "error": str(e)
+            }
         )
 
 
 @router.get("/mfa", response_class=HTMLResponse)
 async def show_mfa(request: Request):
-    return templates.TemplateResponse("mfa.html", {"request": request})
+    return templates.TemplateResponse(
+        request,
+        "mfa.html"
+    )
 
 
 @router.post("/mfa", response_class=HTMLResponse)
@@ -74,8 +83,11 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
         if not mfa_pending_data or not username:
             logging.error("MFA session data missing")
             return templates.TemplateResponse(
+                request,
                 "login.html",
-                {"request": request, "error": "Session expired, please login again"}
+                {
+                    "error": "Session expired, please login again"
+                }
             )
 
         # Reconstruct LoginMFAPending from session data
@@ -86,8 +98,11 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
         if not uc:
             logging.error(f"UserContext not found for {username}")
             return templates.TemplateResponse(
+                request,
                 "login.html",
-                {"request": request, "error": "Session expired, please login again"}
+                {
+                    "error": "Session expired, please login again"
+                }
             )
 
         logging.info(f"Processing MFA for {username}")
@@ -113,6 +128,9 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
     except Exception as e:
         logging.error(e)
         return templates.TemplateResponse(
+            request,
             "login.html",
-            {"request": request, "error": str(e)}
+            {
+                "error": str(e)
+            }
         )
