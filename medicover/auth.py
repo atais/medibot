@@ -107,7 +107,8 @@ def login1(username: str, password: str, device_id: str, session: Session) -> Lo
         "code_challenge_method": "S256",
         "response_mode": "query",
         "ui_locales": "pl",
-        "app_version": "3.24.0-beta.1.7",
+        "app_version": "3.27.0-beta.1.4",
+        "previous_app_version": "3.27.0-beta.1.4",
         "device_id": device_id,
         "device_name": "Chrome",
         "ts": int(time.time() * 1000)
@@ -117,7 +118,27 @@ def login1(username: str, password: str, device_id: str, session: Session) -> Lo
     # https://login-online24.medicover.pl/connect/authorize?client_id=web...
     response = session.get(f"{LOGIN}/connect/authorize", params=auth_params, allow_redirects=False)
     next_url = response.headers.get("Location")
-    return_url = parse_qs(urlparse(next_url).query)["ReturnUrl"][0]
+    qs_params = parse_qs(urlparse(next_url).query)
+
+    if "ReturnUrl" not in qs_params:
+        # The login server already has a valid session for this device and skipped
+        # the login form. Two possible redirect targets:
+        #
+        # A) /connect/authorize/callback?... (still on the login server)
+        #    → pass as a path to login2 which will follow it to get the code.
+        #
+        # B) https://online24.medicover.pl/signin-oidc?code=... (already has code)
+        #    → extract code directly and skip login2's step-4 GET.
+        parsed = urlparse(next_url)
+        if "code" in parse_qs(parsed.query):
+            # Case B: code is already in the redirect URL, exchange it directly.
+            return _exchange_code(next_url, code_verifier, session)
+        else:
+            # Case A: still on the login server callback path.
+            callback_path = parsed.path + ("?" + parsed.query if parsed.query else "")
+            return login2(callback_path, code_verifier, session)
+
+    return_url = qs_params["ReturnUrl"][0]
 
     # 1. get __RequestVerificationToken
     # https://login-online24.medicover.pl/Account/Login?...
@@ -144,6 +165,27 @@ def login1(username: str, password: str, device_id: str, session: Session) -> Lo
         return login2(next_url, code_verifier, session)
     else:
         return _get_mfa(next_url, code_verifier, session)
+
+
+def _exchange_code(signin_oidc_url: str, code_verifier: str, session: Session) -> LoginSuccess:
+    """Exchange a code that arrived directly in a signin-oidc redirect URL (case B)."""
+    code = parse_qs(urlparse(signin_oidc_url).query)["code"][0]
+    # Step 5: visit signin-oidc so the app-side cookies are set
+    session.get(signin_oidc_url)
+    # Step 6: exchange code for tokens
+    token_data = {
+        "grant_type": "authorization_code",
+        "redirect_uri": _oidc_url,
+        "code": code,
+        "code_verifier": code_verifier,
+        "client_id": "web"
+    }
+    response = session.post(f"{LOGIN}/connect/token", data=token_data)
+    session_data = json.loads(response.content)
+    return LoginSuccess(
+        access_token=session_data.get("access_token"),
+        refresh_token=session_data.get("refresh_token")
+    )
 
 
 def login2(next_url: str, code_verifier: str, session: Session) -> LoginSuccess:

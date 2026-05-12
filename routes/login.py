@@ -22,7 +22,8 @@ async def show_login(request: Request):
 async def process_login(request: Request, username: str = Form(...), password: str = Form(...)):
     try:
         logging.info(f"Manual logging in {username}")
-        uc = UserContext.init(username, password, on_update=user_contexts.set)
+        # Reuse existing device_id if available so the server recognizes the trusted device
+        uc = user_contexts.get(username) or UserContext.init(username, password, on_update=user_contexts.set)
         res = medicover.login1(uc.data.username, uc.data.password, uc.data.device_id, uc.session)
 
         if isinstance(res, medicover.LoginSuccess):
