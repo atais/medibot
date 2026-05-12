@@ -5,11 +5,18 @@
             <img src="/static/medi_ico.png" alt="Logo" class="me-2" style="height:30px;">
             <span class="fw-bold text-primary">MEDIBOT</span>
         </a>
-        <span class="navbar-text ms-auto">
-            <span id="fcm-bell" class="d-none"></span>
-            Witaj, {{ user.firstName }}
-        </span>
+        <div class="dropdown ms-auto">
+            <span class="navbar-text dropdown-toggle" style="cursor:pointer;" id="userDropdown" data-bs-toggle="dropdown" aria-expanded="false">
+                Witaj {{ user.firstName }}
+                <span id="fcm-bell" class="d-none"></span>
+            </span>
+            <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="userDropdown">
+                {% if isAdmin %}
+                <li><a class="dropdown-item" href="/admin">Panel administracyjny</a></li>
+                {% endif %}
+                <li><a class="dropdown-item" href="/logout">Wyloguj</a></li>
+            </ul>
+        </div>
     </div>
 </nav>
 <!-- End Navigation Bar -->
-

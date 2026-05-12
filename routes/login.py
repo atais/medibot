@@ -134,3 +134,11 @@ async def process_mfa(request: Request, mfa: str = Form(...)):
                 "error": str(e)
             }
         )
+
+
+@router.get("/logout")
+async def logout(request: Request):
+    response = RedirectResponse(url="/login", status_code=303)
+    response.delete_cookie(key="username")
+    request.session.clear()
+    return response
