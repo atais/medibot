@@ -1,7 +1,7 @@
 APScheduler==3.11.2
 pytz==2025.2
 pydantic==2.13.4
-starlette==0.48.0
+starlette==1.0.0
 beautifulsoup4==4.14.3
 fake-useragent==2.2.0
 python-dotenv==1.1.1

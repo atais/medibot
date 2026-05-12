@@ -17,17 +17,20 @@ async def home(request: Request, user_context=Depends(get_current_user_context))
     appointments = get_person_appointments(user_context.session)
     flash_message = request.session.pop("flash_message", None)
     flash_category = request.session.pop("flash_category", "info")
-    return templates.TemplateResponse("index.html", {
-        "request": request,
-        "user": user_context.data.profile,
-        "jobs": jobs,
-        "referrals": referrals,
-        "appointments": appointments,
-        "all_regions": all_regions,
-        "all_specialities": all_specialities,
-        "flash_message": flash_message,
-        "flash_category": flash_category,
-    })
+    return templates.TemplateResponse(
+        request,
+        "index.html",
+        {
+            "user": user_context.data.profile,
+            "jobs": jobs,
+            "referrals": referrals,
+            "appointments": appointments,
+            "all_regions": all_regions,
+            "all_specialities": all_specialities,
+            "flash_message": flash_message,
+            "flash_category": flash_category,
+        }
+    )
 
 
 @router.post("/update_profile", response_class=HTMLResponse)
