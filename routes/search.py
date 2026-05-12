@@ -5,7 +5,7 @@ from fastapi import APIRouter, Request, Query, Depends
 from starlette.responses import HTMLResponse
 
 import medicover
-from app_context import templates, get_current_user_context, all_regions, all_specialities
+from app_context import templates, get_current_user_context, all_regions, all_specialities, admins
 from medicover.appointments import SearchParams
 
 router = APIRouter()
@@ -51,6 +51,7 @@ async def search(request: Request,
         "search.html",
         {
             "user": user_context.data.profile,
+            "isAdmin": user_context.data.username in admins,
             "appointments": appointments,
             "region_ids": region_ids,
             "specialty_ids": specialty_ids,

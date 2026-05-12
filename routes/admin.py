@@ -28,6 +28,7 @@ async def book(request: Request,
         "admin.html",
         {
             "user": user_context.data.profile,
+            "isAdmin": True,
             "users": users,
             "jobs": jobs,
             "flash_message": flash_message,

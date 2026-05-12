@@ -3,7 +3,7 @@ from starlette.responses import HTMLResponse, RedirectResponse
 
 from app_context import all_regions, all_specialities
 from app_context import templates, get_current_user_context
-from app_context import user_contexts
+from app_context import user_contexts, admins
 from medicover import get_person_appointments, get_referrals, personal_data
 from scheduler import get_jobs
 
@@ -22,6 +22,7 @@ async def home(request: Request, user_context=Depends(get_current_user_context))
         "index.html",
         {
             "user": user_context.data.profile,
+            "isAdmin": user_context.data.username in admins,
             "jobs": jobs,
             "referrals": referrals,
             "appointments": appointments,
