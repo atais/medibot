@@ -29,8 +29,9 @@ COPY --from=nodebuilder /app/templates/dist.html ./templates/dist.html
 # Expose the port FastAPI will run on
 EXPOSE 8000
 
-# Set environment variables (optional)
+# Set environment variables
 ENV PYTHONUNBUFFERED=1
+ENV APP_VERSION=${APP_VERSION:-localbuild}
 
 # Start the FastAPI app with Uvicorn
 CMD ["python", "app.py"]

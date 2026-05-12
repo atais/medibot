@@ -94,3 +94,7 @@ def datetimeformat(value, format='%d.%m.%Y %H:%M'):
 
 # Register the filter with Jinja2
 templates.env.filters['datetimeformat'] = datetimeformat
+
+# Inject version into all templates globally
+app_version = os.getenv("APP_VERSION", "development")
+templates.env.globals["app_version"] = app_version
