@@ -13,7 +13,7 @@
     "bootstrap-datepicker": "^1.10.1",
     "bootstrap-select": "^1.14.0-beta3",
     "firebase": "^12.13.0",
-    "jquery": "^3.7.1",
+    "jquery": "^4.0.0",
     "js-loading-overlay": "^1.2.0",
     "nouislider": "^15.8.1",
     "bootstrap-icons": "^1.11.3"
