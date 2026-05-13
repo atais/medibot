@@ -176,6 +176,10 @@
     "name": "Urolog dziecięcy"
   },
   {
+    "id": "486",
+    "name": "Medicover Express - szczepienia grypa"
+  },
+  {
     "id": "519",
     "name": "USG sutka (piersi)"
   },
@@ -266,6 +270,10 @@
   {
     "id": "11682",
     "name": "Badanie dna oka - dorośli"
+  },
+  {
+    "id": "12088",
+    "name": "Endokrynolog - czat"
   },
   {
     "id": "12288",
@@ -682,5 +690,17 @@
   {
     "id": "110310",
     "name": "Pulmonolog - porada umawiana czat TeleCentrum"
+  },
+  {
+    "id": "112918",
+    "name": "Położna antykoncepcja awaryjna-porada umawiana czat TeleCentrum"
+  },
+  {
+    "id": "113926",
+    "name": "Kardiolog - porada umawiana wideo TeleCentrum"
+  },
+  {
+    "id": "114330",
+    "name": "Kardiolog - porada umawiana czat TeleCentrum"
   }
 ]
