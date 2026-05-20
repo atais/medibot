@@ -1,6 +1,6 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
-@import 'bootstrap-select/dist/css/bootstrap-select.min.css';
+@import 'bootstrap5-tags/tags-pure.css';
 @import 'bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css';
 @import 'nouislider/dist/nouislider.min.css';
 
@@ -80,4 +80,16 @@ body.login {
     display: block;
     margin: 0 auto 1.5rem auto;
     width: 120px;
+}
+
+#monitor-form .form-select {
+   border: none;
+}
+
+#monitor-form #specialty_select {
+    flex-basis: auto !important;
+}
+
+.dropdown-item {
+    text-align: left;
 }

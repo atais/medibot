@@ -37,12 +37,12 @@
                                 <select class="selectpicker"
                                         id="specialty_select"
                                         name="specialty_ids"
-                                        data-none-selected-text="Wybierz specjalności..."
-                                        data-live-search="true"
-                                        data-style="btn-light bg-white border-0 fs-5 fw-normal"
-                                        style="font-size: 1.1rem; border: none; outline: none;"
-                                        multiple
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="false"
+                                        data-suggestions-threshold="0"
                                         required>
+                                    <option hidden value="">Wybierz specjalność...</option>
                                     {% for specialty_id, specialty_name in all_specialities.items() %}
                                     <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                                     {% endfor %}
@@ -64,10 +64,10 @@
                         <select class="selectpicker w-100 mb-2"
                                 id="specialty_select_mobile"
                                 name="specialty_ids"
-                                data-none-selected-text="Wybierz specjalności..."
-                                data-live-search="true"
-                                data-style="btn-light bg-white text-start"
-                                multiple
+                                data-clear-end="false"
+                                data-full-width="true"
+                                data-allow-clear="true"
+                                data-suggestions-threshold="0"
                                 required>
                             {% for specialty_id, specialty_name in all_specialities.items() %}
                             <option value="{{ specialty_id }}">{{ specialty_name }}</option>
