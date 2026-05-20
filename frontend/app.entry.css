@@ -81,3 +81,15 @@ body.login {
     margin: 0 auto 1.5rem auto;
     width: 120px;
 }
+
+#monitor-form .form-select {
+   border: none;
+}
+
+#monitor-form #specialty_select {
+    flex-basis: auto !important;
+}
+
+.dropdown-item {
+    text-align: left;
+}

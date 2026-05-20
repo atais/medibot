@@ -34,14 +34,15 @@
                         <div class="d-flex align-items-stretch shadow-lg"
                              style="border-radius: 50px; overflow: visible; border: 2px solid #e9ecef; background: white;">
                             <div style="flex: 1; display: flex; align-items: center; padding: 0.2rem 0 0 1.5rem;">
-                                <select class="form-select selectpicker"
+                                <select class="selectpicker"
                                         id="specialty_select"
                                         name="specialty_ids"
-                                        data-allow-clear="1"
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="false"
                                         data-suggestions-threshold="0"
-                                        style="font-size: 1.1rem; border: none; outline: none;"
                                         required>
-                                    <option disabled hidden value="">Wybierz specjalność...</option>
+                                    <option hidden value="">Wybierz specjalność...</option>
                                     {% for specialty_id, specialty_name in all_specialities.items() %}
                                     <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                                     {% endfor %}
@@ -63,10 +64,10 @@
                         <select class="selectpicker w-100 mb-2"
                                 id="specialty_select_mobile"
                                 name="specialty_ids"
-                                data-none-selected-text="Wybierz specjalności..."
-                                data-live-search="true"
-                                data-style="btn-light bg-white text-start"
-                                multiple
+                                data-clear-end="false"
+                                data-full-width="true"
+                                data-allow-clear="true"
+                                data-suggestions-threshold="0"
                                 required>
                             {% for specialty_id, specialty_name in all_specialities.items() %}
                             <option value="{{ specialty_id }}">{{ specialty_name }}</option>
