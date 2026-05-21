@@ -10,6 +10,6 @@ fastapi==0.136.1
 Jinja2==3.1.6
 python-multipart==0.0.28
 itsdangerous==2.2.0
-uvicorn==0.46.0
+uvicorn==0.47.0
 SQLAlchemy==2.0.49
 pyfcm==2.1.0
