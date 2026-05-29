@@ -90,6 +90,22 @@ body.login {
     flex-basis: auto !important;
 }
 
+#mobile-monitor-form .form-control {
+    border-radius: 25px;
+    overflow: visible;
+    border: 2px solid #e9ecef;
+    /*background: white;*/
+}
+
+form .form-select input {
+    width: auto !important;
+}
+
+#mobile-monitor-form .form-select input {
+    width: auto !important;
+    margin: 0 2em 0 0;
+}
+
 .dropdown-item {
     text-align: left;
 }

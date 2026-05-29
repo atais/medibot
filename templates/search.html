@@ -26,8 +26,12 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="region_select" name="region_ids"
-                                        data-none-Selected-Text="Wybierz region"
-                                        data-live-search="true" required>
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="true"
+                                        data-suggestions-threshold="0"
+                                        required>
+                                    <option hidden value="">Wybierz region...</option>
                                     {% for region_id, region_value in all_regions.items() %}
                                         <option value="{{ region_id }}" {% if region_ids == region_id %}selected{% endif %}>{{ region_value }}</option>
                                     {% endfor %}
@@ -40,9 +44,12 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="specialty_select" name="specialty_ids"
-                                        data-actions-box="true"
-                                        data-none-Selected-Text="Wybierz specjalności"
-                                        multiple data-live-search="true" required>
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="true"
+                                        data-suggestions-threshold="0"
+                                        required>
+                                    <option hidden value="">Wybierz specjalność...</option>
                                     {% for specialty_id, specialty_name in all_specialities.items() %}
                                         <option value="{{ specialty_id }}" {% if specialty_ids and specialty_id in specialty_ids %}selected{% endif %}>{{ specialty_name }}</option>
                                     {% endfor %}
@@ -55,9 +62,13 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="clinic_select" name="clinic_ids"
-                                        data-actions-box="true"
-                                        data-none-Selected-Text="Wybierz placówki / BRAK WYBORU = WSZYSTKIE"
-                                        multiple data-live-search="true">
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="true"
+                                        data-suggestions-threshold="0"
+                                        multiple
+                                >
+                                    <option hidden value="">Wybierz placówki / BRAK WYBORU = WSZYSTKIE</option>
                                     {% for clinic in all_clinics %}
                                         <option value="{{ clinic.id }}" {% if clinic_ids and clinic.id|string in clinic_ids|map('string')|list %}selected{% endif %}>{{ clinic.value }}</option>
                                     {% endfor %}
@@ -70,9 +81,13 @@
                             </div>
                             <div class="col-md-9">
                                 <select class="selectpicker w-100" id="doctor_select" name="doctor_ids"
-                                        data-actions-box="true"
-                                        data-none-Selected-Text="Wybierz lekarzy / BRAK WYBORU = WSZYSCY"
-                                        multiple data-live-search="true">
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="true"
+                                        data-suggestions-threshold="0"
+                                        multiple
+                                >
+                                    <option hidden value="">Wybierz lekarzy / BRAK WYBORU = WSZYSCY</option>
                                     {% for doctor in all_doctors %}
                                     <option value="{{ doctor.id }}" {% if doctor_ids and doctor.id|string in doctor_ids|map('string')|list %}selected{% endif %}>{{ doctor.value }}</option>
                                     {% endfor %}

@@ -29,7 +29,8 @@
 
                 <!-- Desktop form -->
                 <div class="d-none d-md-block">
-                    <form method="get" action="/search" id="monitor-form" style="max-width: 50rem; margin: 0 auto;">
+                    <form method="get" action="/search" id="monitor-form"
+                          style="max-width: 50rem; margin: 0 auto;">
                         <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
                         <div class="d-flex align-items-stretch shadow-lg"
                              style="border-radius: 50px; overflow: visible; border: 2px solid #e9ecef; background: white;">
@@ -59,7 +60,7 @@
                 <!-- Mobile form -->
                 <div class="d-block d-md-none">
                     <form method="get" action="/search" id="mobile-monitor-form"
-                          style="max-width: 32rem; margin: 0 auto;">
+                          style="max-width: 95%; margin: 0 auto;">
                         <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
                         <select class="selectpicker w-100 mb-2"
                                 id="specialty_select_mobile"
@@ -69,6 +70,7 @@
                                 data-allow-clear="true"
                                 data-suggestions-threshold="0"
                                 required>
+                            <option hidden value="">Wybierz specjalność...</option>
                             {% for specialty_id, specialty_name in all_specialities.items() %}
                             <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                             {% endfor %}
