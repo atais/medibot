@@ -9,46 +9,57 @@ body {
     background: #f5f6fa;
     min-height: 100vh;
 }
-#monitor-form .bootstrap-select>.dropdown-toggle {
+
+#monitor-form .bootstrap-select > .dropdown-toggle {
     width: auto;
 }
-#monitor-form .bootstrap-select> button::after {
+
+#monitor-form .bootstrap-select > button::after {
     content: none;
 }
+
 #slider-hide .noUi-tooltip {
     display: none;
 }
+
 #slider-hide .noUi-active .noUi-tooltip {
     display: block;
 }
+
 #slider-hide .noUi-tooltip {
     font-size: 1rem;
     padding: 2px 8px;
     border-radius: 6px;
     min-width: unset;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+
 #slider-hide .noUi-connect {
     background: #004996;
 }
+
 .btn-primary,
 .bg-primary {
     background-color: #004996 !important;
     border-color: #004996 !important;
 }
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
     background-color: #003a7a !important;
     border-color: #003a7a !important;
 }
+
 .text-primary {
     color: #004996 !important;
 }
+
 .btn-outline-primary {
     color: #004996 !important;
     border-color: #004996 !important;
 }
+
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary:active {
@@ -83,7 +94,7 @@ body.login {
 }
 
 #monitor-form .form-select {
-   border: none;
+    border: none;
 }
 
 #monitor-form #specialty_select {
@@ -94,6 +105,15 @@ body.login {
     border-radius: 25px;
     overflow: visible;
     border: 2px solid #e9ecef;
+}
+
+form .form-control span.tags-badge {
+    /* I'd love to apply it, but sometimes you can't see what you select */
+    /*
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    */
 }
 
 form .form-select input {
