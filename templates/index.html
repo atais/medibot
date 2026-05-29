@@ -29,7 +29,8 @@
 
                 <!-- Desktop form -->
                 <div class="d-none d-md-block">
-                    <form method="get" action="/search" id="monitor-form" style="max-width: 50rem; margin: 0 auto;">
+                    <form method="get" action="/search" id="monitor-form"
+                          style="max-width: 50rem; margin: 0 auto;">
                         <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
                         <div class="d-flex align-items-stretch shadow-lg"
                              style="border-radius: 50px; overflow: visible; border: 2px solid #e9ecef; background: white;">
@@ -37,12 +38,12 @@
                                 <select class="selectpicker"
                                         id="specialty_select"
                                         name="specialty_ids"
-                                        data-none-selected-text="Wybierz specjalności..."
-                                        data-live-search="true"
-                                        data-style="btn-light bg-white border-0 fs-5 fw-normal"
-                                        style="font-size: 1.1rem; border: none; outline: none;"
-                                        multiple
+                                        data-clear-end="false"
+                                        data-full-width="true"
+                                        data-allow-clear="false"
+                                        data-suggestions-threshold="0"
                                         required>
+                                    <option hidden value="">Wybierz specjalność...</option>
                                     {% for specialty_id, specialty_name in all_specialities.items() %}
                                     <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                                     {% endfor %}
@@ -59,16 +60,17 @@
                 <!-- Mobile form -->
                 <div class="d-block d-md-none">
                     <form method="get" action="/search" id="mobile-monitor-form"
-                          style="max-width: 32rem; margin: 0 auto;">
+                          style="max-width: 95%; margin: 0 auto;">
                         <input type="hidden" name="region_ids" value="{{ user.homeClinicId }}">
                         <select class="selectpicker w-100 mb-2"
                                 id="specialty_select_mobile"
                                 name="specialty_ids"
-                                data-none-selected-text="Wybierz specjalności..."
-                                data-live-search="true"
-                                data-style="btn-light bg-white text-start"
-                                multiple
+                                data-clear-end="false"
+                                data-full-width="true"
+                                data-allow-clear="false"
+                                data-suggestions-threshold="0"
                                 required>
+                            <option hidden value="">Wybierz specjalność...</option>
                             {% for specialty_id, specialty_name in all_specialities.items() %}
                             <option value="{{ specialty_id }}">{{ specialty_name }}</option>
                             {% endfor %}

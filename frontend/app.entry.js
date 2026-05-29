@@ -7,7 +7,9 @@ import * as bootstrap from 'bootstrap';
 window.bootstrap = bootstrap;
 
 require('bootstrap-datepicker');
-require('bootstrap-select');
+import Tags from 'bootstrap5-tags';
+window.Tags = Tags;
+
 require('js-loading-overlay');
 const noUiSlider = require('nouislider');
 window.noUiSlider = noUiSlider;

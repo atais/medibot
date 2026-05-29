@@ -1,6 +1,6 @@
 @import 'bootstrap/dist/css/bootstrap.min.css';
 @import 'bootstrap-icons/font/bootstrap-icons.css';
-@import 'bootstrap-select/dist/css/bootstrap-select.min.css';
+@import 'bootstrap5-tags/tags-pure.css';
 @import 'bootstrap-datepicker/dist/css/bootstrap-datepicker3.min.css';
 @import 'nouislider/dist/nouislider.min.css';
 
@@ -9,46 +9,57 @@ body {
     background: #f5f6fa;
     min-height: 100vh;
 }
-#monitor-form .bootstrap-select>.dropdown-toggle {
+
+#monitor-form .bootstrap-select > .dropdown-toggle {
     width: auto;
 }
-#monitor-form .bootstrap-select> button::after {
+
+#monitor-form .bootstrap-select > button::after {
     content: none;
 }
+
 #slider-hide .noUi-tooltip {
     display: none;
 }
+
 #slider-hide .noUi-active .noUi-tooltip {
     display: block;
 }
+
 #slider-hide .noUi-tooltip {
     font-size: 1rem;
     padding: 2px 8px;
     border-radius: 6px;
     min-width: unset;
-    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
+
 #slider-hide .noUi-connect {
     background: #004996;
 }
+
 .btn-primary,
 .bg-primary {
     background-color: #004996 !important;
     border-color: #004996 !important;
 }
+
 .btn-primary:hover,
 .btn-primary:focus,
 .btn-primary:active {
     background-color: #003a7a !important;
     border-color: #003a7a !important;
 }
+
 .text-primary {
     color: #004996 !important;
 }
+
 .btn-outline-primary {
     color: #004996 !important;
     border-color: #004996 !important;
 }
+
 .btn-outline-primary:hover,
 .btn-outline-primary:focus,
 .btn-outline-primary:active {
@@ -80,4 +91,40 @@ body.login {
     display: block;
     margin: 0 auto 1.5rem auto;
     width: 120px;
+}
+
+#monitor-form .form-select {
+    border: none;
+}
+
+#monitor-form #specialty_select {
+    flex-basis: auto !important;
+}
+
+#mobile-monitor-form .form-control {
+    border-radius: 25px;
+    overflow: visible;
+    border: 2px solid #e9ecef;
+}
+
+form .form-control span.tags-badge {
+    /* I'd love to apply it, but sometimes you can't see what you select */
+    /*
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    */
+}
+
+form .form-select input {
+    width: auto !important;
+}
+
+#mobile-monitor-form .form-select input {
+    width: auto !important;
+    margin: 0 2em 0 0;
+}
+
+.dropdown-item {
+    text-align: left;
 }

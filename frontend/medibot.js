@@ -172,5 +172,7 @@ document.addEventListener('DOMContentLoaded', function () {
         });
     }
 
+    Tags.init("select");
+
 });
 
