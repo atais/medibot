@@ -11,5 +11,5 @@ Jinja2==3.1.6
 python-multipart==0.0.29
 itsdangerous==2.2.0
 uvicorn==0.48.0
-SQLAlchemy==2.0.50
+SQLAlchemy==2.0.51
 pyfcm==2.1.0
