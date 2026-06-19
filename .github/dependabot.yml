@@ -4,17 +4,28 @@ updates:
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      javascript:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "pip"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      python:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
 
   - package-ecosystem: "github-actions"
     directory: "/"
     schedule:
       interval: "weekly"
+    groups:
+      githubworkflows:
+        patterns:
+          - "*"
     open-pull-requests-limit: 10
-
