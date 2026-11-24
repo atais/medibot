@@ -95,3 +95,11 @@ jobs:
           docker buildx imagetools create \
             -t "$IMAGE:$VERSION" -t "$IMAGE:latest" \
             $(printf "$IMAGE@sha256:%s " *)
+
+      - name: Update Docker Hub description
+        uses: peter-evans/dockerhub-description@v5
+        with:
+          username: ${{ secrets.DOCKERHUB_USERNAME }}
+          password: ${{ secrets.DOCKERHUB_TOKEN }}
+          repository: ${{ secrets.DOCKERHUB_USERNAME }}/medibot
+          readme-filepath: ./README.md
