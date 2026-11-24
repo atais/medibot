@@ -3,6 +3,15 @@ name: Build and Publish Docker Image
 on:
   release:
     types: [published]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: Release tag to build (e.g. v1.2.3)
+        required: true
+
+concurrency:
+  group: docker-publish-${{ github.event.release.tag_name || inputs.tag }}
+  cancel-in-progress: false
 
 jobs:
   build-and-push:
@@ -10,6 +19,8 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v6
+        with:
+          ref: ${{ inputs.tag || github.ref }}
 
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v4
@@ -25,7 +36,9 @@ jobs:
 
       - name: Extract release version
         id: get_version
-        run: echo "version=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+        run: echo "version=${INPUT_TAG:-${GITHUB_REF#refs/tags/}}" >> "$GITHUB_OUTPUT"
+        env:
+          INPUT_TAG: ${{ inputs.tag }}
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v7
@@ -34,6 +47,8 @@ jobs:
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
           tags: |
             ${{ secrets.DOCKERHUB_USERNAME }}/medibot:${{ steps.get_version.outputs.version }}
             ${{ secrets.DOCKERHUB_USERNAME }}/medibot:latest
