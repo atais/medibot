@@ -96,6 +96,9 @@ jobs:
             -t "$IMAGE:$VERSION" -t "$IMAGE:latest" \
             $(printf "$IMAGE@sha256:%s " *)
 
+      - name: Checkout code
+        uses: actions/checkout@v6
+
       - name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v5
         with:
