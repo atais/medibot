@@ -29,7 +29,7 @@ jobs:
     runs-on: ${{ matrix.runner }}
     steps:
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
         with:
           ref: ${{ inputs.tag || github.ref }}
 
@@ -97,7 +97,7 @@ jobs:
             $(printf "$IMAGE@sha256:%s " *)
 
       - name: Checkout code
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Update Docker Hub description
         uses: peter-evans/dockerhub-description@v5
